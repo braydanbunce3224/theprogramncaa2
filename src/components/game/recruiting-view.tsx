@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useGame } from "@/game/store";
-import { interestIn, intlLabel, isTargeted, lastFit, portalAfford, portalChance, portalInterest, portalOf, portalOpen, reasonLine, recruitStage, recruitingProgress, scholarshipsLeft, settingsOf, signChance, signGate, fogTape, heatMark, nationalBoard, FreakKinds, freakLine, signFloor } from "@/game/engine";
+import { interestIn, intlLabel, isTargeted, lastFit, portalAfford, portalChance, portalInterest, portalOf, portalOpen, reasonLine, recruitStage, recruitingProgress, scholarshipsLeft, settingsOf, signChance, signGate, fogTape, heatMark, nationalBoard, FreakKinds, freakLine } from "@/game/engine";
 import { circleLine, commitWord, pipelineLine, poachWatch, rivalRows, signingBlurb } from "@/game/sheet";
 import { classShapeLine, leanMathLine } from "@/game/recruit-depth";
 import { TEAM_BY_ID, teamOf } from "@/game/teams";
@@ -248,7 +248,10 @@ export function RecruitingView() {
           const nilOn = settingsOf(state).nilOn && state.nilCap >= 10;
           const arrow = heatMark(r, you, state);
           const chance = signChance(r, state);
-          const gate = god ? null : signGate(interest, signFloor(state), offered);
+          const asked = r.signAsk?.season === state.season && r.signAsk.week === state.week;
+          const gate = god ? null : signGate(offered, Boolean(asked));
+          const verbalWindow = settingsOf(state).flipsOn && state.phase !== "offseason" && state.week < 14;
+          const elsewhere = signedElse ? (recruitStage(r, r.committedTo!, state) === "verbal" ? "Verbal" : "Signed") : "";
           const rank = boardRanks.get(r.id) ?? 0;
           return (
             <li key={r.id} className="board-card">
@@ -278,13 +281,11 @@ export function RecruitingView() {
                     {pipe ? " · pipeline" : ""} · {fogTape(r)}
                     {r.scouted ? ` · wants ${topNeed(r.wants)}` : " · scout to see wants"}
                     {r.scouted && r.skills ? ` · shoot ${r.skills.shoot} / finish ${r.skills.finish} / def ${r.skills.defense} / IQ ${r.skills.iq}` : ""}
-                    {signedElse ? ` · signed ${schoolElse?.name ?? "elsewhere"}` : ""}
+                    {signedElse ? ` · ${elsewhere.toLowerCase()} ${schoolElse?.name ?? "elsewhere"}` : ""}
                   </p>
                   <p className="mt-1 text-xs tracking-[0.12em] text-subtle uppercase">
-                    {signedElse ? `Signed · ${schoolElse?.name ?? "elsewhere"}` : STAGE[stage]}
-                    {!signed && !signedElse ? ` · ${chance}% to sign` : ""}
-                    {gate ? ` · ${gate}` : ""}
-                    {!signed && !signedElse && (chance < 15 || (r.stars >= 4 && chance < signFloor(state) - 20)) ? " · Long shot" : ""}
+                    {signedElse ? `${elsewhere} · ${schoolElse?.name ?? "elsewhere"}` : STAGE[stage]}
+                    {!signed && !signedElse ? (gate ? ` · ${gate}` : ` · ${chance}% to ${verbalWindow ? "commit" : "sign"}`) : ""}
                   </p>
                 </div>
                 <span className="jersey-ovr">
@@ -348,7 +349,7 @@ export function RecruitingView() {
                     className="min-h-11 rounded-full bg-accent px-3 text-xs font-bold text-accent-fg disabled:opacity-40"
                     {...bindTap(() => sign(r.id))}
                   >
-                    {gate ? "Can't sign yet" : "Sign"}
+                    {gate ? "Not yet" : verbalWindow ? `Ask · ${chance}%` : `Sign · ${chance}%`}
                   </button>
                   {god && (
                     <button type="button" className="min-h-11 rounded-full bg-elevated px-3 text-xs font-semibold" {...bindTap(() => forceSign(r.id))}>

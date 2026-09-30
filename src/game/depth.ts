@@ -454,7 +454,7 @@ export function forceCommit(state: GameState, id: string): { state: GameState; o
     state: rememberSigns(state, {
       ...state,
       recruits,
-      flash: { kind: "commit", name: `${r.first} ${r.last}`, stars: r.stars, pos: r.pos, detail: "God Mode. The pledge is ink." },
+      flash: { kind: "commit", name: `${r.first} ${r.last}`, stars: r.stars, pos: r.pos, detail: "God Mode. The pledge is in." },
     }),
   };
 }

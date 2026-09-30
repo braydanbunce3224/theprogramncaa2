@@ -2,6 +2,10 @@
 
 Read this before changing the sim. One module per job.
 
+## Postgame
+
+There is no postgame press conference. A finished game opens the recap, then the hub. Do not build a podium, and do not route `pendingPresser` anywhere. Old saves that still have one open on the hub with it cleared.
+
 ## Live endgame buttons
 
 `src/game/liveControls.ts` is the only list. `endgameMenu()` returns the labels: Foul up 3, Don't foul, Intentional foul, Hold for last, 2-for-1.
@@ -28,7 +32,34 @@ Do not add a clamp that pulls either engine back to a target average.
 
 ## 2-for-1
 
-College shot clock is 30 seconds, so the button is not the last 8 seconds. `endgameMenu` shows `2-for-1` only when you have the ball, the lead is 0 to 8, and the clock is 31–40 seconds. `queueLate("twofor")` sets pace to fast and the next possession to an early shot (about 6–9 seconds). A close game parks once per half on that window so the button can appear. Foul up 3, Don't foul, intentional foul, and Hold for last are unchanged. God Mode → Force 2-for-1 sets that exact look.
+College shot clock is 30 seconds, so the button is not the last 8 seconds. `endgameMenu` shows `2-for-1` only when you have the ball, the lead is 0 to 8, and the clock is 31–40 seconds. `queueLate("twofor")` sets pace to fast and the next possession to an early shot (about 6–9 seconds). A close game parks once per half on that window so the button can appear. Foul up 3, Don't foul, intentional foul, and Hold for last are unchanged. God Mode → Force 2-for-1 sets that exact look. Both force buttons set `liveGame.sandbox`. `closeLive` drops a sandbox game and does not write a result, a box, or a record.
+
+## Win probability
+
+`winProb` in `src/game/depth.ts`. The live clock is seconds (`1200` = 20:00), not minutes. Time left is the clock, plus another 1200 seconds during the first half. Possessions left are `time / 18`, with a floor of 0.35. The logistic is `(margin + possession) / sqrt(possessions) * 0.85`. Possession is about a point and only counts inside the last 40 seconds.
+
+Bands (`winProbBandFails`):
+
+- Down 30 at the half (second half, 20:00): 1–12%.
+- Up 2 with the ball at 0:09: 88–99%.
+- Up 4 with the ball at 0:04: 95–99%.
+- Opening tip, tied: 45–55%.
+
+## Titles, awards, numbers
+
+National champions and "Cut the nets" only after a win in a slot id that starts with `ncaa-title-`. Any earlier NCAA win is the next round (Sweet 16, Elite Eight, Final Four, national championship game). A loss in that game is national runner-up.
+
+Conference champions only when the user won the conference final: `confAliveBefore` is 2 or fewer. A semi is "Advance to the conference final." A loss in the final is "Conference finalist." Confetti only on a real title.
+
+Awards in `src/game/awards.ts` use points, rebounds, and assists per game, plus team wins and conference place. Overall and minutes alone cannot make a 14-point player on a 9th-place team national player of the year.
+
+A retired number (`legendWorthy` in `src/game/archives.ts`) is a national award, 1,800 career points, or an 86-overall senior with real scoring (12 a game or 360 points). At most two a year. The Archives empty state says the same thing.
+
+The record book overwrites best season when that row is the current year, so 20–15 does not stay listed as 20–14. "Longest home win streak" is the record. "Current home streak" is `homeStreak`, which resets on a home loss. Neutral and tournament games are not home games (`slot.site === "home"` only).
+
+## Overtime possession
+
+When regulation or an overtime ends tied, the next period starts with the possession already flipped after the last play: the team that did not just have the ball. The code does not force `poss = "home"`. Later overtimes use the same flip, so it alternates off the last possession.
 
 ## Recruiting hours
 
@@ -62,6 +93,10 @@ Portal hours are separate: `src/game/portal.ts` (`scoutPortal` 1, `offerPortal` 
 ## Career vs Pick a school
 
 Career jobs stay at or under `CAREER_MAX_PRESTIGE`. Pick a school lists every Division I program, including commissioner schools. Do not open power-conference jobs on day one of Career.
+
+## Selection Sunday show
+
+`src/components/game/selection-show.tsx` walks the field one game at a time: First Four, then each region in bracket order (`PAIR_64`: 1/16, 8/9, 5/12, 4/13, 6/11, 3/14, 7/10, 2/15), then your envelope. Play the show auto-advances and stops on your game. Skip still opens the bracket. Do not dump a whole seed line on one card.
 
 ## Archives
 

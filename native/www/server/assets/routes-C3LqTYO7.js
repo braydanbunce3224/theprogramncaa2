@@ -1,4 +1,4 @@
-import { a as onMenuArmed, c as FIRST_FOUR, d as SELECTION_SUNDAY, f as gameKindLabel, g as __exportAll, h as phaseLabel, i as isMenuArmed, l as NCAA, m as ncaaRoundLabel, n as Route, o as peekQueuedGo, p as gameKindShort, r as armMenu, s as queueMenuGo, u as NCAA_SHORT } from "./router-CHkRkEUG.js";
+import { _ as ncaaRoundLabel, a as onMenuArmed, b as siteWord, c as DESK, d as NCAA_SHORT, f as SELECTION_SUNDAY, g as ncaaOutcome, h as gameKindShort, i as isMenuArmed, l as FIRST_FOUR, m as gameKindLabel, n as Route, o as peekQueuedGo, p as confOutcome, r as armMenu, s as queueMenuGo, u as NCAA, v as outletLabel, x as __exportAll, y as phaseLabel } from "./router-DPsk4dxF.js";
 import { Component, Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { Fragment as Fragment$1, jsx, jsxs } from "react/jsx-runtime";
 import { Activity, Award, BookOpen, CalendarDays, ClipboardList, Dumbbell, Ellipsis, FileText, Flame, GraduationCap, Hash, Headphones, Landmark, Library, ListOrdered, Mail, Newspaper, Scale, School, Search, Settings, TrendingUp, Trophy, Type, Users } from "lucide-react";
@@ -4265,10 +4265,10 @@ function hashString(s) {
 	for (let i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 16777619);
 	return h >>> 0;
 }
-function clamp(n, lo, hi) {
+function clamp$1(n, lo, hi) {
 	return Math.max(lo, Math.min(hi, n));
 }
-function pick(rng, list) {
+function pick$1(rng, list) {
 	return list[Math.floor(rng() * list.length)];
 }
 function randInt(rng, lo, hi) {
@@ -4349,14 +4349,20 @@ function identityName(d) {
 	if (!d) return "Coach Stone";
 	return `${d.first ?? ""} ${d.last ?? ""}`.trim() || "Coach Stone";
 }
+/** Name a writer uses after a quote. Last name, exactly as entered. */
+function coachSaid(d) {
+	const last = (d?.last ?? "").trim();
+	const first = (d?.first ?? "").trim();
+	return last || first || "the coach";
+}
 function oneBox(poss, rng) {
-	const p = clamp(Math.round(poss), 56, 88);
-	const to = clamp(Math.round(p * (.155 + rng() * .07)), 7, 22);
-	const fta = clamp(Math.round(p * (.18 + rng() * .14)), 8, 32);
-	const orb = clamp(Math.round(p * (.08 + rng() * .06)), 3, 16);
+	const p = clamp$1(Math.round(poss), 56, 88);
+	const to = clamp$1(Math.round(p * (.155 + rng() * .07)), 7, 22);
+	const fta = clamp$1(Math.round(p * (.18 + rng() * .14)), 8, 32);
+	const orb = clamp$1(Math.round(p * (.08 + rng() * .06)), 3, 16);
 	return {
 		poss: p,
-		fga: clamp(Math.round(p - to - .475 * fta + orb), 38, 92),
+		fga: clamp$1(Math.round(p - to - .475 * fta + orb), 38, 92),
 		orb,
 		to,
 		fta
@@ -4364,7 +4370,7 @@ function oneBox(poss, rng) {
 }
 /** Light box that is consistent with Poss ≈ FGA − OR + TO + 0.475×FTA. */
 function estimateGameBoxes(hs, as, rng) {
-	const gamePoss = clamp((hs + as) / 2.12 + gaussian(rng) * 1.8, 58, 84);
+	const gamePoss = clamp$1((hs + as) / 2.12 + gaussian(rng) * 1.8, 58, 84);
 	const drift = rng() < .55 ? 0 : rng() < .5 ? 1 : -1;
 	return {
 		home: oneBox(gamePoss + drift, rng),
@@ -4383,13 +4389,13 @@ function boxFromLive(live) {
 		const to = rows.reduce((n, p) => n + (p.to ?? 0), 0);
 		const fta = rows.reduce((n, p) => n + (p.fta ?? 0), 0);
 		if (fga + to + fta < 20) return null;
-		const orb = clamp(Math.round(fga * .12), 3, 16);
+		const orb = clamp$1(Math.round(fga * .12), 3, 16);
 		return {
 			poss: Math.max(40, Math.round(fga - orb + to + .475 * fta)),
 			fga,
 			orb,
 			to,
-			fta: clamp(fta, 6, teamFtaCap(minutes))
+			fta: clamp$1(fta, 6, teamFtaCap(minutes))
 		};
 	};
 	const linedHome = fromLines(live.homeLines);
@@ -4429,7 +4435,7 @@ function gamePossessions(home, away, hs = 70, as = 70) {
 	if (home && away) return (home.poss + away.poss) / 2;
 	if (home) return home.poss;
 	if (away) return away.poss;
-	return clamp((hs + as) / 2.12, 58, 84);
+	return clamp$1((hs + as) / 2.12, 58, 84);
 }
 function ftaCap(minutes) {
 	return minutes > 40 ? 20 : 16;
@@ -5053,7 +5059,7 @@ function addCustomSchool(input) {
 loadCustomSchools();
 //#endregion
 //#region src/game/recap.ts
-var KIND$1 = {
+var KIND$2 = {
 	conference: gameKindLabel("conference"),
 	noncon: gameKindLabel("noncon"),
 	mte: gameKindLabel("mte"),
@@ -5103,7 +5109,7 @@ function boxPlayers(state, teamId, score, fga, minutes, rng) {
 	const use = rot(state, teamId).slice(0, 9);
 	if (!use.length) return [];
 	const minW = use.map((p, i) => Math.max(i < 8 ? 5 : 0, p.mpg * (i < 5 ? 1.15 : .75)));
-	const mins = split(minutes * 5, minW, rng).map((m, i) => clamp(m, i < 5 ? 16 : 4, 38));
+	const mins = split(minutes * 5, minW, rng).map((m, i) => clamp$1(m, i < 5 ? 16 : 4, 38));
 	const usg = use.map((p, i) => Math.max(2, mins[i] * (.35 + (p.usage ?? p.mpg * 2.15) / 90 + p.skills.shoot / 400 + p.skills.finish / 380)));
 	const fgas = split(Math.max(fga, 48), usg, rng);
 	const tpaShare = use.map((p) => {
@@ -5114,18 +5120,18 @@ function boxPlayers(state, teamId, score, fga, minutes, rng) {
 			PF: .18,
 			C: .05
 		}[p.pos];
-		return clamp(byPos * (.4 + p.skills.shoot / 140), .04, .62);
+		return clamp$1(byPos * (.4 + p.skills.shoot / 140), .04, .62);
 	});
-	const tpas = fgas.map((n, i) => clamp(Math.round(n * tpaShare[i]), 0, n));
-	const tpPct = use.map((p) => clamp(.29 + (p.skills.shoot - 60) * .0035 + rng() * .02, .2, .44));
-	const twoPct = use.map((p) => clamp(.44 + (p.skills.finish - 60) * .004 - rng() * .02, .34, .62));
-	const ftPct = use.map((p) => clamp(.69 + (p.skills.shoot - 60) * .004, .55, .88));
-	const tpms = tpas.map((n, i) => clamp(Math.round(n * tpPct[i]), 0, n));
-	const twoM = fgas.map((n, i) => n - tpas[i]).map((n, i) => clamp(Math.round(n * twoPct[i]), 0, n));
+	const tpas = fgas.map((n, i) => clamp$1(Math.round(n * tpaShare[i]), 0, n));
+	const tpPct = use.map((p) => clamp$1(.29 + (p.skills.shoot - 60) * .0035 + rng() * .02, .2, .44));
+	const twoPct = use.map((p) => clamp$1(.44 + (p.skills.finish - 60) * .004 - rng() * .02, .34, .62));
+	const ftPct = use.map((p) => clamp$1(.69 + (p.skills.shoot - 60) * .004, .55, .88));
+	const tpms = tpas.map((n, i) => clamp$1(Math.round(n * tpPct[i]), 0, n));
+	const twoM = fgas.map((n, i) => n - tpas[i]).map((n, i) => clamp$1(Math.round(n * twoPct[i]), 0, n));
 	const fgm = twoM.map((n, i) => n + tpms[i]);
 	let pts = fgm.map((_, i) => twoM[i] * 2 + tpms[i] * 3);
-	const ftas = use.map((p, i) => clamp(Math.round(mins[i] * (.12 + p.skills.finish / 500) + rng() * 2), 0, 14));
-	const ftms = ftas.map((n, i) => clamp(Math.round(n * ftPct[i]), 0, n));
+	const ftas = use.map((p, i) => clamp$1(Math.round(mins[i] * (.12 + p.skills.finish / 500) + rng() * 2), 0, 14));
+	const ftms = ftas.map((n, i) => clamp$1(Math.round(n * ftPct[i]), 0, n));
 	pts = pts.map((n, i) => n + ftms[i]);
 	let drift = score - pts.reduce((s, n) => s + n, 0);
 	const order = use.map((_, i) => i).sort((a, b) => usg[b] - usg[a]);
@@ -5186,12 +5192,12 @@ function boxPlayers(state, teamId, score, fga, minutes, rng) {
 		pts[star] = Math.max(0, pts[star] + drift);
 	}
 	const rebW = use.map((p, i) => Math.max(1, mins[i] * (p.pos === "C" ? .32 : p.pos === "PF" ? .26 : p.pos === "SF" ? .16 : .1) * (.8 + p.skills.defense / 280)));
-	const rebs = split(clamp(Math.round(30 + rng() * 8), 24, 42), rebW, rng);
+	const rebs = split(clamp$1(Math.round(30 + rng() * 8), 24, 42), rebW, rng);
 	const astW = use.map((p, i) => Math.max(.5, mins[i] * (p.pos === "PG" ? .26 : p.pos === "SG" ? .14 : .07) * (p.skills.iq / 70)));
 	const madeFg = fgm.reduce((s, n) => s + n, 0);
-	const asts = split(clamp(Math.round(madeFg * (.48 + rng() * .1)), 7, 22), astW, rng);
+	const asts = split(clamp$1(Math.round(madeFg * (.48 + rng() * .1)), 7, 22), astW, rng);
 	const toW = use.map((p, i) => Math.max(.4, mins[i] * (.08 + (100 - p.skills.iq) / 400)));
-	const tos = split(clamp(Math.round(11 + rng() * 6), 8, 20), toW, rng);
+	const tos = split(clamp$1(Math.round(11 + rng() * 6), 8, 20), toW, rng);
 	return clampPlayerFta(use.map((p, i) => ({
 		id: p.id,
 		name: `${p.first} ${p.last}`,
@@ -5283,7 +5289,7 @@ function buildRecap(state, slot, result, rng, log, lines) {
 	const minutes = result.minutes ?? (log?.some((e) => e.t.startsWith("OT")) ? 45 : 40);
 	const homeBox = result.homeBox;
 	const awayBox = result.awayBox;
-	const homePoss = homeBox?.poss ?? clamp(Math.round((result.homeScore + result.awayScore) / 2.12), 60, 80);
+	const homePoss = homeBox?.poss ?? clamp$1(Math.round((result.homeScore + result.awayScore) / 2.12), 60, 80);
 	const awayPoss = awayBox?.poss ?? homePoss;
 	const homeLeaders = clampPlayerFta(usable(lines?.home, result.homeScore) ?? boxPlayers(state, result.homeId, result.homeScore, homeBox?.fga ?? 62, minutes, rng), minutes);
 	const awayLeaders = clampPlayerFta(usable(lines?.away, result.awayScore) ?? boxPlayers(state, result.awayId, result.awayScore, awayBox?.fga ?? 62, minutes, rng), minutes);
@@ -5309,15 +5315,15 @@ function buildRecap(state, slot, result, rng, log, lines) {
 	const youWin = winnerId === you;
 	const youIn = result.homeId === you || result.awayId === you;
 	const grafs = [];
-	grafs.push(`${KIND$1[kind]} · week ${result.week} · ${floor}.`);
+	grafs.push(`${KIND$2[kind]} · week ${result.week} · ${floor}.`);
 	if (star) grafs.push(`${star.name} led ${winner} with ${star.pts} points (${star.fgm}-${star.fga} FG${star.tpm != null ? `, ${star.tpm}-${star.tpa} 3PT` : ""}${star.ftm != null ? `, ${star.ftm}-${star.fta} FT` : ""}) in ${star.min} minutes.`);
-	const pppLine = homeWin ? `${home} scored ${homePpp.toFixed(2)} per trip. ${away} sat at ${awayPpp.toFixed(2)}.` : `${away} scored ${awayPpp.toFixed(2)} per trip. ${home} sat at ${homePpp.toFixed(2)}.`;
+	const pppLine = homeWin ? `${home} scored ${homePpp.toFixed(2)} points per possession. ${away} scored ${awayPpp.toFixed(2)}.` : `${away} scored ${awayPpp.toFixed(2)} points per possession. ${home} scored ${homePpp.toFixed(2)}.`;
 	grafs.push(pppLine);
-	if (youIn) grafs.push(youWin ? `${winner} got the win.` : `${winner} got the win. Tough night.`);
+	if (youIn) grafs.push(youWin ? "You got the win." : "You took the loss.");
 	const notes = [`${mascotOf(result.homeId)} ${homeBox?.fga ?? "—"} shots, ${homeBox?.to ?? "—"} turnovers, ${homeBox?.orb ?? "—"} offensive boards.`, `${mascotOf(result.awayId)} ${awayBox?.fga ?? "—"} shots, ${awayBox?.to ?? "—"} turnovers, ${awayBox?.orb ?? "—"} offensive boards.`];
-	if (minutes > 40) notes.push(`This one needed overtime (${minutes} minutes).`);
-	if (margin <= 3) notes.push("Final margin: one possession.");
-	else if (margin >= 18) notes.push(`Final margin: ${margin}. It was over before the last media.`);
+	if (minutes > 40) notes.push(`Went to overtime (${minutes} minutes).`);
+	if (margin <= 3) notes.push("Decided by one possession.");
+	else if (margin >= 18) notes.push(`Won by ${margin}. It was over early.`);
 	const run = played ? biggestRun(log) : null;
 	if (run) notes.push(`${run.pts}-0 run for the ${run.side === "home" ? mascotOf(result.homeId) : mascotOf(result.awayId)}.`);
 	const shots = (log ?? []).filter((e) => (e.kind === "two" || e.kind === "three") && Number.isFinite(e.x) && Number.isFinite(e.y)).map((e) => ({
@@ -5349,7 +5355,7 @@ function recapFor(state, result) {
 	if (result.recap?.headline && result.recap.homeLeaders?.length) return result.recap;
 	return buildRecap(state, state.schedule.find((g) => g.id === result.slotId), result, mulberry32(state.seed ^ hashString(result.id) ^ 492));
 }
-function withRecap(state, result, log, lines) {
+function withRecap$1(state, result, log, lines) {
 	if (result.recap?.headline) return result;
 	if (!(result.homeId === state.playerTeamId || result.awayId === state.playerTeamId)) return result;
 	const slot = state.schedule.find((g) => g.id === result.slotId);
@@ -5372,7 +5378,7 @@ var WRITERS = [
 	"Nina Vos"
 ];
 var OUTLETS = [
-	"Campus Wire",
+	DESK,
 	"The Daily",
 	"Nightly",
 	"Tip-Off",
@@ -5396,7 +5402,7 @@ function asArticle(raw) {
 		headline,
 		dek: raw.dek ?? "",
 		byline: raw.byline ?? "staff",
-		outlet: raw.outlet ?? "Campus Wire",
+		outlet: raw.outlet ?? "The News",
 		grafs: raw.grafs?.length ? raw.grafs : [text],
 		resultId: raw.resultId,
 		names: raw.names,
@@ -5411,7 +5417,7 @@ function brief(week, headline, grafs, tone = "even", kicker = "NCAA") {
 		headline,
 		dek: grafs[0] ?? "",
 		byline: "staff",
-		outlet: "Campus Wire",
+		outlet: DESK,
 		grafs,
 		text: headline
 	});
@@ -5431,33 +5437,60 @@ function cityLine(id, site, kind) {
 	if (kind === "ncaa" || kind === "nit" || kind === "crown" || kind === "conf-tourney" || kind === "mte" || site === "neutral") return t.city.toUpperCase();
 	return t.city.toUpperCase();
 }
-function quoteWin(rng, last, margin) {
-	return `${last}: "${margin <= 3 ? pick(rng, [
-		"I told them at half if we just take care of the ball we walk out of here. They listened.",
-		"That's a tough win. I'll take ugly on a Thursday.",
-		"My stomach's still in a knot. That's a good sign."
-	]) : margin <= 12 ? pick(rng, [
-		"We played 40. That's all I asked.",
-		"Proud of how they shared it. Nobody hid.",
-		"That's how we have to look on a Thursday. This conference punches back Saturday."
-	]) : pick(rng, [
-		"That's how we're supposed to look. Don't let me catch us thinking we arrived.",
-		"Fun night. The film will still have dirt on it.",
-		"Stay hungry. I mean it."
-	])}"`;
+function shooterLine(p, team) {
+	const three = p.tpa ? `, ${p.tpm ?? 0}-for-${p.tpa} from three` : "";
+	const ft = p.fta ? `, ${p.ftm ?? 0}-for-${p.fta} at the line` : "";
+	return `${p.name} led ${team} with ${p.pts} points on ${p.fgm}-for-${p.fga} shooting${three}${ft}, plus ${p.reb} rebound${p.reb === 1 ? "" : "s"} and ${p.ast} assist${p.ast === 1 ? "" : "s"} in ${p.min} minutes.`;
 }
-function quoteLoss(rng, last, margin) {
-	return `${last}: "${margin <= 3 ? pick(rng, [
-		"We had it. We gave it away. That's the truth.",
-		"One possession. I'll live with that film more than they will.",
-		"Credit them. They made one more play. We'll see them again."
-	]) : pick(rng, [
-		"They wanted it more. I don't have a prettier way to say that.",
-		"We'll watch it. Then we go back to work.",
-		"I didn't have them ready. That's on me, not them."
-	])}"`;
+function orderedLog(log) {
+	if (log.length < 2) return log;
+	const tot = (e) => (e.homeScore ?? 0) + (e.awayScore ?? 0);
+	return log[0]?.t === "Final" || tot(log[0]) > tot(log[log.length - 1]) ? [...log].reverse() : [...log];
 }
-function gameStory(state, slot, result) {
+/** Plays that actually happened. A watched game keeps the last stretch of the log. */
+function tapeFromLog(log, home, away) {
+	const rows = orderedLog(log).filter((e) => e.text);
+	const out = [];
+	const half = rows.find((e) => e.text.startsWith("Halftime"));
+	if (half) out.push(`${half.text.replace(/\.$/, "")}.`);
+	if (rows.some((e) => /Five more minutes|Still tied/i.test(e.text))) out.push("It went to overtime.");
+	const plays = rows.filter((e) => e.kind === "two" || e.kind === "three" || e.kind === "ft" || e.kind === "to");
+	const scored = plays.filter((e) => (e.pts ?? 0) > 0 && e.poss);
+	let best = 0;
+	let bestFrom = 0;
+	let bestTo = -1;
+	let cur = 0;
+	let side = null;
+	let start = 0;
+	scored.forEach((e, idx) => {
+		if (e.poss === side) cur += e.pts ?? 0;
+		else {
+			cur = e.pts ?? 0;
+			side = e.poss ?? null;
+			start = idx;
+		}
+		if (cur > best) {
+			best = cur;
+			bestFrom = start;
+			bestTo = idx;
+		}
+	});
+	if (best >= 8 && bestTo >= bestFrom) {
+		const slice = scored.slice(bestFrom, bestTo + 1);
+		const who = slice[0]?.poss === "home" ? home : away;
+		const bits = slice.slice(0, 4).map((e) => (e.text.split(". ")[0] ?? e.text).trim()).join(". ");
+		out.push(`${who} put together a ${best}–0 run. ${bits}.`);
+	}
+	const closing = plays.filter((e) => (e.pts ?? 0) > 0 || e.kind === "to").slice(-5);
+	for (const e of closing) {
+		const clock = e.t && e.t !== "Final" ? `${e.t}: ` : "";
+		const score = `${home} ${e.homeScore}, ${away} ${e.awayScore}`;
+		const line = e.text.replace(/\s+/g, " ").trim();
+		out.push(`${clock}${line} (${score}).`);
+	}
+	return out.slice(0, 8);
+}
+function gameStory(state, slot, result, source) {
 	const rng = rngFor$1(state, result.id);
 	const recap = recapFor(state, result);
 	const homeWin = result.homeScore > result.awayScore;
@@ -5467,6 +5500,8 @@ function gameStory(state, slot, result) {
 	const l = school(loserId);
 	const winner = w?.name ?? winnerId;
 	const loser = l?.name ?? loserId;
+	const homeName = school(result.homeId)?.name ?? "Home";
+	const awayName = school(result.awayId)?.name ?? "Away";
 	const ws = homeWin ? result.homeScore : result.awayScore;
 	const ls = homeWin ? result.awayScore : result.homeScore;
 	const margin = ws - ls;
@@ -5476,22 +5511,28 @@ function gameStory(state, slot, result) {
 	const dateline = cityLine(slot.homeId, slot.site, slot.kind);
 	const neutral = slot.kind === "ncaa" || slot.kind === "nit" || slot.kind === "crown" || slot.kind === "mte" || slot.kind === "conf-tourney" || slot.site === "neutral";
 	const host = school(slot.homeId)?.name ?? "";
-	const site = neutral ? "on a neutral floor" : host === winner ? "at home" : host === loser ? "on the road" : host ? `at ${host}` : "at the host gym";
+	const site = neutral ? "on a neutral floor" : host === winner ? "at home" : host === loser ? "on the road" : host ? `at ${host}` : "";
 	const star = (homeWin ? recap.homeLeaders : recap.awayLeaders)[0];
-	const coachLast = youIn ? state.identity.last || "the coach" : "the bench";
+	const other = (homeWin ? recap.awayLeaders : recap.homeLeaders)[0];
 	const ot = (result.minutes ?? 40) > 40;
-	let headline = recap.headline.replace(/,\s*\d+[–-]\d+\s*$/, "").trim();
-	if (headline.length < 12) headline = star ? `${star.name.split(" ").pop()} leads ${winner} past ${loser}` : `${winner} knocks off ${loser}`;
+	const watched = tapeFromLog(source?.log ?? [], homeName, awayName);
+	const tape = watched.length ? watched : (source?.tape ?? []).filter(Boolean);
+	const how = margin <= 3 ? "edged" : margin >= 15 ? "rolled past" : margin <= 8 ? "held off" : "beat";
+	const lastPlay = tape[tape.length - 1]?.replace(/\s+/g, " ").trim();
+	let headline = star ? `${star.name.split(" ").slice(-1)[0]} ${how === "edged" ? "lifts" : "leads"} ${winner} past ${loser}` : `${winner} ${how} ${loser}`;
 	if (ot) headline = `${winner} outlasts ${loser} in OT`;
-	const dek = `${winner} ${ws}, ${loser} ${ls}${ot ? " in OT" : ""}`;
+	if (headline.length < 12) headline = `${winner} ${how} ${loser}`;
+	const dekCore = `${winner} ${ws}, ${loser} ${ls}${ot ? " in OT" : ""}`;
+	const dek = lastPlay ? `${dekCore}. ${lastPlay.length > 160 ? `${lastPlay.slice(0, 157)}…` : lastPlay}` : dekCore;
+	const lead = `${dateline} — ${winner} ${how} ${loser} ${ws}-${ls}${ot ? " in overtime" : ""}${site ? ` ${site}` : ""}.`;
+	const boxGraf = [star ? shooterLine(star, winner) : "", other && other.name !== star?.name ? shooterLine(other, loser) : ""].filter(Boolean).join(" ");
+	const boardGraf = `${winner} moves to ${recordOf$1(state, winnerId) || "—"}. ${loser} falls to ${recordOf$1(state, loserId) || "—"}. ${homeName} had ${recap.homeTo} turnovers and ${recap.homeOrb} offensive boards. ${awayName} had ${recap.awayTo} turnovers and ${recap.awayOrb} offensive boards.`;
 	const grafs = [
-		star ? `${dateline} — ${star.name} scored ${star.pts} points as ${winner} ${margin <= 3 ? "edged" : margin >= 15 ? "rolled past" : "beat"} ${loser} ${ws}-${ls}${ot ? " in overtime" : ""} ${site}.` : `${dateline} — ${winner} beat ${loser} ${ws}-${ls}${ot ? " in overtime" : ""} ${site}.`,
-		star ? `${star.name} went ${star.fgm}-for-${star.fga} from the field with ${star.reb} boards and ${star.ast} assists in ${star.min} minutes.` : `${winner} got scoring from up and down the lineup.`,
-		`${winner} moves to ${recordOf$1(state, winnerId) || "—"}. ${loser} falls to ${recordOf$1(state, loserId) || "—"}.${recap.keyPlay ? ` ${recap.keyPlay}` : ""}`,
-		youIn ? youWin ? quoteWin(rng, coachLast, margin) : quoteLoss(rng, coachLast, margin) : margin <= 4 ? `It came down to the last possession.` : `${winner} was the better team tonight.`
-	].filter((g) => Boolean(g));
-	const byline = pick(rng, WRITERS);
-	const outlet = pick(rng, OUTLETS);
+		lead,
+		...tape,
+		boxGraf,
+		boardGraf
+	].filter((g) => Boolean(g && g.trim()));
 	return asArticle({
 		id: `story-${result.id}`,
 		week: result.week,
@@ -5500,44 +5541,110 @@ function gameStory(state, slot, result) {
 		kicker: kickerFor(slot.kind),
 		headline,
 		dek,
-		byline,
-		outlet,
+		byline: pick$1(rng, WRITERS),
+		outlet: pick$1(rng, OUTLETS),
 		grafs,
 		resultId: result.id,
-		text: `${headline} (${dek})`
+		text: `${headline} (${dekCore})`
 	});
 }
 function campCopy(state) {
 	const t = school(state.playerTeamId);
-	const rng = rngFor$1(state, `camp-${state.season}`);
-	const name = t?.name ?? "the program";
+	const name = t?.name ?? "The program";
+	const place = [t?.city, t?.state].filter(Boolean).join(", ").toUpperCase() || "CAMPUS";
+	const coach = identityName(state.identity);
+	const said = coachSaid(state.identity);
+	const roster = (state.players ?? []).filter((p) => p.teamId === state.playerTeamId && !p.redshirt).sort((a, b) => b.ovr - a.ovr || b.mpg - a.mpg);
+	const vets = roster.filter((p) => p.year >= 3).length;
+	const top = roster[0];
+	const next = roster[1];
+	const who = top && next ? `${top.first} ${top.last} (${top.pos}) and ${next.first} ${next.last} (${next.pos})` : top ? `${top.first} ${top.last} (${top.pos})` : "";
+	const yearWord = [
+		"freshman",
+		"sophomore",
+		"junior",
+		"senior",
+		"senior"
+	][Math.min(4, Math.max(0, (top?.year ?? 1) - 1))] ?? "player";
+	const quote = top ? pick$1(rngFor$1(state, `camp-q-${state.season}`), [
+		`"${top.last} is going to play a lot," ${said} said. "I need to see who can stay on the floor with him when we get pressed. That's this week."`,
+		`"We're not ranking guys on a whiteboard," ${said} said. "${top.first} has been here. The new guys have to earn the minutes next to him."`,
+		`"First week is habits," ${said} said. "If ${top.last} is open, we throw it to him. Everything else we figure out in practice."`
+	]) : `"First week is conditioning and who can guard," ${said} said. "I'll know more once we actually scrimmage."`;
 	return asArticle({
 		week: 0,
 		season: state.season,
 		tone: "even",
 		kicker: "Camp",
-		headline: `${name} opens camp`,
-		dek: `${identityName(state.identity)} has the keys.`,
-		byline: pick(rng, WRITERS),
-		outlet: pick(rng, OUTLETS),
-		grafs: [`${(t?.city ?? "Campus").toUpperCase()} — ${name} reported this week under ${identityName(state.identity)}. Thirteen scholarships, a gym that still smells like last year, and a first tip that will tell you more than any press conference.`, `"I like this group," ${state.identity.last || "the coach"} said. "We'll find out if they like each other."`],
-		text: `${name} opens camp.`
+		headline: `${name} opens practice`,
+		dek: top ? `${top.first} ${top.last} is back for his ${yearWord} year.` : "First practice is underway.",
+		byline: pick$1(rngFor$1(state, `camp-${state.season}`), WRITERS),
+		outlet: pick$1(rngFor$1(state, `camp-out-${state.season}`), OUTLETS),
+		grafs: [`${place} — ${name} practiced for the first time this season. ${coach} has ${roster.length || "the"} guys on the floor${who ? `, with ${who} getting the first run` : ""}. ${vets ? `${vets} of them are juniors or seniors.` : "Most of the roster is underclassmen."}`, quote],
+		text: `${name} opened practice.`
 	});
 }
-function lockCopy(state, filled) {
+function slateCounts(state) {
+	const id = state.playerTeamId;
+	const games = state.schedule.filter((g) => !g.declined && (g.kind === "conference" || g.kind === "noncon" || g.kind === "mte") && (g.homeId === id || g.awayId === id));
+	const league = games.filter((g) => g.kind === "conference").length;
+	return {
+		total: games.length,
+		noncon: games.length - league,
+		league
+	};
+}
+function nGames(n, label) {
+	return `${n} ${label} game${n === 1 ? "" : "s"}`;
+}
+function scheduleStory(state) {
+	const name = school(state.playerTeamId)?.name ?? "The program";
+	const { total, noncon, league } = slateCounts(state);
+	if (total <= 0) return {
+		dek: "The schedule is set.",
+		grafs: [`${name} locked the ${state.season} schedule.`, "The opener is next."],
+		text: `${name} set the schedule.`
+	};
+	return {
+		dek: `${total} games: ${nGames(noncon, "non-conference")} and ${nGames(league, "conference")}.`,
+		grafs: [`${name} locked the ${state.season} schedule at ${total} games — ${nGames(noncon, "non-conference")} and ${nGames(league, "conference")}. Conference play is in January and February.`, "The opener is next."],
+		text: `${name} set the ${total}-game schedule.`
+	};
+}
+function lockCopy(state) {
 	const t = school(state.playerTeamId);
+	const story = scheduleStory(state);
 	return asArticle({
 		week: 1,
 		season: state.season,
 		tone: "even",
 		kicker: "Schedule",
 		headline: `${t?.name ?? "The program"} sets ${state.season} schedule`,
-		dek: filled > 0 ? `${filled} non-conference game${filled === 1 ? "" : "s"} filled in to make 30.` : "The schedule is set.",
+		dek: story.dek,
 		byline: "staff",
-		outlet: "Campus Wire",
-		grafs: [`${t?.name ?? "The program"} put ${state.season} on the calendar this week.${filled > 0 ? ` Staff filled ${filled} open night${filled === 1 ? "" : "s"}.` : " The schedule was already full."} Conference play sits where it always does — January and February.`, `First tip is next. Nobody's hanging a banner in October.`],
-		text: `${t?.name ?? "The program"} set the schedule.`
+		outlet: DESK,
+		grafs: story.grafs,
+		text: story.text
 	});
+}
+/** Old lock notes counted the whole national board. Rewrite those on screen. */
+function presentNews(article, state) {
+	const blob = `${article.dek ?? ""} ${(article.grafs ?? []).join(" ")}`;
+	if (!/filled in to make \d+|added \d+ games? to get to/.test(blob)) return article;
+	const year = article.headline.match(/\b(20\d{2})\b/)?.[1];
+	if (year && Number(year) !== state.season) {
+		const name = school(state.playerTeamId)?.name ?? "The program";
+		return {
+			...article,
+			dek: "The 30-game slate was locked.",
+			grafs: [`${name} locked the ${year} schedule at 30 games. Conference play was in January and February.`, "The opener followed."],
+			text: `${name} set the schedule.`
+		};
+	}
+	return {
+		...article,
+		...scheduleStory(state)
+	};
 }
 function hydrateNews(raw) {
 	if (!raw?.length) return [];
@@ -5603,7 +5710,7 @@ var BOOSTERS = [
 	["Walt", "wrote a check in '98"]
 ];
 function person(rng, pool) {
-	const [first, last] = pick(rng, pool);
+	const [first, last] = pick$1(rng, pool);
 	return {
 		first,
 		last
@@ -5642,12 +5749,12 @@ function complianceFirst(state) {
 	return staffOf$1(state).compliance.first;
 }
 function fanFrom(rng) {
-	const [name, where] = pick(rng, FANS);
+	const [name, where] = pick$1(rng, FANS);
 	return `${name} · ${where}`;
 }
 function boosterFrom(rng, nil) {
 	const pool = nil ? BOOSTERS.filter((b) => /NIL|collective/i.test(b[1])) : BOOSTERS.filter((b) => !/NIL|collective/i.test(b[1]));
-	const [name, where] = pick(rng, pool.length ? pool : BOOSTERS);
+	const [name, where] = pick$1(rng, pool.length ? pool : BOOSTERS);
 	return `${name} · ${where}`;
 }
 function coachFirst(state) {
@@ -6068,7 +6175,7 @@ function rivalryTease(state) {
 	const rivals = yourRivals(you);
 	if (!rivals.length) return {
 		head: "No listed rival",
-		note: "The gym still fills."
+		note: "No rivalry game on the schedule."
 	};
 	const first = rivals[0];
 	const mark = state.teams[you]?.series?.[first.oppId];
@@ -6123,12 +6230,12 @@ function focusSkill(p, focus) {
 	return focus;
 }
 function composite(s) {
-	return clamp(Math.round(s.shoot * .28 + s.finish * .24 + s.defense * .28 + s.iq * .2), 40, 99);
+	return clamp$1(Math.round(s.shoot * .28 + s.finish * .24 + s.defense * .28 + s.iq * .2), 40, 99);
 }
 function bump(s, key, n, cap) {
 	return {
 		...s,
-		[key]: clamp(s[key] + n, 40, cap)
+		[key]: clamp$1(s[key] + n, 40, cap)
 	};
 }
 function emptyCamp(season) {
@@ -6155,7 +6262,7 @@ function campBudget(state) {
 	if ((you?.wins ?? 0) > (you?.losses ?? 0)) n += 2;
 	if (year?.confTitle) n += 1;
 	if (year?.title) n += 2;
-	return clamp(n, 4, 14);
+	return clamp$1(n, 4, 14);
 }
 function openCamp(state) {
 	if (state.camp && state.camp.season === state.season && !state.camp.locked) return state;
@@ -6215,7 +6322,7 @@ function spendCamp(state, id, d) {
 		detail: "He's not in camp."
 	};
 	const cur = camp.spent[id] ?? 0;
-	const next = clamp(cur + d, 0, 3);
+	const next = clamp$1(cur + d, 0, 3);
 	const cost = next - cur;
 	if (cost > camp.points) return {
 		state,
@@ -6263,7 +6370,7 @@ function applyPoints(p, n, focus, rng) {
 		}, focus);
 		skills = bump(skills, key, 1, 99);
 		const ovr = composite(skills);
-		if (ovr >= potential) potential = clamp(potential + 1, ovr, 99);
+		if (ovr >= potential) potential = clamp$1(potential + 1, ovr, 99);
 	}
 	const ovr = composite(skills);
 	return {
@@ -6372,9 +6479,9 @@ function lockCamp(state, rng) {
 			headline: `${school} closed camp`,
 			dek: jumps[0] ? `${jumps[0].name} ${jumps[0].before} → ${jumps[0].after}.` : "The gym work was quiet.",
 			byline: "Camp notebook",
-			outlet: "Campus Wire",
+			outlet: "The News",
 			grafs: [jumps[0] ? `${jumps[0].name} took the biggest jump. Redshirt calls come after you've seen the film.` : "Nobody leapt. Minutes and morale still feed the next one."],
-			text: jumps[0] ? `${jumps[0].name} ${jumps[0].before} → ${jumps[0].after}.` : "Quiet camp."
+			text: jumps[0] ? `${jumps[0].name} ${jumps[0].before} → ${jumps[0].after}.` : "No jumps in camp."
 		}, ...state.news].slice(0, 60)
 	};
 }
@@ -6626,8 +6733,8 @@ var LAST_NAMES = [
 ];
 function randomPersonName(rng, used) {
 	for (let i = 0; i < 32; i++) {
-		const first = pick(rng, FIRST_NAMES);
-		let last = pick(rng, LAST_NAMES);
+		const first = pick$1(rng, FIRST_NAMES);
+		let last = pick$1(rng, LAST_NAMES);
 		const roll = rng();
 		if (roll < .06) last = `${last} Jr`;
 		else if (roll < .09) last = `${last} III`;
@@ -6640,8 +6747,8 @@ function randomPersonName(rng, used) {
 			};
 		}
 	}
-	const first = pick(rng, FIRST_NAMES);
-	const last = `${pick(rng, LAST_NAMES)}${Math.floor(rng() * 90 + 10)}`;
+	const first = pick$1(rng, FIRST_NAMES);
+	const last = `${pick$1(rng, LAST_NAMES)}${Math.floor(rng() * 90 + 10)}`;
 	used?.add(`${first} ${last}`.toLowerCase());
 	return {
 		first,
@@ -6808,8 +6915,8 @@ function randomIntlName(rng, used, country) {
 	};
 	const pack = country && table[country] || table.AU;
 	for (let i = 0; i < 16; i++) {
-		const first = pick(rng, pack.first);
-		const last = pick(rng, pack.last);
+		const first = pick$1(rng, pack.first);
+		const last = pick$1(rng, pack.last);
 		const key = `${first} ${last}`.toLowerCase();
 		if (!used || !used.has(key)) {
 			used?.add(key);
@@ -6863,44 +6970,44 @@ var FACILITY_OPTS = [
 	{
 		id: "practice",
 		label: "Practice gym",
-		hint: "Development. Kids jump in camp and in-season."
+		hint: "Player development in camp and during the season."
 	},
 	{
 		id: "academics",
 		label: "Academic center",
-		hint: "APR. The committee still reads the number."
+		hint: "Helps your APR."
 	},
 	{
 		id: "locker",
 		label: "Locker room",
-		hint: "Chemistry and the building on Saturday."
+		hint: "Team chemistry."
 	},
 	{
 		id: "training",
 		label: "Training room",
-		hint: "Injuries heal. Hard weeks don't break as many."
+		hint: "Fewer injuries, and they heal faster."
 	}
 ];
 var PRACTICE_OPTS = [
 	{
 		id: "rest",
 		label: "Rest",
-		hint: "Legs back. Skill growth stalls. Injuries ease."
+		hint: "Legs recover. Skill growth slows down."
 	},
 	{
 		id: "film",
 		label: "Film",
-		hint: "IQ from film. Fatigue holds."
+		hint: "IQ goes up. Fatigue stays down."
 	},
 	{
 		id: "scrimmage",
 		label: "Scrimmage",
-		hint: "Skill work. The default week."
+		hint: "A normal week of work."
 	},
 	{
 		id: "hard",
 		label: "Hard",
-		hint: "Strength and finishing. They jump, and they get tired."
+		hint: "More growth, and more fatigue."
 	}
 ];
 function roleLabel(role) {
@@ -6912,8 +7019,8 @@ function prestigeOf(state) {
 function makeCoach(rng, role, prestige, used) {
 	const name = randomPersonName(rng, used);
 	used.add(`${name.first} ${name.last}`.toLowerCase());
-	const spec = role === "oc" ? pick(rng, OC_SPEC) : role === "dc" ? pick(rng, DC_SPEC) : pick(rng, RC_SPEC);
-	const rating = clamp(Math.round(46 + prestige * .28 + gaussianish(rng) * 8), 48, 94);
+	const spec = role === "oc" ? pick$1(rng, OC_SPEC) : role === "dc" ? pick$1(rng, DC_SPEC) : pick$1(rng, RC_SPEC);
+	const rating = clamp$1(Math.round(46 + prestige * .28 + gaussianish(rng) * 8), 48, 94);
 	return {
 		id: `st-${role}-${Math.floor(rng() * 1e9).toString(36)}`,
 		name: `${name.first} ${name.last}`,
@@ -6921,7 +7028,7 @@ function makeCoach(rng, role, prestige, used) {
 		rating,
 		specialty: spec,
 		years: 0,
-		from: pick(rng, [
+		from: pick$1(rng, [
 			"mid-major staff",
 			"high school",
 			"G League",
@@ -6951,10 +7058,10 @@ function seedStaff(seed, prestige) {
 function seedFacilities(prestige) {
 	const base = prestige >= 90 ? 3 : prestige >= 78 ? 2 : 1;
 	return {
-		practice: clamp(base + (prestige >= 96 ? 1 : 0), 1, 5),
-		academics: clamp(base, 1, 5),
-		locker: clamp(base + (prestige >= 88 ? 1 : 0), 1, 5),
-		training: clamp(base, 1, 5),
+		practice: clamp$1(base + (prestige >= 96 ? 1 : 0), 1, 5),
+		academics: clamp$1(base, 1, 5),
+		locker: clamp$1(base + (prestige >= 88 ? 1 : 0), 1, 5),
+		training: clamp$1(base, 1, 5),
 		upgradedThisYear: 0
 	};
 }
@@ -6994,8 +7101,8 @@ function staffTease(state) {
 	const avg = names.length ? Math.round(names.reduce((n, c) => n + c.rating, 0) / names.length) : 50;
 	const star = names.slice().sort((a, b) => b.rating - a.rating)[0];
 	return {
-		head: star ? `${star.name.split(" ").slice(-1)} · ${avg} staff` : "Empty chairs",
-		note: star ? `${star.specialty} ${ROLE_LABEL[star.role].split(" ")[0]?.toLowerCase()}` : "Hire a staff."
+		head: star ? `${star.name.split(" ").slice(-1)} · ${avg} ovr` : "No assistants",
+		note: star ? ROLE_LABEL[star.role] : "Hire a staff."
 	};
 }
 function facilityTease(state) {
@@ -7062,7 +7169,7 @@ function injuryRiskMod(state) {
 	if (plan === "hard") m += .28;
 	if (plan === "rest") m -= .22;
 	if (plan === "film") m -= .08;
-	return clamp(m, .55, 1.45);
+	return clamp$1(m, .55, 1.45);
 }
 function refreshStaffPool(state) {
 	const staff = staffOf(state);
@@ -7093,16 +7200,16 @@ function hireStaff(state, id) {
 	if (!cand) return {
 		state,
 		feedback: {
-			title: "Gone",
-			detail: "That name left the pool.",
+			title: "Already gone",
+			detail: "Someone else hired him.",
 			parts: []
 		}
 	};
 	if (staff.hiresThisYear >= 1 && !state.settings?.godMode) return {
 		state,
 		feedback: {
-			title: "One hire",
-			detail: "The AD signed off on one chair this year.",
+			title: "One hire a year",
+			detail: "You can hire one assistant per year.",
 			parts: []
 		}
 	};
@@ -7137,8 +7244,8 @@ function fireStaff(state, role) {
 	if (!prev) return {
 		state,
 		feedback: {
-			title: "Empty",
-			detail: "That chair is already open.",
+			title: "Already open",
+			detail: "That job is empty.",
 			parts: []
 		}
 	};
@@ -7179,7 +7286,7 @@ function upgradeFacility(state, kind) {
 		state,
 		feedback: {
 			title: "In season",
-			detail: "The hard hats wait until camp or the offseason.",
+			detail: "Facility upgrades wait until camp or the offseason.",
 			parts: []
 		}
 	};
@@ -7187,7 +7294,7 @@ function upgradeFacility(state, kind) {
 		state,
 		feedback: {
 			title: "One project",
-			detail: "Donors will fund one building this year.",
+			detail: "You can upgrade one building a year.",
 			parts: []
 		}
 	};
@@ -7203,8 +7310,8 @@ function upgradeFacility(state, kind) {
 	return {
 		state: {
 			...state,
-			donorMood: clamp(state.donorMood - cost, 0, 100),
-			fanMood: clamp(state.fanMood + 2, 0, 100),
+			donorMood: clamp$1(state.donorMood - cost, 0, 100),
+			fanMood: clamp$1(state.fanMood + 2, 0, 100),
 			facilities: {
 				...f,
 				[kind]: level + 1,
@@ -7245,7 +7352,7 @@ function practiceRep(state, plan) {
 	}
 	const skills = {
 		...p.skills,
-		[key]: clamp((p.skills?.[key] ?? p.ovr) + 1, 40, 99)
+		[key]: clamp$1((p.skills?.[key] ?? p.ovr) + 1, 40, 99)
 	};
 	const ovr = composite(skills);
 	const note = `+1 ${key} from ${plan} · ${tag}`;
@@ -7310,7 +7417,7 @@ function setCaptain(state, id) {
 		},
 		feedback: {
 			title: `Captain ${p.last}`,
-			detail: `${p.first} wears it.`,
+			detail: `${p.first} ${p.last} is the captain.`,
 			parts: []
 		}
 	};
@@ -7347,7 +7454,7 @@ function setStarter(state, pos, id) {
 		},
 		feedback: {
 			title: `Start ${p.last}`,
-			detail: `${p.pos} is his.`,
+			detail: `${p.first} ${p.last} starts at ${p.pos}.`,
 			parts: []
 		}
 	};
@@ -7381,7 +7488,7 @@ function tickFatigue(state) {
 		else f -= 14;
 		if (out) f -= 8;
 		if (!games) f -= 6;
-		next[p.id] = clamp(Math.round(f), 0, 96);
+		next[p.id] = clamp$1(Math.round(f), 0, 96);
 	}
 	return {
 		...state,
@@ -7408,7 +7515,7 @@ function tickStaffYears(state) {
 	const bump = (c) => c ? {
 		...c,
 		years: c.years + 1,
-		rating: clamp(c.rating + (c.years >= 2 && c.rating < 90 ? 1 : 0), 40, 95)
+		rating: clamp$1(c.rating + (c.years >= 2 && c.rating < 90 ? 1 : 0), 40, 95)
 	} : c;
 	return {
 		...state,
@@ -7437,7 +7544,7 @@ function eventMail(state, ev) {
 			read: false,
 			tone: ev.kind === "senior" ? "even" : "good"
 		}, ...state.mail].slice(0, 28),
-		fanMood: clamp(state.fanMood + (ev.kind === "madness" ? 4 : ev.kind === "senior" ? 3 : 2), 0, 100)
+		fanMood: clamp$1(state.fanMood + (ev.kind === "madness" ? 4 : ev.kind === "senior" ? 3 : 2), 0, 100)
 	};
 }
 function rematchEvents(state) {
@@ -7461,7 +7568,7 @@ function seedEvents(state) {
 		week: 0,
 		season: state.season,
 		title: "Midnight Madness",
-		body: `${school?.name ?? "The gym"} opens the doors at midnight. The band is loud. The kids are louder. This is the year they say it is.`,
+		body: `${school?.name ?? "The program"} opens the year at midnight. The gym will be packed.`,
 		done: false
 	}, {
 		id: `ev-media-${state.season}`,
@@ -7469,7 +7576,7 @@ function seedEvents(state) {
 		week: 1,
 		season: state.season,
 		title: "Media day",
-		body: "The local beat, a national note if you're lucky, and the captain in a polo. Don't promise a title unless you mean it.",
+		body: "Media day. Local writers, and maybe a national outlet. Don't promise a title unless you mean it.",
 		done: false
 	}];
 	if (lastHome) events.push({
@@ -7478,7 +7585,7 @@ function seedEvents(state) {
 		week: lastHome.week,
 		season: state.season,
 		title: "Senior night",
-		body: "The seniors walk first. Families on the baseline. Play them. The building notices if you don't.",
+		body: "Seniors are honored before tip. Play them.",
 		done: false
 	});
 	const you = state.playerTeamId;
@@ -7491,7 +7598,7 @@ function seedEvents(state) {
 			week: rivalGame.week,
 			season: state.season,
 			title: trophy,
-			body: `${trophy} week. The building will be loud. Don't get cute. Play your stuff.`,
+			body: `${trophy} week. Expect a big crowd. Stick to the game plan.`,
 			done: false
 		});
 	}
@@ -7516,7 +7623,7 @@ function tickEvents(state) {
 				...s,
 				players: s.players.map((p) => seniors.some((x) => x.id === p.id) ? {
 					...p,
-					morale: clamp(p.morale + 4, 20, 99)
+					morale: clamp$1(p.morale + 4, 20, 99)
 				} : p)
 			};
 		}
@@ -7524,7 +7631,7 @@ function tickEvents(state) {
 			...s,
 			players: s.players.map((p) => p.teamId === s.playerTeamId ? {
 				...p,
-				morale: clamp(p.morale + 2, 20, 99)
+				morale: clamp$1(p.morale + 2, 20, 99)
 			} : p)
 		};
 	}
@@ -7688,7 +7795,7 @@ function availableRoster(state, teamId) {
 function injure(p, rng) {
 	const weeksLeft = rng() < .08 ? 5 + Math.floor(rng() * 4) : 1 + Math.floor(rng() * 3);
 	return {
-		part: pick(rng, [...PARTS]),
+		part: pick$1(rng, [...PARTS]),
 		weeksLeft
 	};
 }
@@ -7707,7 +7814,7 @@ function rollGameInjuries(state, slot, rng) {
 			players = players.map((x) => x.id === p.id ? {
 				...x,
 				injury,
-				morale: clamp(x.morale - 6, 20, 99)
+				morale: clamp$1(x.morale - 6, 20, 99)
 			} : x);
 			if (teamId !== you) continue;
 			const name = `${p.first} ${p.last}`;
@@ -7716,7 +7823,7 @@ function rollGameInjuries(state, slot, rng) {
 				id: `inj-${p.id}-${state.week}`,
 				from: trainerFrom(state),
 				subject: `${p.first} — ${injury.part}`,
-				body: `${coachFirst(state)},\n\n${name} is out. We're looking at about ${injury.weeksLeft} week${injury.weeksLeft === 1 ? "" : "s"}. Don't sneak him back in for a "look." I mean it.\n\nI'll update you when the swelling talks.\n\n${trainerFirst(state)}`,
+				body: `${coachFirst(state)},\n\n${name} is out about ${injury.weeksLeft} week${injury.weeksLeft === 1 ? "" : "s"}. Don't play him until I clear him.\n\n${trainerFirst(state)}`,
 				week: state.week,
 				read: false,
 				tone: "bad"
@@ -7751,7 +7858,7 @@ function tickInjuries(state) {
 		return {
 			...p,
 			injury: null,
-			morale: clamp(p.morale + 3, 20, 99)
+			morale: clamp$1(p.morale + 3, 20, 99)
 		};
 	});
 	return {
@@ -7797,7 +7904,7 @@ function stayChanceOf(state, p) {
 	if (p.year === 1 && band !== "lottery") n += 10;
 	if (p.year >= 3 && band !== "lottery") n -= 6;
 	if (p.focus && p.focus !== "balanced") n += 3;
-	return clamp(Math.round(n), 10, 88);
+	return clamp$1(Math.round(n), 10, 88);
 }
 function considering(p, rng) {
 	if (p.year >= 4 || p.redshirt) return false;
@@ -7981,7 +8088,7 @@ function applyStay(state, row) {
 		...state,
 		players: state.players.map((p) => p.id === row.playerId ? {
 			...p,
-			morale: clamp(p.morale + 8, 20, 99)
+			morale: clamp$1(p.morale + 8, 20, 99)
 		} : p),
 		draft: {
 			...d,
@@ -8009,7 +8116,7 @@ function talkStay(state, id, rng) {
 		state: applyStay(state, row),
 		feedback: {
 			title: `${row.name} stays`,
-			detail: "The meeting landed. He's back in the gym.",
+			detail: "He's staying. He'll be in the gym this summer.",
 			parts: [{
 				label: "Confidence",
 				delta: 8
@@ -8022,8 +8129,8 @@ function talkStay(state, id, rng) {
 			stayChance: Math.max(8, row.stayChance - 10)
 		}),
 		feedback: {
-			title: `${row.name} is gone`,
-			detail: "He heard you out. He's still leaving.",
+			title: `${row.name} is leaving`,
+			detail: "He heard you. He's still declaring.",
 			parts: []
 		}
 	};
@@ -8122,7 +8229,7 @@ function rolesScore(rot) {
 	for (const n of Object.values(byPos)) if (n >= 3) s -= 8;
 	const hog = rot[0];
 	if (hog && hog.mpg >= 38 && (rot[1]?.mpg ?? 0) < 16) s -= 10;
-	return clamp(Math.round(s), 18, 96);
+	return clamp$1(Math.round(s), 18, 96);
 }
 function continuityScore(rot, week) {
 	const mpg = rot.reduce((n, p) => n + Math.max(1, p.mpg), 0);
@@ -8137,7 +8244,7 @@ function continuityScore(rot, week) {
 	if (week >= 10) s += Math.min(6, week - 9);
 	if (seniors / mpg < .08) s -= 6;
 	if (seniors / mpg > .55) s -= 4;
-	return clamp(Math.round(s), 18, 96);
+	return clamp$1(Math.round(s), 18, 96);
 }
 function lockerScore(rot, voice) {
 	const mpg = rot.reduce((n, p) => n + Math.max(1, p.mpg), 0);
@@ -8148,7 +8255,7 @@ function lockerScore(rot, voice) {
 	if (voice && voice.morale < 50) s -= 12;
 	const mean = rot.reduce((n, p) => n + p.morale, 0) / rot.length;
 	if (Math.sqrt(rot.reduce((n, p) => n + (p.morale - mean) ** 2, 0) / rot.length) > 18) s -= 8;
-	return clamp(Math.round(s), 18, 96);
+	return clamp$1(Math.round(s), 18, 96);
 }
 function trustScore(rot, lead) {
 	const iq = rot.reduce((n, p) => n + p.skills.iq, 0) / rot.length;
@@ -8164,7 +8271,7 @@ function trustScore(rot, lead) {
 		n++;
 	}
 	if (n) s = s * .7 + pair / n * .3;
-	return clamp(Math.round(s), 18, 96);
+	return clamp$1(Math.round(s), 18, 96);
 }
 function chemLabel(score) {
 	if (score >= 80) return "Great";
@@ -8195,7 +8302,7 @@ function teamChemistry(state, teamId) {
 	const continuity = continuityScore(rot, state.week);
 	const locker = lockerScore(rot, voice);
 	const trust = trustScore(rot, state.playerTeamId === teamId ? state.coachSkills?.leadership ?? 50 : 50);
-	const score = clamp(Math.round(roles * .28 + continuity * .22 + locker * .28 + trust * .22), 18, 96);
+	const score = clamp$1(Math.round(roles * .28 + continuity * .22 + locker * .28 + trust * .22), 18, 96);
 	const hog = rot[0] && rot[0].mpg >= 36 ? rot[0] : null;
 	const note = diagnose(roles, continuity, locker, trust, rot, voice, hog, state.week);
 	const report = {
@@ -8219,14 +8326,14 @@ function diagnose(roles, continuity, locker, trust, rot, voice, hog, week) {
 		[continuity, "continuity"],
 		[trust, "trust"]
 	].sort((a, b) => a[0] - b[0])[0];
-	if (hog) return `${hog.first} is eating every possession. The other guys have started watching.`;
-	if (voice && voice.morale < 50) return `${voice.first} is the voice in that locker room, and right now he isn't buying what you're selling.`;
-	if (weakest[1] === "roles") return "Guys keep looking at the depth chart like they don't know who's in. That's on us.";
-	if (weakest[1] === "continuity") return week < 6 ? "Too many new faces in the first five. The extra pass is a beat late." : "They still don't know who takes the last shot. Somebody has to claim it.";
-	if (weakest[1] === "locker" && locker < 58) return "The locker room is split. Talk to the guys who sit. They've noticed.";
-	if (trust < 58) return "The second pass dies. They don't trust each other.";
-	if (roles >= 74 && locker >= 74) return "Ball is moving. They know who they are.";
-	return "They're working. Keep the minutes honest and let the seniors talk.";
+	if (hog) return `${hog.first} is taking too many shots.`;
+	if (voice && voice.morale < 50) return `${voice.first} isn't happy. Talk to him.`;
+	if (weakest[1] === "roles") return "The rotation isn't clear yet.";
+	if (weakest[1] === "continuity") return week < 6 ? "Too many new guys in the lineup." : "Nobody has the last shot yet.";
+	if (weakest[1] === "locker" && locker < 58) return "The locker room is split.";
+	if (trust < 58) return "They don't trust each other yet.";
+	if (roles >= 74 && locker >= 74) return "The ball is moving. Roles are set.";
+	return "The group is fine. Keep the minutes fair.";
 }
 function applyChemistryWeek(state) {
 	const you = state.playerTeamId;
@@ -8242,7 +8349,7 @@ function applyChemistryWeek(state) {
 		if (c.hog && p.id !== c.hog.id && p.mpg < 16) m -= 1;
 		return {
 			...p,
-			morale: clamp(m, 18, 99)
+			morale: clamp$1(m, 18, 99)
 		};
 	});
 }
@@ -8321,6 +8428,572 @@ function recordHof(state) {
 	return next;
 }
 //#endregion
+//#region src/game/carousel.ts
+var ROLE_WORD = {
+	oc: "offensive coordinator",
+	dc: "defensive coordinator",
+	rc: "recruiting coordinator"
+};
+function expectedWinPct$1(prestige) {
+	return Math.max(.32, Math.min(.86, .28 + prestige / 155));
+}
+function coachNow(state, teamId) {
+	if (teamId === state.playerTeamId) return identityName(state.identity);
+	const stored = state.teams[teamId]?.coachName;
+	if (stored && stored !== "Staff") return stored;
+	const p = randomPersonName(mulberry32(state.seed ^ hashString(`burner-coach:${teamId}`)));
+	return `${p.first} ${p.last}`;
+}
+function yearNow(state, teamId) {
+	const stored = state.teams[teamId]?.coachYear;
+	if (stored && stored > 0) return stored;
+	const rng = mulberry32(state.seed ^ hashString(`burner-tenure:${teamId}`));
+	return 1 + Math.floor(rng() * 12);
+}
+function schoolName(id) {
+	return TEAM_BY_ID[id]?.name ?? id;
+}
+function seatsOf(state) {
+	const out = [];
+	for (const [id, t] of Object.entries(state.teams)) {
+		if (!t || t.guest || id === state.playerTeamId || !TEAM_BY_ID[id]) continue;
+		const games = t.wins + t.losses;
+		const winPct = games ? t.wins / games : .5;
+		const expected = expectedWinPct$1(t.prestige);
+		out.push({
+			id,
+			coach: coachNow(state, id),
+			prestige: t.prestige,
+			wins: t.wins,
+			losses: t.losses,
+			games,
+			winPct,
+			expected,
+			gap: expected - winPct,
+			year: yearNow(state, id)
+		});
+	}
+	return out;
+}
+function freshName(rng, used) {
+	const p = randomPersonName(rng, used);
+	const name = `${p.first} ${p.last}`;
+	used.add(name.toLowerCase());
+	return name;
+}
+/**
+* Turn the coaching carousel once, when the season ends.
+* A bad year can get a coach fired. A good year is what earns a better job.
+* Assistants get some of the open chairs. A few winners leave for the NBA.
+* The user's own job is settled by the contract, not by this.
+*/
+function spinCarousel(state, rng) {
+	if ((state.coachMoves ?? []).some((m) => m.season === state.season)) return state;
+	const you = state.playerTeamId;
+	const board = seatsOf(state);
+	if (!board.length) return state;
+	const byId = new Map(board.map((s) => [s.id, s]));
+	const used = new Set(board.map((s) => s.coach.toLowerCase()));
+	used.add(identityName(state.identity).toLowerCase());
+	const vacancies = [];
+	const vacant = /* @__PURE__ */ new Set();
+	const addVacancy = (id, outName, reason) => {
+		if (vacant.has(id)) return;
+		vacant.add(id);
+		vacancies.push({
+			id,
+			outName,
+			reason
+		});
+	};
+	let fires = 0;
+	for (const s of [...board].sort((a, b) => b.gap - a.gap || b.prestige - a.prestige)) {
+		if (fires >= 7 || s.games < 18) continue;
+		const bomb = s.gap >= .22;
+		const high = s.prestige >= 76 && s.winPct < .4 && s.year >= 2;
+		const bad = s.gap >= .16 && s.year >= 2;
+		const yearOne = s.year <= 1 && s.gap >= .28 && s.prestige >= 76;
+		if (!bomb && !high && !bad && !yearOne) continue;
+		const chance = yearOne ? .35 : bomb || high ? .8 : .55;
+		if (rng() > chance) continue;
+		addVacancy(s.id, s.coach, "fired");
+		fires += 1;
+	}
+	let nba = 0;
+	for (const s of [...board].filter((s) => !vacant.has(s.id)).sort((a, b) => a.gap - b.gap)) {
+		if (nba >= 2 || s.games < 18 || s.prestige < 74 || s.gap > 0) continue;
+		const champ = state.selection?.champ === s.id;
+		const ncaa = Boolean(state.selection?.ncaa?.some((b) => b.teamId === s.id));
+		if (!(champ || ncaa && s.winPct >= .62 || s.winPct >= s.expected + .08)) continue;
+		const chance = champ ? .28 : s.prestige >= 86 && s.winPct >= .7 ? .16 : .07;
+		if (rng() > chance) continue;
+		addVacancy(s.id, s.coach, "nba");
+		nba += 1;
+	}
+	const hires = /* @__PURE__ */ new Map();
+	let jumps = 0;
+	const jumpers = board.filter((s) => !vacant.has(s.id) && s.games >= 18 && s.gap <= -.06).sort((a, b) => a.gap - b.gap);
+	for (const s of jumpers) {
+		if (jumps >= 5) break;
+		const room = s.gap <= -.14 ? 22 : 14;
+		const spot = vacancies.filter((v) => !hires.has(v.id) && v.id !== s.id).map((v) => ({
+			v,
+			prestige: byId.get(v.id)?.prestige ?? 0
+		})).filter((x) => x.prestige >= s.prestige + 4 && x.prestige <= s.prestige + room).sort((a, b) => b.prestige - a.prestige)[0];
+		if (!spot) continue;
+		hires.set(spot.v.id, {
+			inName: s.coach,
+			fromId: s.id,
+			promoted: false,
+			fromBench: false
+		});
+		addVacancy(s.id, s.coach, "poached");
+		jumps += 1;
+	}
+	const openSeats = () => vacancies.filter((v) => !hires.has(v.id));
+	let leftRole = null;
+	const yours = state.teams[you];
+	const yourGames = (yours?.wins ?? 0) + (yours?.losses ?? 0);
+	const yourPct = yourGames ? (yours?.wins ?? 0) / yourGames : .5;
+	const yourExpected = expectedWinPct$1(yours?.prestige ?? 60);
+	const over = yourPct - yourExpected;
+	const review = state.contractReview;
+	const userFire = review?.decision === "fire";
+	const winRow = review?.results.find((r) => r.kind === "wins");
+	const madeNcaa = Boolean(review?.results.some((r) => r.kind === "ncaa" && r.met));
+	const meritsOffer = !userFire && yourGames >= 18 && (over >= .06 || Boolean(review?.standing && (madeNcaa || winRow && winRow.actual >= winRow.target + 3)));
+	if (userFire) addVacancy(you, identityName(state.identity), "fired");
+	let reserved = null;
+	if (meritsOffer) {
+		const room = over >= .14 ? 22 : 14;
+		const spot = [...openSeats()].map((v) => ({
+			v,
+			prestige: state.teams[v.id]?.prestige ?? byId.get(v.id)?.prestige ?? 0
+		})).filter((x) => x.v.id !== you && x.prestige >= (yours?.prestige ?? 60) + 4 && x.prestige <= (yours?.prestige ?? 60) + room).sort((a, b) => b.prestige - a.prestige)[0];
+		if (spot) {
+			reserved = {
+				id: spot.v.id,
+				outName: spot.v.outName,
+				fallback: freshName(rng, used)
+			};
+			hires.set(spot.v.id, {
+				inName: "",
+				fromId: void 0,
+				promoted: false,
+				fromBench: false
+			});
+		}
+	}
+	const bench = state.staff ? [
+		state.staff.oc,
+		state.staff.dc,
+		state.staff.rc
+	].filter((c) => c && c.rating >= 68) : [];
+	bench.sort((a, b) => (b?.rating ?? 0) - (a?.rating ?? 0));
+	const star = bench[0];
+	if (state.staff && star && openSeats().length && (star.rating >= 82 || yourPct >= yourExpected - .02)) {
+		const chance = .35 + (star.rating - 68) / 80;
+		const seat = [...openSeats()].sort((a, b) => (state.teams[b.id]?.prestige ?? 0) - (state.teams[a.id]?.prestige ?? 0)).find((v) => v.id !== you && (state.teams[v.id]?.prestige ?? 0) <= (yours?.prestige ?? 60) + 10);
+		if (seat && rng() < chance) {
+			hires.set(seat.id, {
+				inName: star.name,
+				fromId: you,
+				promoted: true,
+				fromBench: true,
+				staffRole: star.role
+			});
+			leftRole = star.role;
+			used.add(star.name.toLowerCase());
+		}
+	}
+	const donors = board.filter((s) => !vacant.has(s.id) && s.prestige >= 70);
+	for (const seat of openSeats()) {
+		const destP = state.teams[seat.id]?.prestige ?? byId.get(seat.id)?.prestige ?? 60;
+		const donor = donors.filter((d) => d.prestige >= destP - 4).sort((a, b) => b.prestige - a.prestige)[0];
+		const promote = Boolean(donor) && rng() < .62;
+		hires.set(seat.id, {
+			inName: freshName(rng, used),
+			fromId: promote ? donor.id : void 0,
+			promoted: promote,
+			fromBench: promote
+		});
+	}
+	const beats = [];
+	for (const v of vacancies) {
+		if (reserved && v.id === reserved.id) continue;
+		const hire = hires.get(v.id);
+		const t = state.teams[v.id];
+		if (!hire || !t || !hire.inName) continue;
+		const from = hire.fromId ? byId.get(hire.fromId) : void 0;
+		const fromSchool = hire.fromId && hire.fromId !== you ? schoolName(hire.fromId) : hire.fromId === you ? schoolName(you) : void 0;
+		let kind = "fired";
+		let note = "";
+		if (v.reason === "nba" && !hire.fromId) {
+			kind = "nba";
+			note = `${v.outName} left for an NBA job. ${hire.inName} is the new coach.`;
+		} else if (v.reason === "nba") {
+			kind = hire.fromBench ? "promoted" : "jumped";
+			note = `${v.outName} left for an NBA job. ${hire.inName}${fromSchool ? ` from ${fromSchool}` : ""} got it.`;
+		} else if (hire.fromId && !hire.fromBench) {
+			kind = "jumped";
+			const rec = from ? `${from.wins}-${from.losses}` : "a good year";
+			note = `${hire.inName} earned the job with ${rec} at ${fromSchool}. ${v.outName} is out.`;
+		} else if (hire.fromBench) {
+			kind = "promoted";
+			note = hire.fromId === you ? `${hire.inName}, your ${ROLE_WORD[leftRole ?? "oc"]}, got the head job.` : `${hire.inName} was promoted off the ${fromSchool} bench. ${v.outName} is out.`;
+		} else if (v.reason === "poached") {
+			kind = "jumped";
+			note = `${v.outName} left for a better job. ${hire.inName} is the replacement.`;
+		} else if (v.id === you) {
+			kind = "fired";
+			note = `${schoolName(you)} hires ${hire.inName} after the seat opens.`;
+		} else {
+			kind = "fired";
+			note = `${v.outName} was fired after ${t.wins}-${t.losses}. ${hire.inName} is the hire.`;
+		}
+		beats.push({
+			id: `car-${state.season}-${v.id}`,
+			teamId: v.id,
+			school: schoolName(v.id),
+			outName: v.outName,
+			inName: hire.inName,
+			kind,
+			fromSchool,
+			note,
+			record: `${t.wins}-${t.losses}`,
+			staffRole: hire.staffRole
+		});
+	}
+	const userName = identityName(state.identity);
+	const userRec = `${yours?.wins ?? 0}-${yours?.losses ?? 0}`;
+	if (userFire) {
+		const seat = beats.findIndex((b) => b.teamId === you);
+		const fireBeat = {
+			id: `car-${state.season}-you-fire`,
+			teamId: you,
+			school: schoolName(you),
+			outName: userName,
+			inName: userName,
+			kind: "fired",
+			note: `${userRec}. The AD is ready to move on. The jobs below are open if you want one. Staying is still a choice.`,
+			record: userRec,
+			yours: true,
+			decision: "fire"
+		};
+		if (seat >= 0) beats.splice(seat, 0, fireBeat);
+		else beats.push(fireBeat);
+	} else if (reserved) {
+		const dest = state.teams[reserved.id];
+		const offer = {
+			id: `car-${state.season}-you-offer`,
+			teamId: reserved.id,
+			school: schoolName(reserved.id),
+			outName: reserved.outName,
+			inName: userName,
+			kind: "jumped",
+			fromSchool: schoolName(you),
+			note: `${schoolName(reserved.id)} wants you. ${userRec} at ${schoolName(you)} is why the chair is open.`,
+			record: dest ? `${dest.wins}-${dest.losses}` : userRec,
+			yours: true,
+			decision: "offer",
+			offerTeamId: reserved.id,
+			fallbackName: reserved.fallback
+		};
+		const prestige = dest?.prestige ?? 0;
+		const at = beats.findIndex((b) => (state.teams[b.teamId]?.prestige ?? 0) < prestige);
+		if (at >= 0) beats.splice(at, 0, offer);
+		else beats.push(offer);
+	}
+	if (!beats.length) beats.push({
+		id: `car-${state.season}-quiet`,
+		teamId: you,
+		school: "The carousel",
+		outName: "",
+		inName: "",
+		kind: "fired",
+		note: "No chair changed hands. The seats that looked hot stayed put.",
+		record: userRec,
+		quiet: true
+	});
+	beats.push({
+		id: `car-${state.season}-recap`,
+		teamId: you,
+		school: "Recap",
+		outName: "",
+		inName: "",
+		kind: "fired",
+		note: "That's the carousel.",
+		record: userRec,
+		quiet: true,
+		recap: true
+	});
+	const moving = new Set(beats.filter((b) => !b.quiet && !b.decision).map((b) => b.teamId));
+	if (reserved) moving.add(reserved.id);
+	const teams = { ...state.teams };
+	for (const [id, t] of Object.entries(teams)) {
+		if (!t || t.guest || moving.has(id)) continue;
+		const year = id === you ? state.contract?.yearOnJob ?? yearNow(state, id) : yearNow(state, id) + 1;
+		teams[id] = {
+			...t,
+			coachYear: year,
+			coachName: id === you ? identityName(state.identity) : t.coachName && t.coachName !== "Staff" ? t.coachName : coachNow(state, id)
+		};
+	}
+	const article = {
+		id: `carousel-${state.season}`,
+		week: state.week,
+		season: state.season,
+		tone: "even",
+		kicker: "Carousel",
+		headline: "The carousel is open",
+		dek: userFire ? "Your seat is part of it." : reserved ? "A better job is going to come up." : "One chair at a time.",
+		byline: "The wire",
+		outlet: "The News",
+		grafs: ["Coaching changes land one at a time. Stay for the whole session."],
+		text: "The coaching carousel is open. Jobs move one chair at a time."
+	};
+	return {
+		...state,
+		teams,
+		coachMoves: (state.coachMoves ?? []).filter((m) => m.season !== state.season),
+		carousel: {
+			season: state.season,
+			beats,
+			index: 0,
+			done: false
+		},
+		news: [article, ...state.news.filter((n) => n.id !== article.id)].slice(0, 60),
+		mail: state.mail.filter((m) => m.id !== `asst-job-${state.season}`)
+	};
+}
+function applyBeat(state, beat) {
+	if (beat.quiet || beat.decision || beat.applied) return state;
+	if (beat.teamId === state.playerTeamId && state.contractReview && !state.contractReview.resolved) return state;
+	const t = state.teams[beat.teamId];
+	if (!t || !beat.inName) return state;
+	const move = {
+		season: state.season,
+		teamId: beat.teamId,
+		school: beat.school,
+		outName: beat.outName,
+		inName: beat.inName,
+		kind: beat.kind,
+		fromSchool: beat.fromSchool,
+		note: beat.note
+	};
+	let staff = state.staff;
+	let mail = [];
+	if (beat.staffRole && staff?.[beat.staffRole]?.name === beat.inName) {
+		const role = beat.staffRole;
+		staff = {
+			...staff,
+			[role]: null
+		};
+		mail = [{
+			id: `asst-job-${state.season}`,
+			from: "Your staff",
+			subject: `${beat.inName} took a head job`,
+			body: `${beat.inName} is leaving to be the head coach at ${beat.school}. The ${roleLabel(role).toLowerCase()} chair is open. Hire before the portal gets loud.`,
+			week: state.week,
+			read: false,
+			tone: "even"
+		}];
+	}
+	return {
+		...state,
+		teams: {
+			...state.teams,
+			[beat.teamId]: {
+				...t,
+				coachName: beat.inName,
+				coachYear: 1
+			}
+		},
+		staff,
+		coachMoves: [move, ...(state.coachMoves ?? []).filter((m) => !(m.season === move.season && m.teamId === move.teamId))].slice(0, 48),
+		mail: [...mail, ...state.mail].slice(0, 40)
+	};
+}
+function markBeat(state, index, patch) {
+	const session = state.carousel;
+	if (!session) return state;
+	const beats = session.beats.map((b, i) => i === index ? {
+		...b,
+		...patch
+	} : b);
+	return {
+		...state,
+		carousel: {
+			...session,
+			beats
+		}
+	};
+}
+function carouselWaiting(state) {
+	return state.phase === "offseason" && Boolean(state.carousel && !state.carousel.done && state.carousel.season === state.season);
+}
+function withRecap(state) {
+	const session = state.carousel;
+	if (!session || session.beats.some((b) => b.recap)) return state;
+	const you = state.playerTeamId;
+	const t = state.teams[you];
+	return {
+		...state,
+		carousel: {
+			...session,
+			beats: [...session.beats, {
+				id: `car-${session.season}-recap`,
+				teamId: you,
+				school: "Recap",
+				outName: "",
+				inName: "",
+				kind: "fired",
+				note: "That's the carousel.",
+				record: `${t?.wins ?? 0}-${t?.losses ?? 0}`,
+				quiet: true,
+				recap: true
+			}]
+		}
+	};
+}
+function advanceCarousel(state) {
+	state = withRecap(state);
+	const session = state.carousel;
+	if (!session || session.done) return state;
+	const beat = session.beats[session.index];
+	if (!beat) return {
+		...state,
+		carousel: {
+			...session,
+			done: true
+		}
+	};
+	if (beat.yours && (beat.decision === "fire" || beat.decision === "offer")) return state;
+	let next = applyBeat(state, beat);
+	next = markBeat(next, session.index, { applied: true });
+	const index = session.index + 1;
+	const done = index >= (next.carousel?.beats.length ?? session.beats.length);
+	return {
+		...next,
+		carousel: {
+			...next.carousel,
+			index,
+			done
+		}
+	};
+}
+/** Stay at the current school. Offers are optional, including a firing. */
+function stayAtSchool(state) {
+	state = withRecap(state);
+	const session = state.carousel;
+	const review = state.contractReview;
+	const name = identityName(state.identity);
+	const school = schoolName(state.playerTeamId);
+	if (!session || session.done) {
+		if (!review || review.resolved) return state;
+		return {
+			...state,
+			contractReview: {
+				...review,
+				resolved: true,
+				decision: "continue"
+			}
+		};
+	}
+	const beat = session.beats[session.index];
+	if (!beat?.yours) {
+		if (!review || review.resolved) return state;
+		return {
+			...state,
+			contractReview: {
+				...review,
+				resolved: true,
+				decision: "continue"
+			}
+		};
+	}
+	let beats = session.beats.map((b) => ({ ...b }));
+	let next = state;
+	if (beat.decision === "offer") {
+		const hired = {
+			...beat,
+			yours: false,
+			decision: void 0,
+			inName: beat.fallbackName || beat.inName,
+			kind: "promoted",
+			note: `${beat.school} moved on. ${beat.fallbackName || "The search"} got the job.`,
+			applied: false
+		};
+		beats[session.index] = hired;
+		next = applyBeat({
+			...state,
+			carousel: {
+				...session,
+				beats
+			}
+		}, hired);
+		beats = (next.carousel?.beats ?? beats).map((b, i) => i === session.index ? {
+			...b,
+			applied: true,
+			decision: void 0,
+			inName: hired.inName,
+			note: hired.note
+		} : b);
+	} else {
+		beats = beats.filter((b, i) => i === session.index || b.recap || b.yours || b.teamId !== state.playerTeamId);
+		const at = beats.findIndex((b) => b.id === beat.id);
+		if (at >= 0) beats[at] = {
+			...beats[at],
+			applied: true,
+			decision: void 0,
+			note: `You stayed at ${school}.`
+		};
+		next = {
+			...state,
+			contractReview: review ? {
+				...review,
+				resolved: true,
+				decision: "continue",
+				letter: `${name.split(" ")[0] || "Coach"},\n\nYou stayed. The chair is still yours.\n\n${school}`
+			} : review
+		};
+	}
+	const index = Math.max(0, beats.findIndex((b) => b.id === beat.id)) + 1;
+	const done = index >= beats.length;
+	return {
+		...next,
+		carousel: {
+			...next.carousel ?? session,
+			beats,
+			index,
+			done
+		}
+	};
+}
+function declineCarouselOffer(state) {
+	return stayAtSchool(state);
+}
+/** Call after the user actually changes schools. Steps off their carousel card. */
+function finishUserCarousel(state) {
+	const session = state.carousel;
+	if (!session || session.done) return state;
+	if (!session.beats[session.index]?.yours) return state;
+	const beats = session.beats.map((b, i) => i === session.index ? {
+		...b,
+		applied: true
+	} : b);
+	const index = session.index + 1;
+	return {
+		...state,
+		carousel: {
+			...session,
+			beats,
+			index,
+			done: index >= beats.length
+		}
+	};
+}
+//#endregion
 //#region src/game/contract.ts
 function yearsForPrestige(prestige) {
 	if (prestige >= 82) return 6;
@@ -8374,9 +9047,11 @@ function openingLetter(state) {
 	const c = state.contract;
 	const years = c?.years ?? 4;
 	const terms = (c?.clauses ?? []).map((x) => x.kind === "postseason" ? "a postseason bid" : x.kind === "ncaa" ? "an NCAA bid" : x.label).join(" and ");
+	const first = coachFirst(state);
+	const helen = adFirst(state);
 	return {
-		subject: "welcome",
-		body: `${coachFirst(state)},\n\nWelcome to ${school}. I meant what I said when we hired you — this place will love you if you love it back.\n\nYou've got ${years} years. We need ${terms}. Hit that and nobody's in your doorway in April. Miss it and I'll be the one standing there.\n\nMy cell is on the card. Use it before the papers write it for us.\n\n${adFirst(state)}`
+		subject: `Welcome to ${school}`,
+		body: `${first},\n\nWelcome to ${school}. Your contract is ${years} years. We need ${terms}.\n\nHit those and we'll talk about an extension. Miss them and we'll meet in April.\n\nCall me if something is about to get out before you want it to.\n\n${helen}\nAthletic director`
 	};
 }
 function actualFor(state, kind) {
@@ -8412,10 +9087,10 @@ function letterFor(state, standing, decision, results, remainingAfter, school) {
 	const hit = results.filter((r) => r.met).map((r) => r.label);
 	const first = coachFirst(state);
 	const helen = adFirst(state);
-	if (decision === "extend") return `${first},\n\nI sat with the committee this morning. Nobody wanted to play poker. They want you back.\n\n${hit.join(" and ") || "This year"} held up. More years on the deal. Sign it when you're ready, or tell me you're walking so I can start making calls.\n\nSame office. Same terrible coffee.\n\n${helen}`;
-	if (decision === "fire") return missed.length ? `${first},\n\nI hate this part. ${school} is going in another direction. You missed ${missed.join(" and ")} and I ran out of cover stories.\n\nI left three numbers for you. Programs that still want you. Call one of them before the rumor mill does.\n\nI'm sorry it went this way.\n\n${helen}` : `${first},\n\nThe years ran out. They want a new voice. I hate telling you that.\n\nThree jobs if you still want one. Take one. You're better than how this ended.\n\n${helen}`;
-	if (!standing) return `${first},\n\nYou're still employed. ${remainingAfter} year${remainingAfter === 1 ? "" : "s"} left. ${missed.join(" and ")} did not hit, and I had to say so out loud.\n\nDon't make me send this letter again.\n\n${helen}`;
-	return `${first},\n\n${remainingAfter} year${remainingAfter === 1 ? "" : "s"} left. ${hit.join(" and ") || "The year"} is what we hired you for. Keep going. I'm in your corner.\n\n${helen}`;
+	if (decision === "extend") return `${first},\n\nThe committee wants you back. ${hit.join(" and ") || "This year"} is what we asked for, so there's more time on the deal.\n\nSign it when you're ready. If you're leaving, tell me so I can start the search.\n\n${helen}\nAthletic director`;
+	if (decision === "fire") return missed.length ? `${first},\n\n${school} is moving on. You missed ${missed.join(" and ")}, and I don't have a way to keep the job open.\n\nThere are a few programs still interested. Call them this week.\n\n${helen}\nAthletic director` : `${first},\n\nThe contract is up and they want a new coach. I wish I had a better way to say that.\n\nA few jobs are open if you want to keep coaching. Take a look.\n\n${helen}\nAthletic director`;
+	if (!standing) return `${first},\n\nYou're still the coach. ${remainingAfter} year${remainingAfter === 1 ? "" : "s"} left. ${missed.join(" and ")} didn't get done.\n\nWe need those next year.\n\n${helen}\nAthletic director`;
+	return `${first},\n\n${remainingAfter} year${remainingAfter === 1 ? "" : "s"} left on the deal. ${hit.join(" and ") || "This year"} is what we hired you to do. Keep going.\n\n${helen}\nAthletic director`;
 }
 function jobOffers(state, rng, standing) {
 	const p = TEAM_BY_ID[state.playerTeamId]?.prestige ?? 58;
@@ -8475,10 +9150,12 @@ function reviewContract(state) {
 	const t = state.teams[state.playerTeamId];
 	const winsClause = results.find((r) => r.kind === "wins");
 	const catastrophic = Boolean(winsClause && winsClause.actual <= winsClause.target - 8);
+	const canFire = (state.history?.log ?? []).filter((row) => row.teamId === state.playerTeamId).length > 2;
 	const rng = mulberry32(state.seed ^ state.season * 7919 ^ 3082);
 	let decision = "continue";
-	if (remainingAfter <= 0) decision = standing ? "extend" : "fire";
-	else if (!standing && c.yearOnJob >= 2 && state.adHeat < 34 && catastrophic) decision = "fire";
+	if (remainingAfter <= 0 && standing) decision = "extend";
+	else if (canFire && remainingAfter <= 0) decision = "fire";
+	else if (canFire && !standing && state.adHeat < 34 && catastrophic) decision = "fire";
 	const school = TEAM_BY_ID[state.playerTeamId]?.name ?? "The school";
 	const offer = decision === "extend" ? makeContract(state.playerTeamId, state.season + 1, c.yearOnJob + 1) : void 0;
 	const jobs = decision === "fire" || decision === "extend" ? jobOffers(state, rng, standing) : [];
@@ -8499,8 +9176,8 @@ function applyReview(state) {
 	const review = reviewContract(state);
 	const contract = state.contract ?? makeContract(state.playerTeamId, state.season, 1);
 	let adHeat = state.adHeat;
-	if (review.standing) adHeat = clamp(adHeat + 6, 0, 100);
-	else adHeat = clamp(adHeat - (review.decision === "fire" ? 18 : 10), 0, 100);
+	if (review.standing) adHeat = clamp$1(adHeat + 6, 0, 100);
+	else adHeat = clamp$1(adHeat - (review.decision === "fire" ? 18 : 10), 0, 100);
 	const you = state.teams[state.playerTeamId];
 	const base = TEAM_BY_ID[you.id]?.prestige ?? 58;
 	const madeNcaa = review.results.some((r) => r.kind === "ncaa" && r.met);
@@ -8513,16 +9190,16 @@ function applyReview(state) {
 		else prestigeDelta = 1;
 	} else prestigeDelta = review.standing ? 0 : -1;
 	if (you.prestige - base >= 12 && prestigeDelta <= 0) prestigeDelta -= 1;
-	return {
+	const spun = spinCarousel({
 		...state,
 		adHeat,
-		fanMood: clamp(state.fanMood + (review.standing ? 4 : -6), 0, 100),
-		donorMood: clamp(state.donorMood + (review.standing ? 3 : -5), 0, 100),
+		fanMood: clamp$1(state.fanMood + (review.standing ? 4 : -6), 0, 100),
+		donorMood: clamp$1(state.donorMood + (review.standing ? 3 : -5), 0, 100),
 		teams: {
 			...state.teams,
 			[you.id]: {
 				...you,
-				prestige: clamp(you.prestige + prestigeDelta, 38, 99)
+				prestige: clamp$1(you.prestige + prestigeDelta, 38, 99)
 			}
 		},
 		contract: {
@@ -8539,6 +9216,19 @@ function applyReview(state) {
 			read: false,
 			tone: review.decision === "fire" ? "bad" : review.standing ? "good" : "even"
 		}, ...state.mail].slice(0, 40)
+	}, mulberry32(state.seed ^ state.season * 104729 ^ 49319));
+	const offer = spun.carousel?.beats.find((b) => b.decision === "offer" && b.offerTeamId);
+	if (!offer?.offerTeamId || !spun.contractReview) return spun;
+	if (spun.contractReview.jobs.some((j) => j.teamId === offer.offerTeamId)) return spun;
+	return {
+		...spun,
+		contractReview: {
+			...spun.contractReview,
+			jobs: [...spun.contractReview.jobs, {
+				teamId: offer.offerTeamId,
+				contract: makeContract(offer.offerTeamId, state.season + 1, 1)
+			}]
+		}
 	};
 }
 function signExtension(state) {
@@ -8562,7 +9252,7 @@ function signExtension(state) {
 				resolved: true,
 				decision: "extend"
 			},
-			adHeat: clamp(state.adHeat + 4, 0, 100)
+			adHeat: clamp$1(state.adHeat + 4, 0, 100)
 		}
 	};
 }
@@ -8581,7 +9271,7 @@ function takeContractJob(state, teamId) {
 	const followed = loyal.map((p) => `${p.first} ${p.last}`).join(" and ");
 	return {
 		ok: true,
-		state: {
+		state: finishUserCarousel({
 			...state,
 			playerTeamId: teamId,
 			contract: {
@@ -8593,6 +9283,12 @@ function takeContractJob(state, teamId) {
 				...review,
 				resolved: true
 			} : null,
+			snake: review && (review.decision !== "fire" || review.abrupt) ? {
+				season: state.season,
+				coach: name,
+				from: TEAM_BY_ID[prev]?.name ?? "the last job",
+				to: school.name
+			} : state.snake ?? null,
 			adHeat: 58,
 			fanMood: 56,
 			donorMood: 54,
@@ -8610,19 +9306,20 @@ function takeContractJob(state, teamId) {
 				},
 				[teamId]: {
 					...state.teams[teamId],
-					coachName: name
+					coachName: name,
+					coachYear: 1
 				}
 			},
 			mail: [{
 				id: `hire-${state.season}-${teamId}`,
 				from: adFrom(state),
-				subject: "welcome to campus",
-				body: `${name.split(" ")[0] || "Coach"},\n\n${school.name} is yours. ${offer.contract.years} years. We need ${offer.contract.clauses.map((c) => c.kind === "postseason" ? "a postseason bid" : c.kind === "ncaa" ? "an NCAA bid" : c.label).join(" and ")}.${followed ? `\n\n${followed} followed you. They wanted the coach, not the zip code.` : ""}\n\nDon't make us look like we panicked. Come by when you land — I'll walk you down to the gym.\n\n${adFirst(state)}`,
+				subject: `Welcome to ${school.name}`,
+				body: `${name.split(" ")[0] || "Coach"},\n\n${school.name} is yours. ${offer.contract.years} years. We need ${offer.contract.clauses.map((c) => c.kind === "postseason" ? "a postseason bid" : c.kind === "ncaa" ? "an NCAA bid" : c.label).join(" and ")}.${followed ? `\n\n${followed} came with you.` : ""}\n\nCome by the office when you get in.\n\n${adFirst(state)}\nAthletic director`,
 				week: 0,
 				read: false,
 				tone: "good"
 			}, ...state.mail].slice(0, 40)
-		}
+		})
 	};
 }
 function walkContract(state) {
@@ -8635,6 +9332,7 @@ function walkContract(state) {
 		contractReview: {
 			...review,
 			decision: "fire",
+			abrupt: true,
 			jobs,
 			resolved: false,
 			letter: `${coachFirst(state)},\n\nYou walked. That's your right. The deal's void.\n\nThree chairs if you still want one. Call me if you want to talk before you pick.\n\n${adFirst(state)}`
@@ -8652,27 +9350,27 @@ var DIFFICULTY_OPTS = [
 	{
 		id: "easy",
 		label: "Easy",
-		hint: "Calls go your way. Kids pick up."
+		hint: "Calls lean your way. Recruits are easier to sign."
 	},
 	{
 		id: "realistic",
 		label: "Realistic",
-		hint: "College hoops."
+		hint: "College basketball as it is."
 	},
 	{
 		id: "hard",
 		label: "Hard",
-		hint: "Blue bloods have the edge."
+		hint: "Power programs have the edge."
 	},
 	{
 		id: "extreme",
 		label: "Extreme",
-		hint: "Mid-majors scrape. Five-stars stay home."
+		hint: "Mid-majors struggle. Five-stars stay at the big schools."
 	},
 	{
 		id: "impossible",
 		label: "Impossible",
-		hint: "Blue bloods own recruiting."
+		hint: "The blue bloods get the recruits."
 	}
 ];
 function defaultSettings(era) {
@@ -8756,8 +9454,8 @@ function goatScore(state) {
 function goatLine(state) {
 	const n = goatScore(state);
 	if (n >= 140) return "Hall of Fame career";
-	if (n >= 80) return "A real career";
-	if (n >= 40) return "Building a résumé";
+	if (n >= 80) return "Solid career";
+	if (n >= 40) return "Building a case";
 	return "Just getting started";
 }
 function retireCoach(state) {
@@ -9596,10 +10294,10 @@ function eraTilt(id, era) {
 	return 0;
 }
 function defaultPrior(id) {
-	return clamp(36 + ((TEAM_BY_ID[id]?.prestige ?? 55) - 48) * .72, 30, 79);
+	return clamp$1(36 + ((TEAM_BY_ID[id]?.prestige ?? 55) - 48) * .72, 30, 79);
 }
 function gymPrior(id, era = null) {
-	return clamp((GYMS[id]?.prior ?? defaultPrior(id)) + eraTilt(id, era), 24, 100);
+	return clamp$1((GYMS[id]?.prior ?? defaultPrior(id)) + eraTilt(id, era), 24, 100);
 }
 function isTrueHome(state, r) {
 	if (r.homeId == null) return false;
@@ -9744,11 +10442,11 @@ var GYM_LINES = {
 };
 var PLAIN_HOME = [
 	"Home court is worth a few points.",
-	"Their floor. Visitors don't get a warm one.",
-	"Not a famous gym. Still their gym.",
-	"The crowd is close enough to matter.",
-	"A campus gym, and they play like it.",
-	"They like it here. So does the scoreboard."
+	"Their building. Road teams don't like it.",
+	"Not a famous gym. Still a hard place to play.",
+	"The crowd is close to the floor.",
+	"On-campus gym. They defend it.",
+	"They win here more often than they should."
 ];
 function plainHome(id) {
 	let h = 0;
@@ -9756,15 +10454,15 @@ function plainHome(id) {
 	return PLAIN_HOME[Math.abs(h) % PLAIN_HOME.length];
 }
 function streakNote(id, streak, prior, careerPct, careerG) {
-	if (streak >= 20) return "They haven't lost here in a long time.";
-	if (streak >= 12) return `${streak} in a row. The visitors already know.`;
-	if (streak >= 8) return `${streak} straight. The building is loud.`;
-	if (streak >= 5) return "A real run at home.";
-	if (streak <= -5) return "The place has gone cold.";
-	if (streak <= -3) return "Quiet nights lately.";
-	if (careerG >= 24 && careerPct >= .88) return "They built this. It isn't a rumor.";
-	if (careerG >= 12 && careerPct < .45) return "The old stories don't travel anymore.";
-	return GYM_LINES[id] ?? (prior >= 90 ? "A hard road environment. The crowd is the edge." : prior >= 82 ? "They protect this floor." : plainHome(id));
+	if (streak >= 20) return "Long home winning streak.";
+	if (streak >= 12) return `${streak} straight at home.`;
+	if (streak >= 8) return `${streak} straight at home. It's loud.`;
+	if (streak >= 5) return `${streak} straight at home.`;
+	if (streak <= -5) return "They've been losing at home.";
+	if (streak <= -3) return "The crowd's been thin lately.";
+	if (careerG >= 24 && careerPct >= .88) return "One of the hardest places to play.";
+	if (careerG >= 12 && careerPct < .45) return "Not the home court it used to be.";
+	return GYM_LINES[id] ?? (prior >= 90 ? "Hard place to play. The crowd is the difference." : prior >= 82 ? "They protect this floor." : plainHome(id));
 }
 function gymScore(state, id) {
 	const t = state.teams[id];
@@ -9780,8 +10478,8 @@ function gymScore(state, id) {
 	const games = homeGames(state, id);
 	const seasonMargin = games.length ? games.reduce((n, r) => n + (r.homeScore - r.awayScore), 0) / games.length : 0;
 	const careerMargin = careerG && t ? ((t.gymPf ?? 0) - (t.gymPa ?? 0)) / careerG : seasonMargin;
-	const marginPts = clamp(seasonG ? seasonMargin : careerMargin, -14, 20) * .55;
-	const weight = clamp(careerG / 36, 0, .74);
+	const marginPts = clamp$1(seasonG ? seasonMargin : careerMargin, -14, 20) * .55;
+	const weight = clamp$1(careerG / 36, 0, .74);
 	const prestige = t?.prestige ?? TEAM_BY_ID[id]?.prestige ?? 55;
 	return prior * (1 - weight) * .88 + careerPct * 100 * weight * .72 + seasonPct * 20 + streakPts + marginPts + (prestige - 60) * .07;
 }
@@ -9829,25 +10527,25 @@ function toughestPlaces(state) {
 	}));
 }
 function gymHcaPoints(score) {
-	return clamp(1.6 + (score - 38) / 62 * 7.4, 1.2, 9.4);
+	return clamp$1(1.6 + (score - 38) / 62 * 7.4, 1.2, 9.4);
 }
 /** Possession edge for the live gamecast. Replaces the old flat .08. */
 function gymLiveEdge(state, homeId) {
 	const s = gymScore(state, homeId);
 	const fac = homeId === state.playerTeamId ? facilityHca(state) : 0;
-	return clamp(.04 + (s - 40) / 70 * .11 + fac * 8, .035, .16);
+	return clamp$1(.04 + (s - 40) / 70 * .11 + fac * 8, .035, .16);
 }
 /** Make-rate bump used by the box sim. */
 function gymSimEdge(state, homeId) {
 	const s = gymScore(state, homeId);
 	const fac = homeId === state.playerTeamId ? facilityHca(state) : 0;
-	return clamp(.011 + (s - 40) / 70 * .022 + fac, .01, .038);
+	return clamp$1(.011 + (s - 40) / 70 * .022 + fac, .01, .038);
 }
 function gymCrowd(state, homeId) {
 	const t = state.teams[homeId];
 	const s = gymScore(state, homeId);
 	const streak = t?.homeStreak ?? 0;
-	const fill = clamp(.32 + (s - 35) / 70 * .62 + Math.min(.12, Math.max(0, streak) * .012), .28, .99);
+	const fill = clamp$1(.32 + (s - 35) / 70 * .62 + Math.min(.12, Math.max(0, streak) * .012), .28, .99);
 	return {
 		fill,
 		packed: fill >= .82 || streak >= 8
@@ -9871,7 +10569,7 @@ function gymTease(state) {
 	};
 	return {
 		head: top ? `#1 ${top.gym}` : "Gyms",
-		note: top ? top.streak > 0 ? `${top.school} · ${top.streak} in a row` : `${top.school} · still the hardest floor` : "Home court, ranked."
+		note: top ? top.streak > 0 ? `${top.school} · ${top.streak} in a row` : `${top.school} · toughest home court` : "Home court, ranked."
 	};
 }
 function gymOf(state, id) {
@@ -9983,12 +10681,12 @@ function targetMinutes(roster, total) {
 	});
 	const sum = raw.reduce((s, n) => s + n, 0) || 1;
 	let mins = raw.map((n) => n / sum * total);
-	mins = mins.map((m, i) => i < 8 ? clamp(m, i < 5 ? 18 : 6, 38) : clamp(m, 0, 16));
+	mins = mins.map((m, i) => i < 8 ? clamp$1(m, i < 5 ? 18 : 6, 38) : clamp$1(m, 0, 16));
 	let drift = total - mins.reduce((s, n) => s + n, 0);
 	let guard = 0;
 	while (Math.abs(drift) > .05 && guard++ < 24) {
 		const i = guard % mins.length;
-		const next = clamp(mins[i] + Math.sign(drift) * .5, 0, 38);
+		const next = clamp$1(mins[i] + Math.sign(drift) * .5, 0, 38);
 		drift -= next - mins[i];
 		mins[i] = next;
 	}
@@ -10005,7 +10703,7 @@ function threeShare(p, era) {
 		C: .05
 	}[p.pos];
 	const shoot = sk(p, "shoot");
-	return clamp(scale * byPos * (.45 + shoot), .02 * scale, .62 * scale);
+	return clamp$1(scale * byPos * (.45 + shoot), .02 * scale, .62 * scale);
 }
 function findLine(lines, id) {
 	return lines.find((x) => x.id === id);
@@ -10051,7 +10749,7 @@ function finishLines(lines, minutes) {
 	const sum = live.reduce((n, p) => n + p.min, 0) || 1;
 	const scaled = live.map((p) => ({
 		...p,
-		min: clamp(Math.round(p.min / sum * minutes * 5), 1, minutes - 2)
+		min: clamp$1(Math.round(p.min / sum * minutes * 5), 1, minutes - 2)
 	}));
 	let drift = minutes * 5 - scaled.reduce((n, p) => n + p.min, 0);
 	let i = 0;
@@ -10115,7 +10813,7 @@ function simContest(state, homeId, awayId, rng, opts = {}) {
 	if (awayStyle === "push") possN += 4;
 	if (homeStyle === "slow") possN -= 4;
 	if (awayStyle === "slow") possN -= 4;
-	possN = clamp(possN, pace.lo - 6, pace.hi + 4);
+	possN = clamp$1(possN, pace.lo - 6, pace.hi + 4);
 	let n = Math.round(possN);
 	const minutes0 = 40;
 	const homeT = targetMinutes(homeR, 200);
@@ -10129,6 +10827,29 @@ function simContest(state, homeId, awayId, rng, opts = {}) {
 	const homeChem = teamChemistry(state, homeId).score;
 	const awayChem = teamChemistry(state, awayId).score;
 	const homeCourt = opts.site === "neutral" ? 0 : gymSimEdge(state, homeId) + rivalryEdge(homeId, awayId);
+	const homeName = TEAM_BY_ID[homeId]?.name ?? "Home";
+	const awayName = TEAM_BY_ID[awayId]?.name ?? "Away";
+	const beats = [];
+	let hsRun = 0;
+	let asRun = 0;
+	let trip = 0;
+	let atPlay = 0;
+	let inOt = false;
+	const bump = (home, pts, text) => {
+		if (pts > 0) {
+			if (home) hsRun += pts;
+			else asRun += pts;
+		}
+		beats.push({
+			i: atPlay,
+			ot: inOt,
+			home,
+			hs: hsRun,
+			as: asRun,
+			pts,
+			text
+		});
+	};
 	let youH = 0;
 	let youA = 0;
 	if (opts.youHome === true) {
@@ -10162,6 +10883,7 @@ function simContest(state, homeId, awayId, rng, opts = {}) {
 		const on = onCourtFive(rng, offR, offT, offP);
 		const defOn = onCourtFive(rng, defR, defT, defP);
 		if (!on.length) return;
+		atPlay = trip;
 		const dt = 40 / Math.max(60, n);
 		tickMin("home", offHome ? on : defOn, dt);
 		tickMin("away", offHome ? defOn : on, dt);
@@ -10174,7 +10896,7 @@ function simContest(state, homeId, awayId, rng, opts = {}) {
 		const dStyle = offHome ? awayStyle : homeStyle;
 		const oStyle = offHome ? homeStyle : awayStyle;
 		let toRate = .145 - (iq - .58) * .08 + (def - .58) * .04 - talent * .45 + (dStyle === "press" ? .06 : 0);
-		toRate = clamp(toRate, .06, .28);
+		toRate = clamp$1(toRate, .06, .28);
 		let shooter = pickWeighted(rng, on, (p) => usageW(p));
 		if ((findLine(offL, shooter.id)?.pts ?? 0) >= 42) {
 			const cooler = on.filter((p) => p.id !== shooter.id && (findLine(offL, p.id)?.pts ?? 0) < 42);
@@ -10209,7 +10931,13 @@ function simContest(state, homeId, awayId, rng, opts = {}) {
 		};
 		if (rng() < toRate) {
 			credit(sLine, { to: 1 });
-			if (defOn.length && rng() < .55) credit(findLine(defL, pickWeighted(rng, defOn, (p) => (p.skills?.defense ?? 60) * (p.pos === "PG" || p.pos === "SG" ? 1.8 : .65)).id), { stl: 1 });
+			let thief;
+			if (defOn.length && rng() < .55) {
+				thief = pickWeighted(rng, defOn, (p) => (p.skills?.defense ?? 60) * (p.pos === "PG" || p.pos === "SG" ? 1.8 : .65));
+				credit(findLine(defL, thief.id), { stl: 1 });
+			}
+			const who = `${shooter.first} ${shooter.last}`;
+			bump(offHome, 0, thief ? `${thief.first} ${thief.last} stole it from ${who}` : `${who} turned it over`);
 			return;
 		}
 		const foulSomeone = () => {
@@ -10221,7 +10949,7 @@ function simContest(state, homeId, awayId, rng, opts = {}) {
 		const looseFoul = () => {
 			if (rng() < (dStyle === "press" ? .14 : .09)) foulSomeone();
 		};
-		const ftr = clamp(.12 + sk(shooter, "finish") * .1 + (dStyle === "press" ? .05 : 0) - def * .03, .06, .34);
+		const ftr = clamp$1(.12 + sk(shooter, "finish") * .1 + (dStyle === "press" ? .05 : 0) - def * .03, .06, .34);
 		const playerCap = ftaCap(minutes0);
 		const sideCap = teamFtaCap(minutes0);
 		const already = sLine?.fta ?? 0;
@@ -10229,7 +10957,7 @@ function simContest(state, homeId, awayId, rng, opts = {}) {
 		const ftRoom = Math.min(playerCap - already, sideCap - teamFta);
 		if (ftRoom >= 2 && rng() < ftr * .7) {
 			const attempts = ftRoom >= 2 && rng() < .12 ? Math.min(3, ftRoom) : Math.min(2, ftRoom);
-			const ft = clamp(.72 + (sk(shooter, "shoot") - .68) * .5, .52, .88);
+			const ft = clamp$1(.72 + (sk(shooter, "shoot") - .68) * .5, .52, .88);
 			credit(sLine, { fta: attempts });
 			let made = 0;
 			for (let i = 0; i < attempts; i++) if (rng() < ft) made++;
@@ -10237,6 +10965,7 @@ function simContest(state, homeId, awayId, rng, opts = {}) {
 				ftm: made,
 				pts: made
 			});
+			if (made > 0) bump(offHome, made, `${shooter.first} ${shooter.last} made ${made} of ${attempts} free throws`);
 			foulSomeone();
 			return;
 		}
@@ -10244,7 +10973,7 @@ function simContest(state, homeId, awayId, rng, opts = {}) {
 		if (dStyle === "pack") share *= .55;
 		if (oStyle === "push") share *= 1.12;
 		if (rng() < share) {
-			const make3 = clamp(.33 + (sk(shooter, "shoot") - .55) * .14 - (def - .58) * .04 + hc * .15 + you * .2 + talent * .45 + chem * .06 + gaussian(rng) * .015, .2, .48);
+			const make3 = clamp$1(.33 + (sk(shooter, "shoot") - .55) * .14 - (def - .58) * .04 + hc * .15 + you * .2 + talent * .45 + chem * .06 + gaussian(rng) * .015, .2, .48);
 			credit(sLine, {
 				fga: 1,
 				tpa: 1
@@ -10255,35 +10984,51 @@ function simContest(state, homeId, awayId, rng, opts = {}) {
 					tpm: 1,
 					pts: 3
 				});
+				bump(offHome, 3, `${shooter.first} ${shooter.last} hit a three`);
 				pass();
-			} else if (rng() < clamp(.32 + (sk(on.find((p) => p.pos === "C" || p.pos === "PF") ?? shooter, "finish") - .55) * .16 - def * .06, .22, .4)) putback();
+			} else if (rng() < clamp$1(.32 + (sk(on.find((p) => p.pos === "C" || p.pos === "PF") ?? shooter, "finish") - .55) * .16 - def * .06, .22, .4)) putback();
 			else {
-				if (rng() < .1 && defOn.length) credit(findLine(defL, pickWeighted(rng, defOn, (p) => (p.skills?.defense ?? 60) * (p.pos === "C" ? 2.2 : p.pos === "PF" ? 1.4 : .35)).id), { blk: 1 });
+				if (rng() < .1 && defOn.length) {
+					const big = pickWeighted(rng, defOn, (p) => (p.skills?.defense ?? 60) * (p.pos === "C" ? 2.2 : p.pos === "PF" ? 1.4 : .35));
+					credit(findLine(defL, big.id), { blk: 1 });
+					bump(offHome, 0, `${big.first} ${big.last} blocked ${shooter.first} ${shooter.last}`);
+				}
 				defBoard();
 			}
 			looseFoul();
 			return;
 		}
-		const make2 = clamp(.46 + (sk(shooter, "finish") - .55) * .14 - (def - .58) * .05 + hc * .2 + you * .25 + talent * .7 + chem * .08 + gaussian(rng) * .012, .28, .66);
+		const make2 = clamp$1(.46 + (sk(shooter, "finish") - .55) * .14 - (def - .58) * .05 + hc * .2 + you * .25 + talent * .7 + chem * .08 + gaussian(rng) * .012, .28, .66);
 		credit(sLine, { fga: 1 });
 		if (rng() < make2) {
 			credit(sLine, {
 				fgm: 1,
 				pts: 2
 			});
+			let got = 2;
+			let how = `${shooter.first} ${shooter.last} scored`;
 			if ((sLine?.fta ?? 0) < ftaCap(minutes0) && rng() < .05 + sk(shooter, "finish") * .04) {
-				const ft = clamp(.72 + (sk(shooter, "shoot") - .68) * .5, .52, .88);
+				const ft = clamp$1(.72 + (sk(shooter, "shoot") - .68) * .5, .52, .88);
 				credit(sLine, { fta: 1 });
-				if (rng() < ft) credit(sLine, {
-					ftm: 1,
-					pts: 1
-				});
+				if (rng() < ft) {
+					credit(sLine, {
+						ftm: 1,
+						pts: 1
+					});
+					got = 3;
+					how = `${shooter.first} ${shooter.last} scored and made the free throw`;
+				} else how = `${shooter.first} ${shooter.last} scored and missed the free throw`;
 				foulSomeone();
 			}
+			bump(offHome, got, how);
 			pass();
-		} else if (rng() < clamp(.28 + (sk(on.find((p) => p.pos === "C" || p.pos === "PF") ?? shooter, "finish") - .55) * .12 - def * .04, .16, .4)) putback();
+		} else if (rng() < clamp$1(.28 + (sk(on.find((p) => p.pos === "C" || p.pos === "PF") ?? shooter, "finish") - .55) * .12 - def * .04, .16, .4)) putback();
 		else {
-			if (rng() < .08 && defOn.length) credit(findLine(defL, pickWeighted(rng, defOn, (p) => (p.skills?.defense ?? 60) * (p.pos === "C" ? 2.2 : p.pos === "PF" ? 1.4 : .35)).id), { blk: 1 });
+			if (rng() < .08 && defOn.length) {
+				const big = pickWeighted(rng, defOn, (p) => (p.skills?.defense ?? 60) * (p.pos === "C" ? 2.2 : p.pos === "PF" ? 1.4 : .35));
+				credit(findLine(defL, big.id), { blk: 1 });
+				bump(offHome, 0, `${big.first} ${big.last} blocked ${shooter.first} ${shooter.last}`);
+			}
 			defBoard();
 		}
 		looseFoul();
@@ -10291,10 +11036,13 @@ function simContest(state, homeId, awayId, rng, opts = {}) {
 	let extra = 0;
 	const runHalf = (count) => {
 		for (let i = 0; i < count; i++) {
+			trip += 1;
 			possOnce(true);
+			trip += 1;
 			possOnce(false);
 		}
 	};
+	const firstHalfCut = Math.round(n / 2) * 2;
 	runHalf(Math.round(n / 2));
 	runHalf(n - Math.round(n / 2));
 	const score = (lines) => lines.reduce((s, p) => s + p.pts, 0);
@@ -10303,6 +11051,7 @@ function simContest(state, homeId, awayId, rng, opts = {}) {
 	let minutes = 40;
 	while (hs === as && extra < 3) {
 		extra++;
+		inOt = true;
 		minutes += 5;
 		n += 8;
 		runHalf(4);
@@ -10312,19 +11061,25 @@ function simContest(state, homeId, awayId, rng, opts = {}) {
 	if (hs === as) {
 		if (rng() > .5) {
 			const star = homeLines.slice().sort((a, b) => b.fga - a.fga)[0];
-			if (star) credit(star, {
-				ftm: 1,
-				fta: 1,
-				pts: 1
-			});
+			if (star) {
+				credit(star, {
+					ftm: 1,
+					fta: 1,
+					pts: 1
+				});
+				bump(true, 1, `${star.name} made the free throw`);
+			}
 			hs += 1;
 		} else {
 			const star = awayLines.slice().sort((a, b) => b.fga - a.fga)[0];
-			if (star) credit(star, {
-				ftm: 1,
-				fta: 1,
-				pts: 1
-			});
+			if (star) {
+				credit(star, {
+					ftm: 1,
+					fta: 1,
+					pts: 1
+				});
+				bump(false, 1, `${star.name} made the free throw`);
+			}
 			as += 1;
 		}
 	}
@@ -10332,12 +11087,16 @@ function simContest(state, homeId, awayId, rng, opts = {}) {
 	hs = score(homeLines);
 	as = score(awayLines);
 	if (hs === as) {
-		const star = (rng() > .5 ? homeLines : awayLines).slice().sort((a, b) => b.fga - a.fga)[0];
-		if (star) credit(star, {
-			ftm: 1,
-			fta: 1,
-			pts: 1
-		});
+		const homeSide = rng() > .5;
+		const star = (homeSide ? homeLines : awayLines).slice().sort((a, b) => b.fga - a.fga)[0];
+		if (star) {
+			credit(star, {
+				ftm: 1,
+				fta: 1,
+				pts: 1
+			});
+			bump(homeSide, 1, `${star.name} made the free throw`);
+		}
 	}
 	const homeDone = clampPlayerFta(finishLines(homeLines, minutes), minutes);
 	const awayDone = clampPlayerFta(finishLines(awayLines, minutes), minutes);
@@ -10345,37 +11104,69 @@ function simContest(state, homeId, awayId, rng, opts = {}) {
 	topUp(awayDone, awayDone.reduce((n, p) => n + p.pts, 0));
 	logBoxFaults("sim home", homeDone);
 	logBoxFaults("sim away", awayDone);
+	const homeScore = homeDone.reduce((n, p) => n + p.pts, 0);
+	const awayScore = awayDone.reduce((n, p) => n + p.pts, 0);
 	return {
-		homeScore: homeDone.reduce((n, p) => n + p.pts, 0),
-		awayScore: awayDone.reduce((n, p) => n + p.pts, 0),
+		homeScore,
+		awayScore,
 		poss: n,
 		minutes,
 		homeBox: boxOf(homeDone, homeOrb),
 		awayBox: boxOf(awayDone, awayOrb),
 		homeLines: homeDone,
-		awayLines: awayDone
+		awayLines: awayDone,
+		tape: distillTape(beats, homeScore, awayScore, firstHalfCut, homeName, awayName)
 	};
+}
+function distillTape(beats, finalH, finalA, firstHalfCut, homeName, awayName) {
+	const lastScore = [...beats].reverse().find((b) => b.pts > 0);
+	const scoresOk = Boolean(lastScore && lastScore.hs === finalH && lastScore.as === finalA);
+	const when = (b) => b.ot ? "in overtime" : b.i <= firstHalfCut ? "in the first half" : b.i > firstHalfCut * 1.7 ? "late in the second half" : "in the second half";
+	const say = (b) => scoresOk ? `${b.text} ${when(b)} (${homeName} ${b.hs}, ${awayName} ${b.as})` : `${b.text} ${when(b)}`;
+	const out = [];
+	const halfBeat = [...beats].reverse().find((b) => b.pts > 0 && !b.ot && b.i <= firstHalfCut);
+	if (halfBeat && scoresOk) out.push(`Halftime was ${halfBeat.hs}–${halfBeat.as}.`);
+	let bestPts = 0;
+	let bestFrom = 0;
+	let bestTo = -1;
+	let cur = 0;
+	let side = null;
+	let start = 0;
+	beats.forEach((b, idx) => {
+		if (b.pts <= 0) {
+			cur = 0;
+			side = null;
+			return;
+		}
+		if (b.home === side) cur += b.pts;
+		else {
+			cur = b.pts;
+			side = b.home;
+			start = idx;
+		}
+		if (cur > bestPts) {
+			bestPts = cur;
+			bestFrom = start;
+			bestTo = idx;
+		}
+	});
+	if (bestPts >= 8 && bestTo >= bestFrom) {
+		const slice = beats.slice(bestFrom, bestTo + 1).filter((b) => b.pts > 0);
+		const who = slice[0]?.home ? homeName : awayName;
+		const bits = slice.slice(0, 4).map((b) => b.text).join(", then ");
+		out.push(`${who} put together a ${bestPts}–0 run: ${bits}.`);
+	}
+	const swing = beats.find((b) => b.text.includes("stole") || b.text.includes("blocked"));
+	if (swing) out.push(`${say(swing)}.`);
+	const closing = beats.filter((b) => b.pts > 0).slice(-4);
+	for (const b of closing) out.push(`${say(b)}.`);
+	return out.slice(0, 8);
 }
 function scaleLiveMinutes(lines, minutes) {
 	return finishLines(lines, minutes);
 }
 //#endregion
 //#region src/game/presser.ts
-var REPORTERS = [
-	"Maya Chen, Campus Wire",
-	"Rob Vickers, The Tip",
-	"Ellis Prado, Nightly",
-	"Janelle Ortiz, Conference Notes",
-	"Chris Bohm, Campus Wire",
-	"Priya Nair, the flagship",
-	"Sam Calder, student paper",
-	"Nina Vos, national writer",
-	"TJ Walsh, the call-in",
-	"A.J. Reed, beat writer"
-];
-function kindLabel$1(kind) {
-	return gameKindLabel(kind);
-}
 function youStreak(state, won) {
 	const you = state.playerTeamId;
 	const games = state.results.filter((r) => r.homeId === you || r.awayId === you).slice(-8);
@@ -10387,6 +11178,7 @@ function youStreak(state, won) {
 	}
 	return n;
 }
+/** Box context for postgame mail. There is no press conference. */
 function gameCtx(state, slotId) {
 	const slot = state.schedule.find((g) => g.id === slotId);
 	const res = state.results.find((r) => r.slotId === slotId);
@@ -10447,487 +11239,13 @@ function gameCtx(state, slotId) {
 		adHeat: state.adHeat ?? 55,
 		fanMood: state.fanMood ?? 60,
 		avgMorale,
-		kindLabel: kindLabel$1(slot.kind),
+		kindLabel: gameKindLabel(slot.kind),
 		youTo: (youHome ? recap?.homeTo : recap?.awayTo) ?? 0,
 		oppTo: (youHome ? recap?.awayTo : recap?.homeTo) ?? 0,
 		youOrb: (youHome ? recap?.homeOrb : recap?.awayOrb) ?? 0,
 		oppOrb: (youHome ? recap?.awayOrb : recap?.homeOrb) ?? 0,
 		played: you.wins + you.losses
 	};
-}
-function shouldHoldPresser(state, ctx, rng) {
-	const since = state.week - (state.lastPresserWeek ?? -9);
-	if (ctx.kind === "ncaa" || ctx.kind === "conf-tourney" || ctx.kind === "nit" || ctx.kind === "crown") return true;
-	if (ctx.played <= 1) return true;
-	if (since <= 0) return false;
-	const upsetWin = ctx.won && ctx.youPrestige <= ctx.oppPrestige - 12;
-	const dumped = !ctx.won && ctx.youPrestige >= ctx.oppPrestige + 12;
-	const buzzer = ctx.margin <= 2;
-	const walked = !ctx.won && ctx.margin >= 18;
-	const skid = !ctx.won && ctx.streak >= 3;
-	const heater = ctx.won && ctx.streak >= 5;
-	if (ctx.ot || upsetWin || dumped || buzzer || walked || skid || heater || ctx.kind === "mte" && ctx.margin <= 4) {
-		if (since === 1) return rng() < .4;
-		return rng() < .9;
-	}
-	if (since < 4) return false;
-	return rng() < .1;
-}
-function C(id, label, tone, morale, ad, fans) {
-	return {
-		id,
-		label,
-		tone,
-		morale,
-		ad,
-		fans
-	};
-}
-function shuffle(arr, rng) {
-	const a = arr.slice();
-	for (let i = a.length - 1; i > 0; i--) {
-		const j = Math.floor(rng() * (i + 1));
-		const t = a[i];
-		a[i] = a[j];
-		a[j] = t;
-	}
-	return a;
-}
-function ask(rng, lines) {
-	return pick(rng, lines);
-}
-var HOT = /* @__PURE__ */ new Set([
-	"ot",
-	"upset-win",
-	"upset-loss",
-	"ncaa",
-	"nit",
-	"skid",
-	"loss-blowout",
-	"win-close",
-	"loss-close",
-	"glass",
-	"turnovers",
-	"injured",
-	"star-night",
-	"last-shot"
-]);
-var FACTORIES = [
-	{
-		id: "opener",
-		when: (c) => c.played <= 2,
-		prompt: (c, _s, rng) => ask(rng, [
-			`First real night of the year, ${c.youScore}–${c.oppScore} against ${c.oppName}. What did you learn about this group that you didn't know in October?`,
-			`Opening week, ${c.oppName} in the building. Forget the result for a second — who showed you something?`,
-			`You're ${c.record} after ${c.played === 1 ? "one" : "two"}. Is this the team you thought you had when you left camp?`
-		]),
-		choices: (c) => [
-			C("a", `I learned who competes. ${c.starFirst} did. A couple guys still have to decide if they want to.`, "cool", 3, 2, 2),
-			C("b", "It's one night in November. Don't write a novel. We'll be better in January if we tell the truth on the tape.", "even", 2, 3, 1),
-			C("c", "I liked our toughness. The rest is stuff we can fix by Wednesday.", "even", 3, 2, 2),
-			C("d", "Ask me in February. Opening night is for finding out who needs a kick in the rear.", "hot", 0, 1, 1)
-		]
-	},
-	{
-		id: "win-close",
-		when: (c) => c.won && c.margin <= 4,
-		prompt: (c, _s, rng) => ask(rng, [
-			`${c.oppName} was right there the whole night and you got out ${c.youScore}–${c.oppScore}. Walk me through that last possession.`,
-			`One-possession game. You kept going to ${c.starFirst}${c.starPts >= 16 ? ` — he finished with ${c.starPts}` : ""}. Was that the plan or did the game just go there?`,
-			`You win it ${c.youScore}–${c.oppScore}. Where was this one actually decided? Don't give me "we competed."`
-		]),
-		choices: (c) => [
-			C("a", `I trusted ${c.starFirst}. He's been in the gym when nobody's watching. Tonight he made the play.`, "cool", 5, 2, 3),
-			C("b", "We got a stop and we got a rebound. That's a one-possession game. That's the whole sport.", "even", 2, 3, 1),
-			C("c", "Look, we got a bounce. I'll take a bounce on a night like this. Don't ask me to draw it up again.", "even", 1, 0, 2),
-			C("d", "They blinked. We didn't. That's who I think we are when it gets late.", "hot", -1, 0, 4)
-		]
-	},
-	{
-		id: "loss-close",
-		when: (c) => !c.won && c.margin <= 4,
-		prompt: (c, _s, rng) => ask(rng, [
-			`${c.oppName} made one more play, ${c.oppScore}–${c.youScore}. How do you watch that last trip down back?`,
-			`You had a chance to win it and you didn't. Whose shot was that supposed to be?`,
-			`A one-possession night and you go home ${c.oppScore}–${c.youScore}. What did you tell your guys after that last shot?`
-		]),
-		choices: (c) => [
-			C("a", "That's on me. I'll take the last possession. Those kids competed. I didn't get them a better look.", "cool", 4, 4, 2),
-			C("b", "Credit them. They made a shot. We didn't. We'll be back in the gym in the morning.", "even", 2, 2, 1),
-			C("c", "I'm not getting into the officiating. You all saw it. Next question.", "hot", -1, -5, 3),
-			C("d", `${c.starFirst} will sleep worse than I will, and that's not fair to him. We had other guys who could've made a play.`, "hot", -2, 0, 1)
-		]
-	},
-	{
-		id: "last-shot",
-		when: (c) => c.margin <= 3 && c.keyPlay.length > 20,
-		prompt: (c, _s, rng) => ask(rng, [`People are going to freeze-frame this — ${c.keyPlay.replace(/\.$/, "")}. Was that the game?`, `That sequence at the end is going to be on every show tonight. ${c.keyPlay.replace(/\.$/, "")}. What did you want there?`]),
-		choices: () => [
-			C("a", "One trip doesn't make a night. It just makes a headline. The other 39 minutes mattered too.", "cool", 2, 2, 1),
-			C("b", "Yeah. That was the game. We can dress it up all we want.", "even", 1, 2, 2),
-			C("c", "I liked the fight in it. Whether it bounced our way or not, that's who I want in March.", "hot", 3, 1, 3),
-			C("d", "I'll have a better answer after I watch it twenty times, which I will, tonight.", "even", 2, 3, 0)
-		]
-	},
-	{
-		id: "win-blowout",
-		when: (c) => c.won && c.margin >= 18,
-		prompt: (c, _s, rng) => ask(rng, [
-			`${c.oppName} was never in this one, ${c.youScore}–${c.oppScore}. Do you worry this tells you nothing?`,
-			`You won by ${c.margin}. Half the building was in the parking lot with four minutes left. What did you actually get out of it?`,
-			`A ${c.margin}-point night. Are you hanging anything on this, or is it just Saturday?`
-		]),
-		choices: (c) => [
-			C("a", "One night. The film will still be ugly in spots. I'm not hanging a banner over this.", "cool", 2, 3, 1),
-			C("b", "That's how we should look when we play on time and we share it. I'll take that and then forget it.", "even", 3, 2, 3),
-			C("c", `We're built for this. ${c.oppName} got our best tonight. I don't know if that's a compliment yet.`, "hot", 0, 0, 5),
-			C("d", "Ask me in March. November blowouts don't hang anything. You know that.", "even", 1, 3, 0)
-		]
-	},
-	{
-		id: "loss-blowout",
-		when: (c) => !c.won && c.margin >= 16,
-		prompt: (c, _s, rng) => ask(rng, [
-			`That was a ${c.margin}-point night. People started leaving. Are you still the guy for this job?`,
-			`${c.oppName} walked you, ${c.oppScore}–${c.youScore}. How do you explain a night like that?`,
-			`You got beat by ${c.margin}. Not close. Not unlucky. What was that?`
-		]),
-		choices: () => [
-			C("a", "Yes. We'll get this fixed on the floor, not on a podium. Those kids don't need me pointing at them.", "even", 3, 3, 1),
-			C("b", "I didn't have them ready. That's the only headline I want out of tonight.", "cool", 2, 5, 0),
-			C("c", "Some guys didn't show up. That's the truth. Minutes will look different Saturday.", "hot", -7, -2, -1),
-			C("d", "Ask the people writing the checks if they still believe. I do. I'm not walking from this.", "hot", -1, -6, 2)
-		]
-	},
-	{
-		id: "glass",
-		when: (c) => c.oppOrb >= 8 && c.oppOrb >= c.youOrb + 3,
-		prompt: (c, _s, rng) => ask(rng, [
-			`They had ${c.oppOrb} offensive rebounds. You had ${c.youOrb}. How does that happen on your watch?`,
-			`${c.oppName} lived on the glass tonight. That's not a scheme thing, is it? That's will.`,
-			`Second chances killed you. ${c.oppOrb} offensive boards. What did you tell them at halftime about boxing out?`
-		]),
-		choices: () => [
-			C("a", "That's will. We didn't want the ball. I'll own that. We'll be on the glass at 6 a.m.", "cool", 3, 3, 1),
-			C("b", "We got sealed. We got outworked. I'm not going to dress it up as a coverage issue.", "even", 2, 2, 1),
-			C("c", "If you don't box out, you don't play. That's been the rule since October. Apparently it needs repeating.", "hot", -4, 1, 0),
-			C("d", "They were more physical. That's a Tuesday problem we should've solved in November.", "even", 1, 2, 0)
-		]
-	},
-	{
-		id: "turnovers",
-		when: (c) => c.youTo >= 14 || c.youTo >= 11 && c.youTo >= c.oppTo + 5,
-		prompt: (c, _s, rng) => ask(rng, [
-			`${c.youTo} turnovers. Is that the game, or are we pretending it was something else?`,
-			`You gave it away ${c.youTo} times. ${c.oppName} didn't need to be great. Why are you still turning it over like that?`,
-			`That's ${c.youTo} empty trips. What's going on with the basketball?`
-		]),
-		choices: (c) => [
-			C("a", "It's the game. You can't win if you give them that many extra possessions. That's on me.", "cool", 3, 3, 1),
-			C("b", `We're trying to play fast and we're not taking care of it. ${c.starFirst} wasn't the problem. The other spots were.`, "even", 2, 2, 1),
-			C("c", "Careless. I don't have a nicer word. We'll take it out of some guys' hands.", "hot", -3, 1, 0),
-			C("d", "Some of those were us being young. Some of those were us being stupid. I'm only mad about the stupid ones.", "even", 2, 2, 1)
-		]
-	},
-	{
-		id: "ot",
-		when: (c) => c.ot,
-		prompt: (c, _s, rng) => c.won ? ask(rng, [`Overtime. You'd already played 40 and you still found another five. What did you say in that huddle?`, `You go extra against ${c.oppName} and you win it. Who did you look at when you called that last play?`]) : ask(rng, [`You went to overtime and came up short, ${c.oppScore}–${c.youScore}. What did you tell your guys after that one?`, `Forty-five minutes and you don't have a win. What do you tell a group that just emptied the tank?`]),
-		choices: (c) => c.won ? [
-			C("a", "I told them we'd been here in practice. Tired is a choice. They chose to play.", "cool", 4, 2, 3),
-			C("b", "Keep it simple. Next stop, next rebound. Don't make overtime a speech.", "even", 2, 3, 2),
-			C("c", "I loved it. That's who I want in March — a group that doesn't look at the clock.", "hot", 3, 1, 4),
-			C("d", "We got a bounce. I'll take it. I'm not pretending we were the better team for 45.", "even", 1, 2, 1)
-		] : [
-			C("a", "I hugged every one of them. They emptied the tank. The shot just didn't go.", "cool", 4, 3, 2),
-			C("b", "One extra possession. We'll live with the work. I won't live with feeling sorry.", "even", 2, 2, 1),
-			C("c", "We had our chance in regulation. Overtime just made it public.", "hot", -2, 0, 1),
-			C("d", "I don't send them home with a speech. We didn't make the play. That's the whole night.", "even", 1, 2, 0)
-		]
-	},
-	{
-		id: "star-night",
-		when: (c) => c.starPts >= 24,
-		prompt: (c, _s, rng) => ask(rng, [`${c.star} had ${c.starPts} tonight${c.starReb >= 8 ? ` and ${c.starReb} boards` : c.starAst >= 7 ? ` and ${c.starAst} assists` : ""}. Is this the version you've been waiting on, or was it just a hot night?`, `${c.starFirst} goes for ${c.starPts}. How much of that was you calling his number, and how much was him taking over?`]),
-		choices: (c) => [
-			C("a", `${c.starFirst} competed. That's what I asked. The rest of it — shots, stats — that's him being himself.`, "cool", 5, 1, 3),
-			C("b", "He's been this guy in the gym. It showed up on a night people were watching. I'm happy for him.", "even", 4, 2, 3),
-			C("c", "If he wants nights like this, he has to guard. That's the deal. Tonight he did both.", "hot", 2, 2, 2),
-			C("d", "One night. Don't crown him because he scored. We've got another one Saturday.", "even", 1, 3, 0)
-		]
-	},
-	{
-		id: "quiet-star",
-		when: (c) => !c.won && c.starPts > 0 && c.starPts <= 8 && c.margin <= 12,
-		prompt: (c, _s, rng) => ask(rng, [`${c.star} never got going — ${c.starPts} points. Do you live with that, or does it have to run through somebody else?`, `Your best guy had ${c.starPts}. Was that ${c.oppName}'s defense, or did you not get him the ball?`]),
-		choices: (c) => [
-			C("a", `I'm not burying ${c.starFirst} at a podium. He competed. The looks will be there.`, "cool", 4, 2, 1),
-			C("b", "Whoever is hot. Tonight it wasn't him. We'll live with that as long as we compete.", "even", 1, 2, 1),
-			C("c", "If you want the shot, you have to get downhill and you have to guard. We'll talk about it tomorrow, not here.", "hot", -3, 1, 0),
-			C("d", "I call the play. They run it. Leave the ego. Next question.", "even", 0, 3, -1)
-		]
-	},
-	{
-		id: "home-crowd",
-		when: (c) => c.home && (c.margin <= 5 || !c.won && c.margin >= 14),
-		prompt: (c, _s, rng) => c.won ? ask(rng, [`This building was in it the whole night, ${c.youScore}–${c.oppScore}. What did they just pay to watch?`, `Students were still here with two minutes left. That's not always true. What did you give them?`]) : ask(rng, [`This building waited through ${c.oppName} and it got quiet. What do you say to the ones who stayed?`, `Home night, and people started heading for the tunnel. Did you hear it?`]),
-		choices: (c) => c.won ? [
-			C("a", "A team that will play for this building every night. That's the deal I made with them.", "cool", 3, 2, 5),
-			C("b", "A win they could yell at. That's what they came for. I'm glad we gave them one.", "even", 1, 1, 3),
-			C("c", "They were louder than we were in the first half. We caught up. That's on us, in a good way.", "even", 2, 1, 2),
-			C("d", "If they want nights like this, help us keep these kids here. That's how this year works.", "hot", 0, -3, 4)
-		] : [
-			C("a", "We owe them better. I'll say it to the kids in the morning, not just in here.", "cool", 3, 2, 3),
-			C("b", "They stayed. That matters. We didn't give them enough to stay for.", "even", 2, 1, 2),
-			C("c", "Boos are honest. I'll take honest. Then we go win so they can yell at somebody else.", "hot", 1, 0, 2),
-			C("d", "I heard it. I'm not coaching the last eight minutes of the crowd. I'm coaching the tape.", "even", 0, 2, -1)
-		]
-	},
-	{
-		id: "road",
-		when: (c) => c.site === "away" && (c.margin <= 6 || c.oppPrestige >= c.youPrestige + 8),
-		prompt: (c, _s, rng) => ask(rng, [`Their building, ${c.oppName} on the chest, crowd on you. Did you like how you competed, or are we just saying that?`, `Hostile gym. ${c.youScore}–${c.oppScore}. Who handled that, and who didn't?`]),
-		choices: (c) => [
-			C("a", c.won ? "Loved it. That's a road group. They didn't look for an official or a bounce." : "We competed in stretches. We didn't finish. That's a different thing on the road.", "even", 3, 2, 2),
-			C("b", "The crowd got to a couple of guys. I'll handle that. That's my job, not theirs.", "cool", 2, 3, 1),
-			C("c", "This league doesn't scare us. Next building. Same approach. I mean that.", "hot", 2, 0, 3),
-			C("d", "We came to survive, not to make friends. I liked our toughness. The rest is film.", "even", 1, 2, 1)
-		]
-	},
-	{
-		id: "league",
-		when: (c) => c.conf && c.confW + c.confL >= 3,
-		prompt: (c, _s, rng) => ask(rng, [
-			`You're ${c.confW}–${c.confL} in league play after tonight. At what point is this the team you actually are?`,
-			`Conference game, ${c.youScore}–${c.oppScore}, you're ${c.confW}–${c.confL}. Does that sit right with you?`,
-			`${c.oppName} is a league game you ${c.won ? "had to have" : "couldn't give away"}. Where does that leave you?`
-		]),
-		choices: (c) => [
-			C("a", c.won ? "It sits. League play is a different animal. I like how we responded." : "Not yet. I thought we'd be further along. That's on me, not them.", "even", 2, 2, 3),
-			C("b", "One conference night. There are a lot of them left. I'm not doing the standings at midnight.", "cool", 1, 3, 0),
-			C("c", c.won ? "If you want our gym in February, bring a better team than that." : "We just made February harder. That's the truth.", "hot", 1, 0, 4),
-			C("d", `We're ${c.record} overall. League play will tell us if that's real. We'll find out.`, "even", 1, 2, 1)
-		]
-	},
-	{
-		id: "upset-win",
-		when: (c) => c.won && c.youPrestige <= c.oppPrestige - 12,
-		prompt: (c, _s, rng) => ask(rng, [
-			`Nobody had ${c.schoolName} beating ${c.oppName} tonight. Did you, or are you lying to me?`,
-			`That's a Quad night if it holds. ${c.youScore}–${c.oppScore}. When did you think you could win it?`,
-			`${c.oppName} is supposed to be the better program. You just beat them. What changed?`
-		]),
-		choices: (c) => [
-			C("a", "I did. I told them this morning we could win if we played 40. They believed me.", "cool", 4, 3, 5),
-			C("b", "I don't look at the odds. We were in this one if we shared the ball and we rebounded.", "even", 2, 3, 3),
-			C("c", "We're not a cute story. We're a team. Let people sit with that for a night.", "hot", 1, 1, 5),
-			C("d", "One night. We've got to prove it again Saturday or it's a footnote.", "even", 2, 3, 2)
-		]
-	},
-	{
-		id: "upset-loss",
-		when: (c) => !c.won && c.youPrestige >= c.oppPrestige + 12,
-		prompt: (c, _s, rng) => ask(rng, [
-			`${c.oppName} isn't supposed to do this to you. ${c.oppScore}–${c.youScore}. What happened?`,
-			`You got dumped by a team you should beat. Don't give me "they wanted it more" unless that's actually true.`,
-			`That's going to sit on the resume. How do you explain ${c.oppName} beating you in your own building?`.replace("in your own building", c.home ? "in your own building" : "on a night you were supposed to handle")
-		]),
-		choices: (c) => [
-			C("a", "They wanted it more. I don't have a prettier way to say that. That's on me.", "cool", 3, 4, 1),
-			C("b", "We didn't compete for 40. We competed in stretches. That's how you get beat by a hungry team.", "even", 1, 2, 0),
-			C("c", "I'm not going to sit here and pick my guys apart. We'll handle it internally.", "even", 3, 2, 1),
-			C("d", "That's a loss that sits. It should. If it doesn't bother you, you're in the wrong program.", "hot", -2, 1, 2)
-		]
-	},
-	{
-		id: "mte",
-		when: (c) => c.kind === "mte",
-		prompt: (c, _s, rng) => ask(rng, [`Neutral floor, ${c.oppName} across the hall. Did this week tell you anything about your group you didn't already know?`, `Classic setting, nobody's wearing your colors. ${c.youScore}–${c.oppScore}. Who traveled, and who looked like they wanted to go home?`]),
-		choices: (c) => [
-			C("a", c.won ? "It told me they'll travel. That's not nothing in November." : "It told me we've got work. That's why you play these.", "even", 3, 2, 2),
-			C("b", "I liked the way we prepared. The result is one night in a gym that isn't ours.", "cool", 2, 3, 1),
-			C("c", "This is why you fly. You find out who you are when nobody's wearing your colors in the stands.", "hot", 2, 1, 3),
-			C("d", "Ask me when we get home. These things are loud and they're long. The film will be quieter.", "even", 1, 2, 0)
-		]
-	},
-	{
-		id: "ncaa",
-		when: (c) => c.kind === "ncaa",
-		prompt: (c, _s, rng) => c.won ? ask(rng, [`NCAA Tournament, you beat ${c.oppName} ${c.youScore}–${c.oppScore}. What's the next 48 hours actually look like?`, `You're still dancing. Don't give me "we can play." What was the difference in the last eight minutes?`]) : ask(rng, [`Your year ends tonight against ${c.oppName}, ${c.oppScore}–${c.youScore}. How do you send them off the floor?`, `March is over. What do you want this group to remember besides the last shot?`]),
-		choices: (c) => c.won ? [
-			C("a", "We scout whoever's waiting. I'm proud of them for about an hour. Then it's the next one.", "cool", 3, 3, 3),
-			C("b", "The difference was the glass and the ball. That's March. That's every year.", "even", 4, 2, 4),
-			C("c", "People just found out we can play. Good. I already knew.", "hot", 2, 1, 5),
-			C("d", "One game. I've seen this movie in the first weekend. Don't crown anybody.", "even", 1, 3, 1)
-		] : [
-			C("a", "I told them I loved them. I meant it. That's all I've got at midnight.", "cool", 5, 3, 3),
-			C("b", `Credit ${c.oppName}. They were better tonight. Our year is going to sit with us, and it should.`, "even", 3, 3, 2),
-			C("c", "I'm not doing a eulogy. These kids gave me everything. March is cruel. That's it.", "even", 4, 2, 3),
-			C("d", "We'll be back. I told them that in the handshake line, and I believe it.", "hot", 2, 1, 4)
-		]
-	},
-	{
-		id: "nit",
-		when: (c) => c.kind === "nit" || c.kind === "crown",
-		prompt: (c, _s, rng) => ask(rng, [`You're in the ${c.kindLabel}. People dump on this tournament. What is it to you, tonight, after ${c.youScore}–${c.oppScore}?`, `This isn't the dance you wanted. It's the one you have. How do you get them to play like it matters?`]),
-		choices: () => [
-			C("a", "It's a chance to play. My guys didn't come here to feel sorry for themselves.", "cool", 4, 2, 2),
-			C("b", "We wanted the other dance. We didn't get it. This is the one in front of us.", "even", 2, 3, 1),
-			C("c", "Call it whatever you want. We're trying to win the thing that's in front of us.", "hot", 3, 1, 3),
-			C("d", "I don't rank tournaments. I look at the next scout. That's the whole job tonight.", "even", 1, 2, 0)
-		]
-	},
-	{
-		id: "streak",
-		when: (c) => c.won && c.streak >= 5,
-		prompt: (c, _s, rng) => ask(rng, [`That's ${c.streak} in a row. ${c.record}. Can we call it a run yet, or are you going to dodge that?`, `${c.streak} wins. When does this stop being a hot week and start being who you are?`]),
-		choices: () => [
-			C("a", "We're not allowed to say that. I just said it. Now forget I said it.", "even", 2, 2, 3),
-			C("b", "It's a good stretch. That's all it is. The league doesn't care about your streak.", "cool", 2, 3, 1),
-			C("c", "Yeah, it's a run. These kids have earned the right to feel good for one night.", "hot", 3, 1, 4),
-			C("d", "Ask me after somebody punches us in the mouth. That's when you find out.", "even", 1, 2, 2)
-		]
-	},
-	{
-		id: "skid",
-		when: (c) => !c.won && c.streak >= 3,
-		prompt: (c, _s, rng) => ask(rng, [`That's ${c.streak} losses in a row. ${c.record}. What's actually broken — not "we'll watch the film"?`, `${c.streak} straight. At what point is this a problem you can't coach out of a Tuesday practice?`]),
-		choices: () => [
-			C("a", "We'll watch the film and we'll tell the truth. I'm not ripping guys in here.", "cool", 3, 3, 1),
-			C("b", "We're not making the extra pass and we're not getting back. Those two things. We'll fix both.", "even", 2, 2, 1),
-			C("c", "Effort. I'm tired of dressing it up. We'll see who wants to play Saturday.", "hot", -6, -1, 0),
-			C("d", "I'm still the guy. If that changes, you'll hear it from somebody else, not me begging.", "hot", 0, -3, 1)
-		]
-	},
-	{
-		id: "injured",
-		when: (c) => Boolean(c.injured),
-		prompt: (c, _s, rng) => ask(rng, [`${c.injured} went down${c.injuredPart ? ` — ${c.injuredPart}` : ""}. How bad is it, and don't say "we'll know more tomorrow" if you already know.`, `You lost ${c.injured} tonight. Can you win the next one without him, or is that the year changing?`]),
-		choices: (c) => [
-			C("a", `We'll know more tomorrow. I'm not diagnosing ${c.injured?.split(" ")[0] ?? "him"} in here. That's not fair to the kid.`, "cool", 3, 3, 1),
-			C("b", "Next man up. I hate saying it. It's still the job, and somebody's about to get his chance.", "even", 2, 2, 2),
-			C("c", "I'm worried. I'd be lying if I said I wasn't. He's a big part of what we do.", "even", 3, 1, 2),
-			C("d", "I don't talk injuries. Ask the trainer. I've got a game to get ready for.", "hot", 0, 1, -1)
-		]
-	},
-	{
-		id: "freshman",
-		when: (c) => Boolean(c.freshman) && c.week <= 6 && c.played <= 8,
-		prompt: (c, _s, rng) => ask(rng, [`${c.freshman} is still a freshman. How much leash does the kid have before you sit him?`, `You're playing ${c.freshman} like he's been here. Has he earned that, or are you out of options?`]),
-		choices: () => [
-			C("a", "As much as he earns. Freshman is a class, not a minute restriction.", "cool", 3, 2, 2),
-			C("b", "We're going to play him. We're also going to protect him. Those two things can both be true.", "even", 2, 3, 1),
-			C("c", "If he's the best guy, he plays. I watch the tape, not the class year.", "hot", 2, 1, 2),
-			C("d", "Ask me in February. These kids look different after Christmas. Every year.", "even", 1, 2, 0)
-		]
-	},
-	{
-		id: "nil",
-		when: (c) => c.nil && !c.won && c.week >= 12,
-		prompt: (c, _s, rng) => ask(rng, [`Donors are going to ask about the NIL pool after a night like ${c.oppName}. What do you actually tell those people?`, `Nights like this, the money people get loud. Is this a roster problem or a coaching problem?`]),
-		choices: () => [
-			C("a", "Help us keep the guys who already bled for this place. That's what I tell them.", "cool", 4, 2, 3),
-			C("b", "Write the checks and we'll keep the talent. I'm not going to pretend it isn't that way now.", "hot", 1, -4, 4),
-			C("c", "Development still beats a contract. I believe that. I also live in this year, not 1998.", "even", 3, 2, 1),
-			C("d", "That's above my pay grade. I coach whoever walks in the gym tomorrow.", "even", 2, 4, 0)
-		]
-	},
-	{
-		id: "ad-watch",
-		when: (c) => c.adHeat >= 70 && (!c.won || c.streak >= 3),
-		prompt: (c, _s, rng) => ask(rng, [`The AD's standing in the back. Can you still do this job, or is that a stupid question tonight?`, `This is the part of the year where people start making calls. What does that office need to hear from you?`]),
-		choices: () => [
-			C("a", "I was hired to build this. I'm still building it. That's the only answer I've got.", "even", 2, 4, 1),
-			C("b", "Win the next one and this conversation gets quieter. I know how this works.", "even", 1, 2, 2),
-			C("c", "If they want a new voice, they know where to find me. I'm not begging at a podium.", "hot", -2, -6, 2),
-			C("d", "March is built on the floor, not in front of cameras. Trust the work or don't.", "cool", 2, 4, 2)
-		]
-	},
-	{
-		id: "fans",
-		when: (c) => c.fanMood <= 42 && !c.won || c.fanMood >= 78 && c.won && c.margin <= 8,
-		prompt: (c, _s, rng) => c.fanMood <= 42 ? ask(rng, [`The fan base is restless. ${c.record}. What do they need to hear from you that isn't a slogan?`, `People are done being patient. What do you actually owe them after ${c.oppName}?`]) : ask(rng, [`They're with you right now. What do you say back without sounding like a press release?`, `This place was loud for you tonight. Do you feel that, or is that just us in the back?`]),
-		choices: (c) => c.fanMood <= 42 ? [
-			C("a", "Stay with us. This group will give you a reason. I believe that or I wouldn't say it.", "cool", 2, 2, 5),
-			C("b", "Boos don't bother me. Losing does. I'll take the boos if we get the next one.", "hot", 0, 1, 1),
-			C("c", "We're going to play hard and we're going to share it. If that's not enough, I can't help you.", "even", 2, 2, 3),
-			C("d", "If you're here for a fairy tale, you're in the wrong gym. Come back anyway.", "hot", -1, -1, -2)
-		] : [
-			C("a", "Thank you. That's not nothing. Play for people like that and you sleep better.", "cool", 3, 2, 4),
-			C("b", "They showed up. We owed them a night. Glad we paid a little of it back.", "even", 2, 1, 3),
-			C("c", "Keep coming. We'll keep playing like this is our building, because it is.", "hot", 2, 1, 4),
-			C("d", "Enjoy it. Don't get used to pretty. This league doesn't do pretty for long.", "even", 1, 2, 2)
-		]
-	},
-	{
-		id: "morale",
-		when: (c) => c.avgMorale < 52 && !c.won,
-		prompt: (_c, _s, rng) => ask(rng, [`Body language looked dead from the floor. How do you get this group back without ripping them on camera?`, `They looked like a group that didn't want to be out there. Is that on you?`]),
-		choices: () => [
-			C("a", "Closed doors. Honest film. Then we go back to work. I'm not doing it in front of you.", "cool", 5, 3, 1),
-			C("b", "I believe in every guy who played tonight. Some of them need to hear it twice, and I'll say it when the cameras are gone.", "cool", 6, 1, 2),
-			C("c", "Minutes will change if the tape says so. That's how you keep a team honest.", "hot", -3, 2, 0),
-			C("d", "Some of them should be nervous. Comfortable teams look like that. I won't let it sit.", "hot", -8, 0, -1)
-		]
-	}
-];
-var FALLBACK = [{
-	id: "win-night",
-	when: (c) => c.won,
-	prompt: (c, _s, rng) => ask(rng, [`You beat ${c.oppName} ${c.youScore}–${c.oppScore}. What actually showed up on the floor that you can take into the next one?`, `${c.youScore}–${c.oppScore}. Don't give me "we competed." Where was this one won?`]),
-	choices: (c) => [
-		C("a", `The guys who sat. The ones who checked in and didn't shrink. ${c.starFirst} set the tone, but it wasn't a one-man night.`, "cool", 5, 2, 2),
-		C("b", "We shared it and we got on the glass. That's a win you can build on. That's all it is.", "even", 3, 2, 2),
-		C("c", "They doubted us all week. Let 'em keep talking. I liked our edge.", "hot", 0, -1, 5),
-		C("d", "I had them ready. Don't make it bigger than Saturday.", "even", -2, 1, 1)
-	]
-}, {
-	id: "loss-night",
-	when: (c) => !c.won,
-	prompt: (c, _s, rng) => ask(rng, [`${c.oppName} had the last word, ${c.oppScore}–${c.youScore}. Where did it get away from you?`, `You go home ${c.oppScore}–${c.youScore}. What's the first thing you clean up, specifically?`]),
-	choices: () => [
-		C("a", "That's on me. We'll watch it, we'll tell the truth, and then we go back to work.", "cool", 3, 3, 1),
-		C("b", "The extra pass and the glass. Two things. We'll be on those two things tomorrow.", "even", 2, 1, 2),
-		C("c", "I'm not talking about the officials. You saw it. I'm talking about us.", "hot", 0, -4, 2),
-		C("d", "The tape was honest. Some minutes are going to move.", "hot", -4, 1, 0)
-	]
-}];
-function buildPresser(state, slotId) {
-	const ctx = gameCtx(state, slotId);
-	if (!ctx) return null;
-	const rng = mulberry32(state.seed ^ hashString(slotId) ^ state.week * 911 ^ (state.recentQuestionIds?.length ?? 0) ^ 81);
-	const recent = new Set(state.recentQuestionIds ?? []);
-	const matched = FACTORIES.filter((f) => f.when(ctx, state));
-	const fresh = matched.filter((f) => !recent.has(f.id));
-	let pool = (fresh.length >= 2 ? fresh : matched.length ? matched : FALLBACK.filter((f) => f.when(ctx, state))).filter((f) => f.when(ctx, state));
-	if (pool.length < 2) {
-		const extra = FALLBACK.filter((f) => f.when(ctx, state) && !pool.some((p) => p.id === f.id));
-		pool = [...pool, ...extra];
-	}
-	if (!pool.length) return null;
-	const hot = shuffle(pool.filter((f) => HOT.has(f.id)), rng);
-	const rest = shuffle(pool.filter((f) => !HOT.has(f.id)), rng);
-	const n = ctx.kind === "ncaa" || ctx.kind === "conf-tourney" || ctx.kind === "nit" || ctx.kind === "crown" || ctx.ot ? rng() < .55 ? 3 : 2 : 2;
-	const take = [...hot, ...rest].slice(0, Math.min(n, pool.length));
-	const reporters = shuffle(REPORTERS, rng);
-	const questions = take.map((f, i) => ({
-		id: f.id,
-		prompt: f.prompt(ctx, state, rng),
-		from: reporters[i % reporters.length],
-		choices: shuffle(f.choices(ctx, state, rng), rng)
-	}));
-	if (!questions.length) return null;
-	const place = ctx.site === "home" ? "home" : ctx.site === "away" ? "on the road" : "neutral floor";
-	return {
-		gameId: slotId,
-		questions,
-		asked: 0,
-		log: [],
-		kicker: `${ctx.schoolName} ${ctx.youScore}, ${ctx.oppName} ${ctx.oppScore} · ${ctx.kindLabel} · ${place}${ctx.ot ? " · OT" : ""}`
-	};
-}
-function rememberQuestions(state, presser) {
-	return [...presser.questions.map((q) => q.id), ...state.recentQuestionIds ?? []].slice(0, 16);
 }
 //#endregion
 //#region src/game/mail.ts
@@ -10938,81 +11256,33 @@ function mail(partial) {
 	};
 }
 function starFirst(state) {
-	return state.players.filter((x) => x.teamId === state.playerTeamId).sort((a, b) => b.ovr - a.ovr)[0]?.first ?? "the kids";
+	return state.players.filter((x) => x.teamId === state.playerTeamId).sort((a, b) => b.ovr - a.ovr)[0]?.first ?? "the guys";
 }
 function afterGameMail(state, ctx) {
+	if (!worthALetter(ctx)) return state.mail;
 	const rng = mulberry32(state.seed ^ hashString(ctx.slotId) ^ 2989);
-	const out = [];
-	if (rng() < .42) out.push(adNote(state, ctx, rng));
-	if (rng() < .34) out.push(fanNote(state, ctx, rng));
-	if (rng() < .3) out.push(boosterNote(state, ctx, rng));
-	return [...out, ...state.mail].slice(0, 40);
+	return [ctx.kind === "ncaa" || ctx.margin >= 18 || Math.abs(ctx.streak) >= 4 ? adNote(state, ctx, rng) : ctx.home ? fanNote(state, ctx, rng) : boosterNote(state, ctx, rng), ...state.mail].slice(0, 16);
+}
+function worthALetter(ctx) {
+	if (ctx.kind === "ncaa" || ctx.kind === "nit" || ctx.kind === "crown" || ctx.kind === "conf-tourney") return true;
+	if (ctx.margin >= 18) return true;
+	if (Math.abs(ctx.streak) >= 4) return true;
+	if (ctx.won && ctx.oppPrestige - ctx.youPrestige >= 14) return true;
+	if (!ctx.won && ctx.youPrestige - ctx.oppPrestige >= 14) return true;
+	return false;
 }
 function weeklyStakeholderMail(state, week) {
+	if (week < 4 || week % 4 !== 0) return state.mail;
+	if (state.mail.some((m) => m.week === week)) return state.mail;
 	const rng = mulberry32(state.seed ^ week * 4243);
-	if (week < 2) return state.mail;
-	if (rng() > .55) return state.mail;
 	const t = state.teams[state.playerTeamId];
 	const pct = t.wins + t.losses ? t.wins / (t.wins + t.losses) : .5;
-	const who = pick(rng, [
+	const who = pick$1(rng, [
 		"ad",
 		"fan",
 		"booster"
 	]);
-	return [who === "ad" ? adWeekly(state, pct, week, rng) : who === "fan" ? fanWeekly(state, pct, week, rng) : boosterWeekly(state, pct, week, rng), ...state.mail].slice(0, 40);
-}
-function presserFollowup(state, ad, fans, morale) {
-	const rng = mulberry32(state.seed ^ state.week * 17 ^ ad * 9 + fans * 5 + morale);
-	const first = coachFirst(state);
-	const helen = adFirst(state);
-	if (ad >= 3) return mail({
-		id: `press-${state.week}-${state.results.length}-ad`,
-		from: adFrom(state),
-		subject: pick(rng, [
-			"that podium",
-			"heard you upstairs",
-			"thanks"
-		]),
-		body: pick(rng, [
-			`${first},\n\nI was standing in the back. You sounded like yourself. That's all I ever ask after a night like that.\n\nSleep. We'll talk tomorrow.\n\n${helen}`,
-			`Hey — the trustees texted me before I even sat down. They liked how you talked about the kids. Keep doing that.\n\n${helen}`,
-			`${first}, I know those questions are dumb. You didn't make them dumber. Appreciate it.\n\n${helen}`
-		]),
-		week: state.week,
-		tone: "good"
-	});
-	if (ad <= -3) return mail({
-		id: `press-${state.week}-${state.results.length}-ad`,
-		from: adFrom(state),
-		subject: pick(rng, [
-			"we need to talk",
-			"my phone's still buzzing",
-			"not on TV"
-		]),
-		body: pick(rng, [
-			`${first},\n\nI spent an hour walking people down after that presser. Next time you're mad, call me. Don't take it out on a kid with a recorder.\n\nCome by in the morning.\n\n${helen}`,
-			`Listen. I like that you care. I don't like watching it on my phone at 11:40.\n\nWe'll get through this. Just... breathe next time.\n\n${helen}`,
-			`${first} — that clip is already in group chats. I can live with a bad night. I can't live with you picking a fight we don't need.\n\n${helen}`
-		]),
-		week: state.week,
-		tone: "bad"
-	});
-	return mail({
-		id: `press-${state.week}-${state.results.length}-ad`,
-		from: adFrom(state),
-		subject: pick(rng, [
-			"fine",
-			"got it",
-			"on to the next"
-		]),
-		body: pick(rng, [
-			`${first}, I heard it. Nothing I have to clean up. Win one so nobody asks me about quotes.\n\n${helen}`,
-			`That was fine. See you at shootaround.\n\n${helen}`,
-			`Noted. I'm more worried about the scoreboard than the mic. You should be too.\n\n${helen}`
-		]),
-		week: state.week,
-		tone: "even"
-	});
+	return [who === "ad" ? adWeekly(state, pct, week, rng) : who === "fan" ? fanWeekly(state, pct, week, rng) : boosterWeekly(state, pct, week, rng), ...state.mail].slice(0, 16);
 }
 function adNote(state, ctx, rng) {
 	const first = coachFirst(state);
@@ -11021,15 +11291,15 @@ function adNote(state, ctx, rng) {
 	if (ctx.won && ctx.margin >= 12) return mail({
 		id: `adg-${ctx.slotId}`,
 		from: adFrom(state),
-		subject: pick(rng, [
-			"that's us",
-			"suite was loud",
-			"more of that"
+		subject: pick$1(rng, [
+			`beat ${ctx.oppName}`,
+			"good win",
+			`${ctx.youScore}-${ctx.oppScore}`
 		]),
-		body: pick(rng, [
-			`${first},\n\nI had a trustee next to me who hasn't smiled since October. He smiled tonight. ${ctx.youScore}–${ctx.oppScore} against ${ctx.oppName}. ${kid} looked like he belonged on TV.\n\nDon't let this be a one-off. I can raise money on nights like this.\n\n${helen}`,
-			`Hey. That was fun. I almost forgot what that felt like.\n\nGrab breakfast if you want. Or don't — you've earned a morning.\n\n${helen}`,
-			`${first} — the students stayed. That's the night.\n\n${helen}`
+		body: pick$1(rng, [
+			`${first},\n\n${ctx.youScore}-${ctx.oppScore} against ${ctx.oppName}. ${kid} played well. That's a game we can raise money off of. Let's get another one.\n\n${helen}`,
+			`${first} — students stayed after. ${ctx.record}. Nice win.\n\n${helen}`,
+			`That was a good night. ${ctx.youScore}-${ctx.oppScore}. Come by the office tomorrow if you want to talk about the rotation.\n\n${helen}`
 		]),
 		week: ctx.week,
 		tone: "good"
@@ -11037,15 +11307,15 @@ function adNote(state, ctx, rng) {
 	if (!ctx.won && ctx.margin >= 12) return mail({
 		id: `adg-${ctx.slotId}`,
 		from: adFrom(state),
-		subject: pick(rng, [
-			"rough one",
-			"call me tomorrow",
-			"I'm getting questions"
+		subject: pick$1(rng, [
+			`loss to ${ctx.oppName}`,
+			"we need to talk",
+			`${ctx.record}`
 		]),
-		body: pick(rng, [
-			`${first},\n\nI'm going to get asked about this at breakfast and "we'll watch the film" is not going to fly. ${ctx.record} after ${ctx.oppName}. I need something that looks like a plan.\n\nI'm not panicking. I just need you not to either.\n\n${helen}`,
-			`Sat in the car for a minute before I started it. That's never a good sign.\n\nCome by when you've had coffee. We'll figure out what to tell people.\n\n${helen}`,
-			`${first} — a ${ctx.margin}-point night in this league puts my job next to yours. I still like our chances. Fix whatever broke.\n\n${helen}`
+		body: pick$1(rng, [
+			`${first},\n\n${ctx.youScore}-${ctx.oppScore} to ${ctx.oppName}. I'm going to get asked about it tomorrow. I need a real answer, not "we'll watch film."\n\n${helen}`,
+			`${first} — that was a ${ctx.margin}-point loss. ${ctx.record}. Come by in the morning.\n\n${helen}`,
+			`I'm not firing anyone tonight. I do need to know what you're changing before the next game.\n\n${helen}`
 		]),
 		week: ctx.week,
 		tone: "bad"
@@ -11053,15 +11323,15 @@ function adNote(state, ctx, rng) {
 	if (ctx.won) return mail({
 		id: `adg-${ctx.slotId}`,
 		from: adFrom(state),
-		subject: pick(rng, [
-			"bank it",
-			"needed that",
-			"on to Saturday"
+		subject: pick$1(rng, [
+			"got the win",
+			`${ctx.record}`,
+			"next one"
 		]),
-		body: pick(rng, [
-			`${first},\n\nA win is a win. I don't care if it was pretty. ${ctx.record}. Get some sleep.\n\n${helen}`,
-			`Hey — nobody in the suite is complaining. That's my favorite kind of night. See you at practice.\n\n${helen}`,
-			`Good. Now the next one. Don't make me write a speech.\n\n${helen}`
+		body: pick$1(rng, [
+			`${first},\n\nWin is a win. ${ctx.record}. Get some sleep.\n\n${helen}`,
+			`${ctx.youScore}-${ctx.oppScore}. I'll take it. See you at practice.\n\n${helen}`,
+			`Good. On to the next one.\n\n${helen}`
 		]),
 		week: ctx.week,
 		tone: "good"
@@ -11069,15 +11339,15 @@ function adNote(state, ctx, rng) {
 	return mail({
 		id: `adg-${ctx.slotId}`,
 		from: adFrom(state),
-		subject: pick(rng, [
-			"one night",
-			"we'll live",
-			"get the next"
+		subject: pick$1(rng, [
+			`${ctx.oppName}`,
+			"tough one",
+			ctx.record
 		]),
-		body: pick(rng, [
-			`${first},\n\n${ctx.record} after ${ctx.oppName}. Get the next one and this stays a footnote. I didn't love the body language, but I'm not writing a speech about it.\n\n${helen}`,
-			`I know you already hate the film. I won't pile on. Text me if you need cover with anyone.\n\n${helen}`,
-			`We're still in it if you say we are. Say it to them, not to me.\n\n${helen}`
+		body: pick$1(rng, [
+			`${first},\n\n${ctx.record} after ${ctx.oppName}. Not the result we wanted. Get the next one.\n\n${helen}`,
+			`I watched it. I'm not going to pile on. Text me if you need me to handle anyone.\n\n${helen}`,
+			`${ctx.youScore}-${ctx.oppScore}. We're fine if the next one looks better.\n\n${helen}`
 		]),
 		week: ctx.week,
 		tone: "even"
@@ -11088,15 +11358,15 @@ function fanNote(state, ctx, rng) {
 	if (ctx.won) return mail({
 		id: `fang-${ctx.slotId}`,
 		from,
-		subject: pick(rng, [
-			"that's our team",
-			"still buzzing",
-			"brought my kid"
+		subject: pick$1(rng, [
+			"good win",
+			"that was fun",
+			`${ctx.youScore}-${ctx.oppScore}`
 		]),
-		body: pick(rng, [
-			`took my nephew tonight. he's nine. he would not sit down after ${ctx.oppName}. that's all i wanted to say. see you saturday.`,
-			`${ctx.youScore}-${ctx.oppScore}. I was hoarse in the parking lot. Don't forget who fills that place when it's raining.`,
-			`y'all sent them out quiet. I haven't felt that in a while. thank you.`
+		body: pick$1(rng, [
+			`Took my nephew. He didn't sit down after we beat ${ctx.oppName}. Thanks for that.`,
+			`${ctx.youScore}-${ctx.oppScore}. Place was loud. See you next home game.`,
+			`They looked like they wanted to be there. That's all I wanted. Thanks coach.`
 		]),
 		week: ctx.week,
 		tone: "good"
@@ -11104,15 +11374,15 @@ function fanNote(state, ctx, rng) {
 	return mail({
 		id: `fang-${ctx.slotId}`,
 		from,
-		subject: pick(rng, [
-			"we showed up",
-			"get mad",
-			"long drive home"
+		subject: pick$1(rng, [
+			"tough loss",
+			"we were there",
+			`${ctx.oppName}`
 		]),
-		body: pick(rng, [
-			`I've sat through worse. Just don't make us sit through people who don't care. ${ctx.oppName} wanted it more and everybody in my row knew it.`,
-			`boos are honest, coach. take them personally. then go win one so I can brag at work again.`,
-			`dragged four people tonight. two of them asked if this is how it's gonna be. I didn't have a good answer.`
+		body: pick$1(rng, [
+			`I've seen worse. ${ctx.oppName} just wanted it more tonight. Please don't let that become a habit.`,
+			`Booing isn't personal. It means we showed up and the team didn't. Win one so I can stop explaining it at work.`,
+			`Brought four people. Two of them asked if it's always like this. I didn't have an answer.`
 		]),
 		week: ctx.week,
 		tone: "bad"
@@ -11124,19 +11394,19 @@ function boosterNote(state, ctx, rng) {
 	if (ctx.won) return mail({
 		id: `bstr-${ctx.slotId}`,
 		from,
-		subject: pick(rng, [
-			"that's fundable",
-			"easy yes",
-			"we're in"
+		subject: pick$1(rng, [
+			"good night for us",
+			"people are calling",
+			`${ctx.oppName}`
 		]),
-		body: nil ? pick(rng, [
-			`Coach — nights like ${ctx.oppName} make the phone ring. Keep those kids happy and the checks stay easy. Call me if you need me to talk to somebody.`,
-			`I can sell this. Don't go cheap in the portal if we're actually trying. Proud of the group.`,
-			`Had a couple sit down with me after. They're in. Just keep putting a team on the floor that looks like they want to be here.`
-		]) : pick(rng, [
-			`That's the kind of night that fills the golf outing. Thank you. Tell the kids I said hey.`,
-			`I wrote a check in 1998. Nights like this are why I still do. See you at the next one.`,
-			`The tip-off club is happy. I'm happy. Keep us that way.`
+		body: nil ? pick$1(rng, [
+			`Coach — after ${ctx.oppName}, people are calling. I'll keep the checks coming if the roster stays happy. Text me if you need a name.`,
+			`I can raise money off that win. If you're looking in the portal, don't go cheap.`,
+			`A couple of people sat with me after the game. They're in. Just keep playing like that.`
+		]) : pick$1(rng, [
+			`That's a night that helps the golf outing. Tell the guys I said thanks.`,
+			`I've been writing checks here a long time. Nights like ${ctx.oppName} are why. See you at the next one.`,
+			`Tip-off club is happy. So am I. Keep winning.`
 		]),
 		week: ctx.week,
 		tone: "good"
@@ -11144,19 +11414,19 @@ function boosterNote(state, ctx, rng) {
 	return mail({
 		id: `bstr-${ctx.slotId}`,
 		from,
-		subject: pick(rng, [
+		subject: pick$1(rng, [
 			"harder to raise",
-			"we're still here",
-			"rough sell"
+			"still here",
+			`${ctx.oppName}`
 		]),
-		body: nil ? pick(rng, [
-			`It's hard to ask people for money after a night like ${ctx.oppName}. I'm not walking. I just need something I can say besides "wait till March."`,
-			`We're not a charity, coach. Put a team out there that looks invested and I'll do the rest.`,
-			`Had to talk two people off the ledge tonight. Help me out next week.`
-		]) : pick(rng, [
-			`The golf outing got quieter. I've been in this building since the old gym. This group looked soft. I still love you. Fix it.`,
-			`We'll still show up. It would help if they did too.`,
-			`I'm not writing you off. I am tired of apologizing at lunch.`
+		body: nil ? pick$1(rng, [
+			`It's hard to ask for money after a loss to ${ctx.oppName}. I'm not going anywhere. I just need something to say besides "wait until March."`,
+			`I'm not asking for a miracle. I need a team that looks like it cares, and I'll handle the checks.`,
+			`I had to calm two people down after the game. Help me out next week.`
+		]) : pick$1(rng, [
+			`The golf outing was quiet. That group looked flat. I still support you. Fix it.`,
+			`We'll be at the next one. It would help if they played like they wanted to be there.`,
+			`I'm not done with this team. I am tired of explaining the losses at lunch.`
 		]),
 		week: ctx.week,
 		tone: "bad"
@@ -11171,20 +11441,20 @@ function adWeekly(state, pct, week, rng) {
 	return mail({
 		id: `adw-${week}`,
 		from: adFrom(state),
-		subject: tone === "good" ? pick(rng, [
+		subject: tone === "good" ? pick$1(rng, [
 			"good week",
-			"people believe",
+			`${t.wins}-${t.losses}`,
 			"keep going"
-		]) : tone === "bad" ? pick(rng, [
+		]) : tone === "bad" ? pick$1(rng, [
 			"we need to talk",
-			"my week",
-			"we need a stretch"
-		]) : pick(rng, [
+			`${t.wins}-${t.losses}`,
+			"need a win"
+		]) : pick$1(rng, [
 			"checking in",
-			"still in it",
+			`${t.wins}-${t.losses}`,
 			"hey"
 		]),
-		body: tone === "good" ? pick(rng, [`${first},\n\n${t.wins}-${t.losses}. Donors are picking up the phone again. ${kid} is the one they mention first.\n\nKeep the locker room on this side of happy.\n\n${helen}`, `Had three people stop me in the hallway who used to avoid me. That's on you. Don't give them a reason to start a new conversation.\n\n${helen}`]) : tone === "bad" ? pick(rng, [`${first},\n\n${t.wins}-${t.losses} is not why we hired you. I'm taking meetings I don't want to take. Win the next one. I still want it to be you.\n\n${helen}`, `This is still your job. Act like you want to keep it. Call me tonight if you need to vent before you talk to the kids.\n\n${helen}`]) : pick(rng, [`${first},\n\n${t.wins}-${t.losses}. We're treading water. Don't start sinking. Keep the locker room together.\n\n${helen}`, `No panic, no parade. Just basketball. I'm here if you need cover.\n\n${helen}`]),
+		body: tone === "good" ? pick$1(rng, [`${first},\n\n${t.wins}-${t.losses}. Donors are calling again. ${kid} is the name they bring up. Keep the locker room in a good place.\n\n${helen}`, `${first} — people who used to dodge me are saying hello. That's because of the record. Don't lose that.\n\n${helen}`]) : tone === "bad" ? pick$1(rng, [`${first},\n\n${t.wins}-${t.losses} is not what we hired you to do. I'm in meetings I don't want to be in. Win the next one.\n\n${helen}`, `${first} — this is still your job. Call me if you need to talk before you talk to the team.\n\n${helen}`]) : pick$1(rng, [`${first},\n\n${t.wins}-${t.losses}. We're stuck in the middle. Keep the locker room together and win a couple.\n\n${helen}`, `No panic. ${t.wins}-${t.losses}. I'm here if you need me to handle someone.\n\n${helen}`]),
 		week,
 		tone
 	});
@@ -11195,20 +11465,20 @@ function fanWeekly(state, pct, week, rng) {
 	return mail({
 		id: `fanw-${week}`,
 		from,
-		subject: tone === "good" ? pick(rng, [
-			"we're in",
-			"love this group",
-			"saturday can't come"
-		]) : tone === "bad" ? pick(rng, [
+		subject: tone === "good" ? pick$1(rng, [
+			"this team is fun",
+			"see you Saturday",
+			"good week"
+		]) : tone === "bad" ? pick$1(rng, [
 			"show up",
-			"same old",
-			"empty seats"
-		]) : pick(rng, [
+			"empty seats",
+			"come on"
+		]) : pick$1(rng, [
 			"still here",
-			"from the cheap seats",
+			"Saturday",
 			"hey coach"
 		]),
-		body: tone === "good" ? pick(rng, [`this team is fun again. please don't overcoach it. i already bought a new shirt.`, `the student line wrapped around the bookstore. that's on you. keep playing like you mean it.`]) : tone === "bad" ? pick(rng, [`we're not asking for perfect. we're asking for a pulse. i can get this on the radio for free.`, `the walkouts started in the second half last time. that's a choice. we still want to believe.`]) : pick(rng, [`we'll be there saturday. play like you remember who fills the seats.`, `we'll be there. play like you know our names even if you don't.`]),
+		body: tone === "good" ? pick$1(rng, [`This team is fun. I already bought a new shirt. Don't mess it up.`, `The student line was around the bookstore. Keep playing like this.`]) : tone === "bad" ? pick$1(rng, [`We're not asking for perfect. We're asking them to look like they care.`, `People started leaving in the second half. We'll still be there if they start playing.`]) : pick$1(rng, [`We'll be there Saturday. Just play hard.`, `Still coming to the games. A win would help.`]),
 		week,
 		tone
 	});
@@ -11220,20 +11490,20 @@ function boosterWeekly(state, pct, week, rng) {
 	return mail({
 		id: `bstrw-${week}`,
 		from,
-		subject: tone === "good" ? pick(rng, [
-			"easy yes",
+		subject: tone === "good" ? pick$1(rng, [
+			"easy week",
 			"funds are moving",
 			"proud"
-		]) : tone === "bad" ? pick(rng, [
+		]) : tone === "bad" ? pick$1(rng, [
 			"harder ask",
-			"waiting",
+			"need a win",
 			"help me out"
-		]) : pick(rng, [
+		]) : pick$1(rng, [
 			"checking in",
-			"still writing",
+			"still writing checks",
 			"from the club"
 		]),
-		body: tone === "good" ? nil ? pick(rng, [`The collective had a good week because you did. Keep the roster happy and I'll keep making calls.`, `I can talk to people when the team looks like a program. It looks like a program. Thank you.`]) : pick(rng, [`The tip-off club is in. Don't waste it. Tell the kids dinner's on us after the next home one.`, `Wins make the annual drive easy. I actually enjoyed asking this week.`]) : tone === "bad" ? nil ? pick(rng, [`People don't write checks for .400 basketball. I'm not out. I'm tired of selling hope.`, `Had a meeting that went quiet. Help me have a different one next week.`]) : pick(rng, [`The boosters are restless. A win would help my next meeting. I'm still in your corner.`, `I've been patient. Patience has a season too. Love you anyway.`]) : pick(rng, [`We'll keep doing our part. Do yours on the floor. No panic.`, `We'll keep showing up. You keep putting a team on the floor. That's it.`]),
+		body: tone === "good" ? nil ? pick$1(rng, [`Good week for the collective because it was a good week for the team. I'll keep calling people if the roster stays happy.`, `It's easier to raise money when the team looks like a real program. It does right now. Thanks.`]) : pick$1(rng, [`Tip-off club is in. Dinner is on us after the next home game.`, `Wins make the annual drive easy. I actually liked asking this week.`]) : tone === "bad" ? nil ? pick$1(rng, [`People don't write checks for a losing team. I'm still in. I'm tired of selling "wait until March."`, `The meeting was quiet. A win next week would help.`]) : pick$1(rng, [`Boosters are getting restless. A win would help my next meeting. I'm still with you.`, `I've been patient. A win would make the next ask a lot easier.`]) : pick$1(rng, [`We'll keep doing our part. You handle the games.`, `Still showing up. Still writing checks. Win a few.`]),
 		week,
 		tone
 	});
@@ -11292,8 +11562,8 @@ function classShape(state) {
 }
 function classShapeLine(state) {
 	const rows = classShape(state);
-	if (!rows.some((r) => r.count > 0)) return "Class shape: no pledges yet. The first two at a spot are clean. A third at the same position is class pressure.";
-	return `Class shape: ${rows.map((r) => `${r.pos} ${r.count}${r.penalty ? ` (pressure −${r.penalty})` : ""}`).join(", ")}.`;
+	if (!rows.some((r) => r.count > 0)) return "No commits yet. Two players at one position is fine. A third makes it harder to pitch that spot.";
+	return `Class: ${rows.map((r) => `${r.pos} ${r.count}${r.penalty ? ` (crowded)` : ""}`).join(", ")}.`;
 }
 function rivalBattle(state, r, yours) {
 	const rivals = new Set(yourRivals(state.playerTeamId).map((x) => x.oppId));
@@ -11306,7 +11576,7 @@ function rivalBattle(state, r, yours) {
 		};
 	}
 	if (!best || best.n < yours - 8) return null;
-	const penalty = clamp(Math.round((best.n - yours + 8) / 2), 0, 10);
+	const penalty = clamp$1(Math.round((best.n - yours + 8) / 2), 0, 10);
 	if (penalty <= 0) return null;
 	return {
 		name: TEAM_BY_ID[best.id]?.name ?? "a rival",
@@ -11326,7 +11596,7 @@ function signParts(r, state, heat) {
 	const n = heat + offer + visit - rival - press.penalty;
 	const floor = signFloor(state);
 	return {
-		chance: clamp(Math.round((n - (floor - 28)) / 62 * 100), offered ? 5 : 1, 96),
+		chance: clamp$1(Math.round((n - (floor - 28)) / 62 * 100), offered ? 5 : 1, 96),
 		offer,
 		visit,
 		pipe: mem.pipe,
@@ -11345,16 +11615,17 @@ function leanMathLine(r, state, heat) {
 	if (p.visit) bits.push(`visit ${p.visit > 0 ? `+${p.visit}` : p.visit}`);
 	if (p.rival) bits.push(`rival battle ${p.rivalName} −${p.rival}`);
 	if (p.pressure) bits.push(`${r.pos} class pressure −${p.pressure}`);
-	return `Lean math: ${bits.join(" · ")}. ${p.chance}% to sign.`;
+	return `${bits.join(". ")}. Asking this week is a ${p.chance}% roll.`;
 }
 function pipelineMemoryLine(state) {
 	const home = TEAM_BY_ID[state.playerTeamId]?.state;
-	if (!home) return "Pipeline opens once the school has a home state.";
+	if (!home) return "Pipeline starts once the school has a home state.";
 	const book = pipelineBookOf(state);
 	const signs = book.states[home] ?? 0;
 	const ties = book.ties[home] ?? 0;
 	const bond = Math.min(8, Math.floor(ties / 4));
-	return `Memory: ${signs} prior in-state sign${signs === 1 ? "" : "s"}, bond +${bond}. Next ${home} class starts warmer.`;
+	const warm = bond ? ` Pipeline bonus +${bond}.` : "";
+	return signs ? `${signs} previous in-state signee${signs === 1 ? "" : "s"} from ${home}.${warm}` : `No in-state signees yet from ${home}.${warm}`;
 }
 function noteTouch(state, recruit, kind) {
 	const st = recruit.state;
@@ -11635,7 +11906,7 @@ var FreakKinds = [
 		tag: "Point forward",
 		pos: "PG",
 		height: "6-8",
-		line: "A 6-8 lead guard. Posts, passes, and bullies smaller points.",
+		line: "6-8 point guard. Can post smaller guards and pass out of it.",
 		bump: {
 			finish: 8,
 			iq: 4,
@@ -11647,7 +11918,7 @@ var FreakKinds = [
 		tag: "Stretch five",
 		pos: "C",
 		height: "6-11",
-		line: "A center who spaces the floor. Shoots it; not a rim runner.",
+		line: "Center who can shoot. Not a rim runner.",
 		bump: {
 			shoot: 10,
 			finish: -2,
@@ -11659,7 +11930,7 @@ var FreakKinds = [
 		tag: "Wing freak",
 		pos: "SF",
 		height: "6-8",
-		line: "A 6-8 athlete who shoots, finishes, and guards. Tools over polish.",
+		line: "6-8 wing. Scores and defends.",
 		bump: {
 			shoot: 4,
 			finish: 4,
@@ -11671,7 +11942,7 @@ var FreakKinds = [
 		tag: "Rim prowler",
 		pos: "PF",
 		height: "6-10",
-		line: "Lives at the rim. No jumper. Screens, dunks, and fouls.",
+		line: "Finishes at the rim. No jumper. Sets screens and fouls.",
 		bump: {
 			finish: 8,
 			defense: 6,
@@ -11683,7 +11954,7 @@ var FreakKinds = [
 		tag: "Lockdown two",
 		pos: "SG",
 		height: "6-6",
-		line: "A 2-guard who defends first. Stops the other team's best wing.",
+		line: "Shooting guard who defends first. Can take the other team's best wing.",
 		bump: {
 			defense: 9,
 			iq: 3,
@@ -11772,10 +12043,11 @@ function pipelineBonus(r, teamId) {
 }
 function winProb(live, youHome) {
 	const diff = (youHome ? live.homeScore : live.awayScore) - (youHome ? live.awayScore : live.homeScore);
-	const minutes = Math.max(.3, live.clock + (live.half === 1 ? 20 : live.half >= 3 ? 0 : 0));
-	const leadWeight = diff / Math.sqrt(minutes);
-	const p = 1 / (1 + Math.exp(-leadWeight * .55));
-	return clamp(Math.round(p * 100), 1, 99);
+	const timeLeft = Math.max(0, live.clock) + (live.half === 1 ? 1200 : 0);
+	const possLeft = Math.max(.35, timeLeft / 18);
+	const z = (diff + (live.poss === "home" === youHome ? 1 : -1) * Math.max(0, 1.15 * (1 - Math.min(1, timeLeft / 40)))) / Math.sqrt(possLeft) * .85;
+	const p = 1 / (1 + Math.exp(-z));
+	return clamp$1(Math.round(p * 100), 1, 99);
 }
 function gameOfDay(state) {
 	const week = state.week;
@@ -11836,17 +12108,22 @@ function preseasonWatch(state, n = 12) {
 	}));
 }
 function awardRace(state, n = 8) {
-	return state.players.filter((p) => (p.seasonGames ?? 0) >= 3 && !p.redshirt).map((p) => {
-		const min = p.seasonMinutes || p.mpg * Math.max(1, p.seasonGames);
-		const usage = p.usage ?? p.mpg * 2.15;
-		const score = min * (.55 + p.ovr / 180) * (.7 + usage / 80);
+	return state.players.filter((p) => (p.seasonGames ?? 0) >= 1 && !p.redshirt).map((p) => {
+		const games = Math.max(1, p.stats?.g || p.seasonGames || 1);
+		const ppg = (p.stats?.pts ?? 0) / games;
+		const rpg = (p.stats?.reb ?? 0) / games;
+		const apg = (p.stats?.ast ?? 0) / games;
+		const impact = ppg * 1.15 + rpg * .7 + apg * .9;
+		const sample = Math.min(1, games / 8);
 		return {
 			name: `${p.first} ${p.last}`,
 			teamId: p.teamId,
 			yours: p.teamId === state.playerTeamId,
-			score
+			score: impact * (.45 + .55 * sample),
+			ppg,
+			games
 		};
-	}).sort((a, b) => b.score - a.score).slice(0, n);
+	}).filter((r) => r.games < 8 || r.ppg >= 5 || r.score >= 8).sort((a, b) => b.score - a.score || b.ppg - a.ppg).slice(0, n);
 }
 function weeklyTake(state, rng) {
 	const weekGames = state.results.filter((r) => r.week === state.week);
@@ -11896,7 +12173,7 @@ function tickFlips(state, rng) {
 		if (!rival) return r;
 		const gap = rival[1] - heat;
 		const brand = (TEAM_BY_ID[rival[0]]?.prestige ?? 60) - (TEAM_BY_ID[school]?.prestige ?? 60);
-		const pFlip = clamp(.02 + Math.max(0, gap) / 220 + Math.max(0, brand) / 400 * g, 0, .16);
+		const pFlip = clamp$1(.02 + Math.max(0, gap) / 220 + Math.max(0, brand) / 400 * g, 0, .16);
 		if (rng() < pFlip) {
 			const from = TEAM_BY_ID[school]?.name ?? "campus";
 			const to = TEAM_BY_ID[rival[0]]?.name ?? "a brand";
@@ -11956,12 +12233,12 @@ function tickDonors(state, rng) {
 	const you = state.playerTeamId;
 	const t = state.teams[you];
 	const record = (t?.wins ?? 0) - (t?.losses ?? 0);
-	const mood = clamp((state.donorMood ?? 58) + (record >= 6 ? 6 : record <= -4 ? -7 : 1), 20, 99);
+	const mood = clamp$1((state.donorMood ?? 58) + (record >= 6 ? 6 : record <= -4 ? -7 : 1), 20, 99);
 	const gift = Math.round(8 + mood / 8 + Math.max(0, record));
 	const donors = [...state.donors ?? []];
 	donors.unshift({
 		id: `don-${state.season}`,
-		name: pick(rng, [
+		name: pick$1(rng, [
 			"The collective",
 			"A campus group",
 			"An old letterman",
@@ -11977,7 +12254,7 @@ function tickDonors(state, rng) {
 		fromPlayerId: g.name,
 		season: state.season
 	}));
-	const nilCap = clamp(Math.round((state.nilCap || 100) * (.92 + mood / 400) + gift * .4 + alumni.reduce((n, a) => n + a.gift, 0) * .3), 40, 180);
+	const nilCap = clamp$1(Math.round((state.nilCap || 100) * (.92 + mood / 400) + gift * .4 + alumni.reduce((n, a) => n + a.gift, 0) * .3), 40, 180);
 	const roster = state.players.filter((p) => p.teamId === you && !p.redshirt).sort((a, b) => b.ovr - a.ovr);
 	const asks = [];
 	const hungry = roster.filter((p) => (p.morale ?? 70) < 62 || p.ovr >= 84);
@@ -12010,7 +12287,7 @@ function answerNilAsk(state, playerId, yes) {
 		if (p.id !== playerId) return p;
 		return {
 			...p,
-			morale: clamp(p.morale + (yes ? 8 : -10), 20, 99)
+			morale: clamp$1(p.morale + (yes ? 8 : -10), 20, 99)
 		};
 	});
 	const nilCap = yes ? Math.max(20, state.nilCap - ask.ask) : state.nilCap;
@@ -12100,7 +12377,7 @@ function forceCommit(state, id) {
 				name: `${r.first} ${r.last}`,
 				stars: r.stars,
 				pos: r.pos,
-				detail: "God Mode. The pledge is ink."
+				detail: "God Mode. The pledge is in."
 			}
 		})
 	};
@@ -12170,14 +12447,14 @@ function calcApr(state) {
 		const minutesDrag = p.mpg >= 22 && p.skills.iq < 46 ? .08 : 0;
 		pts += Math.max(0, eligible + retained - minutesDrag);
 	}
-	return clamp(Math.round(pts / (2 * rot.length) * 1e3) + facilityAprBump(state), 820, 1e3);
+	return clamp$1(Math.round(pts / (2 * rot.length) * 1e3) + facilityAprBump(state), 820, 1e3);
 }
 function pushFlag(flags, flag) {
 	return [flag, ...flags.filter((f) => f.id !== flag.id)].slice(0, FLAG_MAX);
 }
 function withFlag(state, flag, heatDelta) {
 	const c = state.compliance ?? emptyCompliance();
-	const heat = clamp(c.heat + heatDelta, 0, 100);
+	const heat = clamp$1(c.heat + heatDelta, 0, 100);
 	const banned = heat >= 88 || c.apr < 930;
 	return {
 		...state,
@@ -12187,7 +12464,7 @@ function withFlag(state, flag, heatDelta) {
 			banned,
 			flags: pushFlag(c.flags, flag)
 		},
-		adHeat: clamp(state.adHeat - (flag.severity === "major" ? 6 : flag.severity === "notice" ? 2 : 0), 0, 100)
+		adHeat: clamp$1(state.adHeat - (flag.severity === "major" ? 6 : flag.severity === "notice" ? 2 : 0), 0, 100)
 	};
 }
 function ncaaEligible(state, teamId = state.playerTeamId) {
@@ -12249,7 +12526,7 @@ function noteVisit(state, r) {
 function tickCompliance(state) {
 	const c = state.compliance ?? emptyCompliance();
 	const apr = calcApr(state);
-	let heat = clamp(c.heat - 2, 0, 100);
+	let heat = clamp$1(c.heat - 2, 0, 100);
 	let flags = c.flags;
 	let banned = c.banned;
 	if (apr < 930) {
@@ -12260,7 +12537,7 @@ function tickCompliance(state) {
 			week: state.week,
 			text: `APR ${apr} is under the 930 line. Bylaw 14: no NCAA championship until the rate recovers.`
 		});
-		heat = clamp(heat + 8, 0, 100);
+		heat = clamp$1(heat + 8, 0, 100);
 		banned = true;
 	} else if (apr < 950) flags = pushFlag(flags, {
 		id: `aprw-${state.season}`,
@@ -12309,7 +12586,7 @@ function complianceNote(state) {
 	if (c.banned && c.apr < 930) return `APR ${c.apr}. Under 930. No NCAA Tournament.`;
 	if (c.banned) return "The NCAA file is too hot. No postseason.";
 	if (top) return top.text;
-	return `APR ${c.apr}. They're watching (${c.heat}). We're clean.`;
+	return `APR ${c.apr}. No NCAA issues.`;
 }
 //#endregion
 //#region src/game/align.ts
@@ -13215,6 +13492,21 @@ function applyYearRealignment(state, fromYear, toYear) {
 }
 //#endregion
 //#region src/game/archives.ts
+/** National award, 1,800 career points, or an 86-overall senior who actually scored. Not every senior. */
+function legendWorthy(state, p) {
+	if (p.teamId !== state.playerTeamId || p.year < 4 || p.redshirt) return false;
+	if ((state.awards ?? []).some((a) => a.playerId === p.id && (a.kind === "poy" || a.kind === "dpoy" || a.kind === "all-american" || a.kind === "freshman"))) return true;
+	const seasonPts = p.stats?.pts ?? 0;
+	if ((p.career?.pts ?? 0) + seasonPts >= 1800) return true;
+	const g = Math.max(1, p.stats?.g || p.seasonGames || 1);
+	if (p.ovr >= 86 && (seasonPts / g >= 12 || seasonPts >= 360)) return true;
+	return false;
+}
+function legendReason(state, p) {
+	if ((state.awards ?? []).some((a) => a.playerId === p.id && (a.kind === "poy" || a.kind === "dpoy" || a.kind === "all-american" || a.kind === "freshman"))) return "National award";
+	if ((p.career?.pts ?? 0) + (p.stats?.pts ?? 0) >= 1800) return "1,800 career points";
+	return "Program legend";
+}
 function jersey(name, used) {
 	let n = 0;
 	for (const c of name) n = (n * 33 + c.charCodeAt(0)) % 54;
@@ -13401,7 +13693,7 @@ function ensureSelectionArchive(state) {
 		confW: you.confW,
 		confL: you.confL,
 		coachName: you.coachName,
-		confTitle: base.selection?.confTourney === you.id || base.selection?.autos?.[you.conference] === you.id,
+		confTitle: base.selection?.confTourney === you.id,
 		ncaaBid: bid,
 		title: false,
 		run: bid ? "bid" : base.selection?.nit?.includes(you.id) ? "nit" : base.selection?.crown?.includes(you.id) ? "crown" : void 0,
@@ -13431,11 +13723,12 @@ function stampSeasonArchive(state) {
 	const log = base.history?.log ?? [];
 	if (!log.length) return base;
 	const last = log[log.length - 1];
-	if (last.boxes && last.boxes.length > 0 && last.championId) return base;
+	const realChamp = base.selection?.champ || "";
+	const invented = Boolean(last.championId) && !realChamp;
+	if (last.boxes && last.boxes.length > 0 && last.summary && !invented && (!realChamp || last.championId === realChamp)) return base;
 	const you = base.playerTeamId;
 	const boxes = base.results.filter((r) => r.homeId === you || r.awayId === you).map((r) => boxFromResult(r));
-	const ranked = Object.values(state.teams).sort((a, b) => b.wins - b.losses - (a.wins - a.losses) || b.wins - a.wins);
-	const championId = state.selection?.champ || ranked[0]?.id || you;
+	const championId = realChamp || void 0;
 	const awards = (state.awards ?? []).filter((a) => a.season === state.season).slice(0, 28).map((a) => ({
 		name: a.name,
 		kind: a.kind,
@@ -13461,12 +13754,12 @@ function stampSeasonArchive(state) {
 		pts: p.stats?.pts ?? 0
 	}));
 	const used = new Set((state.legends ?? []).filter((g) => g.teamId === you).map((g) => g.number));
-	const fresh = state.players.filter((p) => p.teamId === you && p.year >= 4 && !p.redshirt && (p.ovr >= 76 || (p.stats?.pts ?? 0) >= 280)).slice(0, 4).map((p) => ({
+	const fresh = state.players.filter((p) => legendWorthy(state, p)).sort((a, b) => (b.stats?.pts ?? 0) - (a.stats?.pts ?? 0) || b.ovr - a.ovr).slice(0, 2).map((p) => ({
 		name: `${p.first} ${p.last}`,
 		number: jersey(`${p.first} ${p.last}`, used),
 		teamId: you,
 		season: state.season,
-		note: `${p.pos} · ${p.ovr} ovr${(p.stats?.pts ?? 0) > 0 ? ` · ${p.stats.pts} pts` : ""}`
+		note: `${legendReason(state, p)} · ${p.pos} · ${p.ovr} ovr`
 	}));
 	const legends = [...(state.legends ?? []).filter((g) => !fresh.some((f) => f.name === g.name && f.season === g.season)), ...fresh].slice(-80);
 	const row = {
@@ -13554,7 +13847,7 @@ function playNeutral(state, homeId, awayId, week, kind, id, rng) {
 	const hs = sim.homeScore;
 	const as = sim.awayScore;
 	const homeWin = hs > as;
-	const result = withRecap(state, {
+	const result = withRecap$1(state, {
 		id: `res-${id}`,
 		slotId: id,
 		homeId,
@@ -13774,7 +14067,7 @@ function startUserTourney(state, rng) {
 		}
 	}, item(week, `${league} tournament tips this week.`));
 }
-function tourneySlotMap(state, conf) {
+function tourneySlotMap(state, conf, stopBeforeId) {
 	const frozen = state.selection?.confField?.filter(Boolean);
 	let field = frozen?.length ? frozen.slice() : confOrder(state, conf).map((t) => t.id);
 	if (field.length > 8) field = field.slice(0, 8);
@@ -13782,6 +14075,7 @@ function tourneySlotMap(state, conf) {
 	field.forEach((id, i) => map.set(i, id));
 	const played = state.schedule.filter((g) => g.kind === "conf-tourney" && g.id.startsWith(ctPrefix(conf)) && g.resultId).sort((a, b) => a.week - b.week);
 	for (const g of played) {
+		if (stopBeforeId && g.id === stopBeforeId) break;
 		const r = state.results.find((x) => x.id === g.resultId);
 		if (!r) continue;
 		const winner = r.homeScore > r.awayScore ? r.homeId : r.awayId;
@@ -13796,6 +14090,14 @@ function tourneySlotMap(state, conf) {
 		map.delete(Math.max(hs, as));
 	}
 	return map;
+}
+/** Teams still alive in the user's conference tournament before this game was played. Two means the final. */
+function confAliveBefore(state, slotId) {
+	const conf = state.teams[state.playerTeamId]?.conference;
+	if (!conf) return null;
+	const slot = state.schedule.find((g) => g.id === slotId);
+	if (!slot || slot.kind !== "conf-tourney" || !slot.id.startsWith(ctPrefix(conf))) return null;
+	return tourneySlotMap(state, conf, slotId).size;
 }
 function advanceUserTourney(state) {
 	const conf = state.teams[state.playerTeamId].conference;
@@ -14183,6 +14485,48 @@ function continuePostseason(state) {
 	return enterOffseason(s);
 }
 //#endregion
+//#region src/game/calendar.ts
+/** Season calendar. `season` is the fall year (2026 = 2026–27).
+* Week 1 is the Monday of the week that contains November 4.
+* The first NET is the first week whose Monday is in December.
+*/
+var MONTHS = [
+	"Jan",
+	"Feb",
+	"Mar",
+	"Apr",
+	"May",
+	"Jun",
+	"Jul",
+	"Aug",
+	"Sep",
+	"Oct",
+	"Nov",
+	"Dec"
+];
+function weekStart(season, week) {
+	const anchor = Date.UTC(season, 10, 4);
+	const monday = anchor - (new Date(anchor).getUTCDay() + 6) % 7 * 864e5;
+	return new Date(monday + (Math.max(1, week) - 1) * 7 * 864e5);
+}
+function weekDateLabel(season, week) {
+	const d = weekStart(season, week);
+	return `${MONTHS[d.getUTCMonth()]} ${d.getUTCDate()}`;
+}
+/** First regular-season week whose Monday falls in December. */
+function netReleaseWeek(season) {
+	for (let w = 1; w <= 22; w++) if (weekStart(season, w).getUTCMonth() === 11) return w;
+	return 6;
+}
+function netReleased(state) {
+	if (state.phase === "preseason") return false;
+	if (state.phase !== "regular") return true;
+	return state.week >= netReleaseWeek(state.season);
+}
+function netHoldLine(_season) {
+	return "The NET doesn't release until the first week of December.";
+}
+//#endregion
 //#region src/game/ranks.ts
 function locOf(slot, resultHomeId, teamId) {
 	if (slot?.site === "neutral") return "neutral";
@@ -14477,8 +14821,10 @@ function netRanks(state) {
 	const k = stamp$1(state);
 	if (memoNet && memoKey$1 === k) return memoNet;
 	const current = buildNet(state, Infinity);
+	const release = netReleaseWeek(state.season);
+	const priorBoard = state.phase === "regular" ? state.week > release : state.week > 1;
 	let out;
-	if (state.week <= 1 || !state.results.length) out = current.map((r) => ({
+	if (!priorBoard || !state.results.length) out = current.map((r) => ({
 		...r,
 		prevRank: r.rank
 	}));
@@ -14493,6 +14839,23 @@ function netRanks(state) {
 	memoKey$1 = k;
 	memoNet = out;
 	return out;
+}
+/** How many results the NET is built from. `beforeRelease` is every game dated before the first board. */
+function netFeed(state) {
+	const release = netReleaseWeek(state.season);
+	let beforeRelease = 0;
+	for (const r of state.results) if (r.week < release) beforeRelease++;
+	return {
+		total: state.results.length,
+		beforeRelease
+	};
+}
+function netBoardLine(state) {
+	const feed = netFeed(state);
+	const open = weekDateLabel(state.season, 1);
+	const prior = feed.beforeRelease > 0 ? `${feed.beforeRelease} result${feed.beforeRelease === 1 ? "" : "s"} from before the release` : "no games before the release";
+	if (state.phase === "regular" && state.week === netReleaseWeek(state.season)) return `First NET. Every game since ${open} is on this board, including ${prior}.`;
+	return `Through week ${state.week} · ${feed.total} games · every result since ${open}, including ${prior}.`;
 }
 function apPoll(state) {
 	const k = stamp$1(state);
@@ -14603,13 +14966,13 @@ function resumeOf(state, teamId = state.playerTeamId) {
 	const q1l = n?.q1l ?? 0;
 	const next = state.schedule.filter((g) => !g.resultId && !g.declined && (g.homeId === teamId || g.awayId === teamId) && (g.kind === "conference" || g.kind === "noncon" || g.kind === "mte")).sort((x, y) => x.week - y.week)[0];
 	const quadNext = next ? gameQuad(state, next, teamId) : null;
-	let need = "Play the next one.";
-	if (path === "auto") need = "The league is yours if you hold serve.";
-	else if (path === "at-large" && (n?.rank ?? 99) <= 40) need = "Don't lay an egg. The résumé is in.";
-	else if (path === "at-large") need = "A Q1 would lock it. A Q4 loss would not.";
-	else if (path === "bubble") need = q1w === 0 ? "You need a Quad 1. The committee does not guess." : "Win the ones in front of you. One Q4 and you're out.";
-	else if (state.phase === "preseason" || (n?.wins ?? 0) + (n?.losses ?? 0) < 4) need = "Too early for a résumé. Build it.";
-	else need = "The dance is a stretch. Win the league or go hunting.";
+	let need = "Play the next game.";
+	if (path === "auto") need = "Win the league and the bid is yours.";
+	else if (path === "at-large" && (n?.rank ?? 99) <= 40) need = "You're in good shape. Don't drop a bad loss.";
+	else if (path === "at-large") need = "A Quad 1 win would lock it. A Quad 4 loss would hurt.";
+	else if (path === "bubble") need = q1w === 0 ? "You need a Quad 1 win." : "Win the games in front of you. A bad loss can knock you out.";
+	else if (state.phase === "preseason" || (n?.wins ?? 0) + (n?.losses ?? 0) < 4) need = "Too early. Build the résumé.";
+	else need = "The NCAA Tournament is a long shot. Win the league or stack quality wins.";
 	return {
 		teamId,
 		net: n?.rank ?? 200,
@@ -14787,13 +15150,13 @@ function pythag(pf, pa) {
 	return a / (a + Math.pow(Math.max(1, pa), 10.25));
 }
 function american(p) {
-	const x = clamp(p, .08, .92);
+	const x = clamp$1(p, .08, .92);
 	if (x >= .5) return -Math.round(x / (1 - x) * 100);
 	return Math.round((1 - x) / x * 100);
 }
 function juice(p) {
-	if (p >= .5) return clamp(p + .018, .5, .92);
-	return clamp(p - .018, .08, .5);
+	if (p >= .5) return clamp$1(p + .018, .5, .92);
+	return clamp$1(p - .018, .08, .5);
 }
 function hangLine(state, slot) {
 	const kp = kenpom(state);
@@ -14887,13 +15250,13 @@ function desiredWindow(state) {
 	return "closed";
 }
 function reasonLine(t) {
-	if (t.reason === "minutes") return "Wants a real rotation role";
-	if (t.reason === "nil") return "The NIL number wasn't there";
-	if (t.reason === "chemistry") return "Locker room went cold";
-	if (t.reason === "scheme") return "Doesn't fit the system";
-	if (t.reason === "hometown") return "Wants closer to home";
-	if (t.reason === "coaching") return "Doesn't trust the staff";
-	if (t.reason === "draft") return "Needs a bigger stage for the league";
+	if (t.reason === "minutes") return "Wants more minutes";
+	if (t.reason === "nil") return "The NIL offer wasn't enough";
+	if (t.reason === "chemistry") return "Unhappy in the locker room";
+	if (t.reason === "scheme") return "Doesn't fit the offense";
+	if (t.reason === "hometown") return "Wants to be closer to home";
+	if (t.reason === "coaching") return "Lost trust in the staff";
+	if (t.reason === "draft") return "Wants a bigger stage for the NBA";
 	return "Wants more shots";
 }
 function lastFit(t) {
@@ -14907,7 +15270,7 @@ function yearsLeftOf(p) {
 function portalInterest(t, teamId, state) {
 	if (t.committedTo === teamId) return 99;
 	const stored = t.interest[teamId];
-	if (typeof stored === "number" && Number.isFinite(stored)) return clamp(stored, 0, 99);
+	if (typeof stored === "number" && Number.isFinite(stored)) return clamp$1(stored, 0, 99);
 	return portalFit(t, teamId, state);
 }
 function starsOf(ovr) {
@@ -15016,10 +15379,10 @@ function portalFit(t, teamId, state, load) {
 	if (t.wants.minutes > 62 && atPos >= 3) n -= 10;
 	if (school?.state && from?.state && school.state === from.state) n += t.wants.home * .12;
 	if (!nilOn(state) && t.wants.nil > 60) n -= 8;
-	else n += clamp((state.nilCap - t.nilAsk) / 14, -6, 7);
+	else n += clamp$1((state.nilCap - t.nilAsk) / 14, -6, 7);
 	if (t.boomerang && teamId === state.playerTeamId) n += 12;
 	if (teamId === t.fromId) n -= 24;
-	return clamp(Math.round(n), 8, 88);
+	return clamp$1(Math.round(n), 8, 88);
 }
 function pickReason(p, teamId, state, rng) {
 	const t = state.teams[teamId];
@@ -15063,14 +15426,14 @@ function eligible(p, draftIds) {
 	return true;
 }
 function wantsOf(p, rng) {
-	const roll = (b) => clamp(Math.round(22 + rng() * 48 + b), 10, 96);
+	const roll = (b) => clamp$1(Math.round(22 + rng() * 48 + b), 10, 96);
 	return {
 		home: roll(p.mpg < 14 ? 8 : -4),
 		minutes: roll(p.mpg < 16 ? 20 : 4),
 		scheme: roll(6),
 		academics: roll(-6),
 		nil: roll(p.ovr >= 78 ? 16 : -4),
-		style: pick(rng, [
+		style: pick$1(rng, [
 			"motion",
 			"spread",
 			"post",
@@ -15169,7 +15532,7 @@ function newsForOpen(state, transfers, window) {
 		id: `port-out-${t.playerId}-${state.season}`,
 		from: adFrom(state),
 		subject: `${t.first} just entered`,
-		body: `${coachFirst(state)},\n\n${t.first} ${t.last} put his name in. ${reasonLine(t)}.\n\nScholarship's open. If you want him back, come by and we'll talk hours — not the high-school clock.\n\nI'm watching. That's all.\n\n${adFirst(state)}`,
+		body: `${coachFirst(state)},\n\n${t.first} ${t.last} entered the portal. ${reasonLine(t)}.\n\nThe scholarship is open. If you want him back, we can talk. It uses portal hours, not recruiting hours.\n\n${adFirst(state)}`,
 		week: state.week,
 		read: false,
 		tone: "bad"
@@ -15268,7 +15631,7 @@ function spotsOf(state, teamId) {
 function hoursBudget(state, window) {
 	const base = window === "spring" ? 8 : 6;
 	const spots = spotsOf(state, state.playerTeamId);
-	return clamp(base + Math.min(4, Math.max(0, spots)), 4, 14);
+	return clamp$1(base + Math.min(4, Math.max(0, spots)), 4, 14);
 }
 function toPlayer(t, teamId, mpg, bumpYear, season) {
 	const year = bumpYear ? t.redshirt ? t.year : Math.min(4, t.year + 1) : t.year;
@@ -15280,7 +15643,7 @@ function toPlayer(t, teamId, mpg, bumpYear, season) {
 		year,
 		ovr: t.ovr,
 		potential: t.potential,
-		morale: clamp(t.morale + 6, 30, 88),
+		morale: clamp$1(t.morale + 6, 30, 88),
 		teamId,
 		mpg,
 		skills: t.skills,
@@ -15407,7 +15770,7 @@ function bumpInterest(t, teamId, n, state) {
 		...t,
 		interest: {
 			...t.interest,
-			[teamId]: clamp(cur + n, 0, 99)
+			[teamId]: clamp$1(cur + n, 0, 99)
 		}
 	};
 }
@@ -15542,7 +15905,7 @@ function offerPortal(state, id) {
 			parts: []
 		}
 	};
-	const nilBump = !nilOn(state) ? t.wants.nil > 60 ? -3 : 0 : clamp(Math.round((state.nilCap - t.nilAsk) / 12), -4, 5);
+	const nilBump = !nilOn(state) ? t.wants.nil > 60 ? -3 : 0 : clamp$1(Math.round((state.nilCap - t.nilAsk) / 12), -4, 5);
 	const bump = 10 + Math.round(((state.coachSkills?.recruiting ?? 50) - 50) / 8) + nilBump;
 	const you = state.playerTeamId;
 	const transfers = portalOf(paid).transfers.map((x) => {
@@ -15651,7 +16014,7 @@ function portalChance(state, t) {
 	const strict = settingsOf(state).portalStrict ?? "normal";
 	if (strict === "tight") chance -= 12;
 	if (strict === "open") chance += 8;
-	return clamp(Math.round(chance), t.offers.includes(state.playerTeamId) ? 4 : 1, 96);
+	return clamp$1(Math.round(chance), t.offers.includes(state.playerTeamId) ? 4 : 1, 96);
 }
 function portalAfford(state, t) {
 	if (!nilOn(state) || state.settings?.nilOn === false) return "off";
@@ -15869,6 +16232,65 @@ function ensurePortal(raw, season, era) {
 	};
 }
 //#endregion
+//#region src/game/present.ts
+function clamp(n, lo, hi) {
+	return Math.max(lo, Math.min(hi, n));
+}
+function pfSum(rows) {
+	return (rows ?? []).reduce((s, r) => s + (r.pf ?? 0), 0);
+}
+/**
+* Scorebug win%. Wraps the clock model and then clamps readings that would
+* contradict the scoreboard. Display only — the possession engine does not read this.
+*/
+function honestWinPct(live, youHome) {
+	let p = winProb(live, youHome);
+	const diff = (youHome ? live.homeScore : live.awayScore) - (youHome ? live.awayScore : live.homeScore);
+	const timeLeft = Math.max(0, live.clock) + (live.half === 1 ? 1200 : 0);
+	const youPf = pfSum(youHome ? live.homeLines : live.awayLines);
+	const themPf = pfSum(youHome ? live.awayLines : live.homeLines);
+	if (timeLeft < 900 && youPf >= 10) p -= Math.min(5, youPf - 9);
+	if (timeLeft < 900 && themPf >= 10) p += Math.min(5, themPf - 9);
+	if (live.lateChoice === "foul3" && diff > 0) p = Math.min(p, 82);
+	if (diff <= -25 && timeLeft <= 180) p = Math.min(p, 8);
+	if (diff <= -12 && timeLeft <= 45) p = Math.min(p, 18);
+	if (diff >= 25 && timeLeft <= 180) p = Math.max(p, 92);
+	if (diff >= 8 && timeLeft <= 8) p = Math.max(p, 97);
+	return clamp(Math.round(p), 1, 99);
+}
+/** This season's home / away / neutral record, counted from played games — not a stored streak. */
+function seasonSiteRecord(state) {
+	const you = state.playerTeamId;
+	const rec = {
+		homeW: 0,
+		homeL: 0,
+		awayW: 0,
+		awayL: 0,
+		neuW: 0,
+		neuL: 0
+	};
+	for (const r of state.results) {
+		if (r.homeId !== you && r.awayId !== you) continue;
+		const slot = state.schedule.find((g) => g.id === r.slotId);
+		const site = siteWord(slot, you);
+		const won = (r.homeId === you ? r.homeScore : r.awayScore) > (r.homeId === you ? r.awayScore : r.homeScore);
+		if (site === "Home") {
+			if (won) rec.homeW++;
+			else rec.homeL++;
+		} else if (site === "Away") {
+			if (won) rec.awayW++;
+			else rec.awayL++;
+		} else if (won) rec.neuW++;
+		else rec.neuL++;
+	}
+	return rec;
+}
+function siteRecordLine(state) {
+	const s = seasonSiteRecord(state);
+	if (!(s.homeW + s.homeL + s.awayW + s.awayL + s.neuW + s.neuL)) return "No games yet";
+	return `Home ${s.homeW}-${s.homeL} · Away ${s.awayW}-${s.awayL} · Neutral ${s.neuW}-${s.neuL}`;
+}
+//#endregion
 //#region src/game/records.ts
 function emptyBook(teamId) {
 	return {
@@ -15928,6 +16350,19 @@ function rollCareer(season, career) {
 		fta: (career?.fta ?? 0) + season.fta
 	};
 }
+function noteSeason(book, season, w, l) {
+	if (book.bestSeason?.season === season) return {
+		season,
+		w,
+		l
+	};
+	if (!book.bestSeason || w > book.bestSeason.w || w === book.bestSeason.w && l < book.bestSeason.l) return {
+		season,
+		w,
+		l
+	};
+	return book.bestSeason;
+}
 function stampBook(state, result) {
 	const you = state.playerTeamId;
 	const inGame = result.homeId === you || result.awayId === you;
@@ -15977,11 +16412,7 @@ function stampBook(state, result) {
 	}
 	const w = t?.wins ?? 0;
 	const l = t?.losses ?? 0;
-	if (!book.bestSeason || w > book.bestSeason.w || w === book.bestSeason.w && l < book.bestSeason.l) next.bestSeason = {
-		season: state.season,
-		w,
-		l
-	};
+	next.bestSeason = noteSeason(book, state.season, w, l);
 	return next;
 }
 function closeSeasonBook(state) {
@@ -15989,11 +16420,9 @@ function closeSeasonBook(state) {
 	const t = state.teams[state.playerTeamId];
 	const w = t?.wins ?? 0;
 	const l = t?.losses ?? 0;
-	const next = { ...book };
-	if (!book.bestSeason || w > book.bestSeason.w || w === book.bestSeason.w && l < book.bestSeason.l) next.bestSeason = {
-		season: state.season,
-		w,
-		l
+	const next = {
+		...book,
+		bestSeason: noteSeason(book, state.season, w, l)
 	};
 	next.titles = Math.max(book.titles ?? 0, state.history.titles ?? 0);
 	next.longestHome = Math.max(book.longestHome ?? 0, t?.homeStreak ?? 0);
@@ -16002,13 +16431,22 @@ function closeSeasonBook(state) {
 function bookLines(state) {
 	const book = bookOf(state);
 	const school = teamOf(book.teamId);
+	const live = state.teams[state.playerTeamId];
+	const best = book.bestSeason && live && book.bestSeason.season === state.season ? {
+		season: state.season,
+		w: live.wins,
+		l: live.losses
+	} : book.bestSeason;
 	const lines = [{
 		k: "This job",
 		v: `${book.allW}-${book.allL}`
+	}, {
+		k: "This season",
+		v: siteRecordLine(state)
 	}];
-	if (book.bestSeason) lines.push({
+	if (best) lines.push({
 		k: "Best season",
-		v: `${book.bestSeason.season} · ${book.bestSeason.w}-${book.bestSeason.l}`
+		v: `${best.season} · ${best.w}-${best.l}`
 	});
 	if (book.biggestWin) {
 		const opp = TEAM_BY_ID[book.biggestWin.oppId]?.name ?? book.biggestWin.oppId;
@@ -16029,8 +16467,17 @@ function bookLines(state) {
 		v: `${book.playerGame.name} ${book.playerGame.pts} vs ${TEAM_BY_ID[book.playerGame.oppId]?.abbr ?? ""} (${book.playerGame.season})`
 	});
 	if ((book.longestHome ?? 0) > 0) lines.push({
-		k: "Home streak",
+		k: "Longest home win streak",
 		v: `W${book.longestHome}`
+	});
+	const cur = live?.homeStreak ?? 0;
+	if (cur > 0) lines.push({
+		k: "Current home streak",
+		v: `W${cur}`
+	});
+	else if (cur < 0) lines.push({
+		k: "Current home streak",
+		v: `L${Math.abs(cur)}`
 	});
 	if ((book.titles ?? 0) > 0) lines.push({
 		k: "Titles here",
@@ -16067,9 +16514,9 @@ function livePromises(state, playerId) {
 	return (state.promises ?? []).filter((p) => p.kept == null && p.season === state.season && (!playerId || p.playerId === playerId));
 }
 function targetOf(kind, p, nilCap) {
-	if (kind === "minutes") return clamp(Math.max(p.mpg + 4, 22), 18, 34);
+	if (kind === "minutes") return clamp$1(Math.max(p.mpg + 4, 22), 18, 34);
 	if (kind === "start") return 5;
-	if (kind === "nil") return clamp(Math.round(nilCap * .18 + p.ovr * .4), 8, 80);
+	if (kind === "nil") return clamp$1(Math.round(nilCap * .18 + p.ovr * .4), 8, 80);
 	return 1;
 }
 function lineOf(kind, p, target) {
@@ -16131,7 +16578,7 @@ function makePromise(state, id, kind) {
 			promises: [...state.promises ?? [], row].slice(-40),
 			players: state.players.map((x) => x.id === id ? {
 				...x,
-				morale: clamp(x.morale + bump, 20, 99)
+				morale: clamp$1(x.morale + bump, 20, 99)
 			} : x)
 		},
 		feedback: {
@@ -16172,13 +16619,13 @@ function tickPromises(state) {
 		if (state.week < 8) {
 			players = players.map((x) => x.id === p.id ? {
 				...x,
-				morale: clamp(x.morale - 2, 20, 99)
+				morale: clamp$1(x.morale - 2, 20, 99)
 			} : x);
 			return row;
 		}
 		players = players.map((x) => x.id === p.id ? {
 			...x,
-			morale: clamp(x.morale - 10, 20, 99)
+			morale: clamp$1(x.morale - 10, 20, 99)
 		} : x);
 		news = [{
 			id: `broke-${row.id}-${state.week}`,
@@ -16189,8 +16636,8 @@ function tickPromises(state) {
 			headline: `${p.first} ${p.last} heard a broken promise`,
 			dek: row.text,
 			byline: "Locker room",
-			outlet: "Campus Wire",
-			grafs: [`Word in the gym is the staff didn't keep it. ${p.first} hasn't said anything. He doesn't have to.`],
+			outlet: "The News",
+			grafs: [`${p.first} was promised something the staff didn't keep. He hasn't said anything publicly.`],
 			text: row.text
 		}, ...news].slice(0, 60);
 		return {
@@ -16220,11 +16667,11 @@ function gradePromises(state) {
 		const ok = holding(state, row, p);
 		if (ok) players = players.map((x) => x.id === p.id ? {
 			...x,
-			morale: clamp(x.morale + 4, 20, 99)
+			morale: clamp$1(x.morale + 4, 20, 99)
 		} : x);
 		else players = players.map((x) => x.id === p.id ? {
 			...x,
-			morale: clamp(x.morale - 12, 20, 99)
+			morale: clamp$1(x.morale - 12, 20, 99)
 		} : x);
 		return {
 			...row,
@@ -16277,15 +16724,15 @@ function holdAccountable(state, id) {
 		if (x.teamId !== state.playerTeamId) return x;
 		if (x.id === id) return {
 			...x,
-			morale: clamp(x.morale + (isStar ? -6 : -4), 20, 99)
+			morale: clamp$1(x.morale + (isStar ? -6 : -4), 20, 99)
 		};
 		if (isStar) return {
 			...x,
-			morale: clamp(x.morale + 1, 20, 99)
+			morale: clamp$1(x.morale + 1, 20, 99)
 		};
 		if (star && x.id === star.id) return {
 			...x,
-			morale: clamp(x.morale + 2, 20, 99)
+			morale: clamp$1(x.morale + 2, 20, 99)
 		};
 		return x;
 	});
@@ -16294,7 +16741,7 @@ function holdAccountable(state, id) {
 			...state,
 			players,
 			talksThisWeek: (state.talksThisWeek ?? 0) + 1,
-			adHeat: clamp((state.adHeat ?? 55) + 1, 10, 99)
+			adHeat: clamp$1((state.adHeat ?? 55) + 1, 10, 99)
 		},
 		feedback: {
 			title: isStar ? `Held ${p.first}` : `Called ${p.first} up`,
@@ -16328,7 +16775,7 @@ function pepTalk(state, id) {
 		}
 	};
 	const lead = state.coachSkills?.leadership ?? 50;
-	const bump = clamp(3 + Math.round((lead - 50) / 10), 1, 8);
+	const bump = clamp$1(3 + Math.round((lead - 50) / 10), 1, 8);
 	bustChemCache();
 	return {
 		state: {
@@ -16336,7 +16783,7 @@ function pepTalk(state, id) {
 			talksThisWeek: (state.talksThisWeek ?? 0) + 1,
 			players: state.players.map((x) => x.id === id ? {
 				...x,
-				morale: clamp(x.morale + bump, 20, 99)
+				morale: clamp$1(x.morale + bump, 20, 99)
 			} : x)
 		},
 		feedback: {
@@ -16351,13 +16798,67 @@ function pepTalk(state, id) {
 }
 //#endregion
 //#region src/game/awards.ts
-function score(p) {
-	const min = p.seasonMinutes || p.mpg * Math.max(1, p.seasonGames);
-	const usage = p.usage ?? clampUse$1(p.mpg);
-	return min * (.55 + p.ovr / 180) * (.7 + usage / 80) * (.85 + (p.skills.shoot + p.skills.finish) / 400);
+function gamesOf(p) {
+	return Math.max(1, p.stats?.g || p.seasonGames || 1);
 }
-function clampUse$1(mpg) {
-	return Math.max(8, Math.min(38, Math.round(mpg * 2.15)));
+function hasBox(p) {
+	return (p.stats?.g ?? 0) >= 6 && ((p.stats?.pts ?? 0) > 0 || (p.stats?.reb ?? 0) > 0);
+}
+function confPlace(state, teamId) {
+	const conf = state.teams[teamId]?.conference ?? TEAM_BY_ID[teamId]?.conference;
+	if (!conf) return 12;
+	const peers = Object.values(state.teams).filter((t) => t.conference === conf && !t.guest).sort((a, b) => b.wins - b.losses - (a.wins - a.losses) || b.confW - a.confW || b.wins - a.wins);
+	const i = peers.findIndex((t) => t.id === teamId);
+	return i < 0 ? peers.length + 1 : i + 1;
+}
+function placeBoost(place) {
+	if (place <= 1) return 1.28;
+	if (place <= 3) return 1.12;
+	if (place <= 5) return 1;
+	if (place <= 8) return .78;
+	return .58;
+}
+/** A full sample under 5 points a game is not a national scorer. Empty box scores do not win hardware. */
+function hardwarePool(pool) {
+	return pool.filter((p) => {
+		const g = gamesOf(p);
+		const ppg = (p.stats?.pts ?? 0) / g;
+		const rpg = (p.stats?.reb ?? 0) / g;
+		const apg = (p.stats?.ast ?? 0) / g;
+		if ((p.stats?.pts ?? 0) <= 0 && (p.stats?.reb ?? 0) <= 0 && (p.stats?.ast ?? 0) <= 0) return false;
+		if (g >= 10 && ppg < 5 && ppg + rpg * .5 + apg * .6 < 8) return false;
+		return true;
+	});
+}
+function teamFactor(state, teamId) {
+	const t = state.teams[teamId];
+	const wins = t?.wins ?? 0;
+	const losses = t?.losses ?? 0;
+	return (.5 + wins / Math.max(1, wins + losses)) * placeBoost(confPlace(state, teamId));
+}
+/** National awards use points, rebounds, assists, wins, and conference place. Overall alone cannot win. */
+function score(state, p) {
+	const g = gamesOf(p);
+	const ppg = (p.stats?.pts ?? 0) / g;
+	const rpg = (p.stats?.reb ?? 0) / g;
+	const apg = (p.stats?.ast ?? 0) / g;
+	const box = ppg * 1.15 + rpg * .7 + apg * .9;
+	const mpg = p.seasonGames > 0 ? p.seasonMinutes / Math.max(1, p.seasonGames) : p.mpg;
+	const minuteGate = .62 + .38 * Math.min(1, mpg / 24);
+	const prod = hasBox(p) ? 1 : .22;
+	return box * teamFactor(state, p.teamId) * minuteGate * prod;
+}
+function defenseScore(state, p) {
+	const g = gamesOf(p);
+	const rpg = (p.stats?.reb ?? 0) / g;
+	const mpg = p.seasonGames > 0 ? p.seasonMinutes / Math.max(1, p.seasonGames) : p.mpg;
+	return p.skills.defense / 8 * (.35 + Math.min(1, mpg / 28)) * (1 + rpg / 14) * teamFactor(state, p.teamId) * (hasBox(p) ? 1 : .35);
+}
+function coachScore(state, teamId) {
+	const t = state.teams[teamId];
+	if (!t) return 0;
+	const g = Math.max(1, t.wins + t.losses);
+	return (t.wins / g * 42 + t.wins * .35 + t.confW * .45) * placeBoost(confPlace(state, teamId));
 }
 function nm$3(p) {
 	return `${p.first} ${p.last}`;
@@ -16378,14 +16879,15 @@ function rollAwards(state) {
 	const you = state.playerTeamId;
 	const pool = state.players.filter((p) => (p.seasonGames ?? 0) >= 6 && !p.redshirt);
 	if (pool.length < 20) return [];
-	const ranked = pool.slice().sort((a, b) => score(b) - score(a) || b.ovr - a.ovr);
+	const ranked = hardwarePool(pool).slice().sort((a, b) => score(state, b) - score(state, a) || b.ovr - a.ovr);
 	const out = [];
 	const poy = ranked[0];
-	if (poy) out.push({
+	const poyPpg = poy ? (poy.stats?.pts ?? 0) / gamesOf(poy) : 0;
+	if (poy && poyPpg >= 5) out.push({
 		...row$1("poy", "", poy, you),
 		season: state.season
 	});
-	const dpool = pool.slice().sort((a, b) => b.skills.defense * (b.mpg + 4) - a.skills.defense * (a.mpg + 4) || b.ovr - a.ovr);
+	const dpool = pool.slice().sort((a, b) => defenseScore(state, b) - defenseScore(state, a) || b.ovr - a.ovr);
 	if (dpool[0] && dpool[0].id !== poy?.id) out.push({
 		...row$1("dpoy", "", dpool[0], you),
 		season: state.season
@@ -16394,8 +16896,8 @@ function rollAwards(state) {
 		...row$1("dpoy", "", dpool[1], you),
 		season: state.season
 	});
-	const frosh = pool.filter((p) => p.year === 1).sort((a, b) => score(b) - score(a))[0];
-	if (frosh) out.push({
+	const frosh = hardwarePool(pool.filter((p) => p.year === 1)).sort((a, b) => score(state, b) - score(state, a))[0];
+	if (frosh && (frosh.stats?.pts ?? 0) / gamesOf(frosh) >= 5) out.push({
 		...row$1("freshman", "", frosh, you),
 		season: state.season
 	});
@@ -16429,16 +16931,13 @@ function rollAwards(state) {
 		if (a) a.push(p);
 		else byConf.set(conf, [p]);
 	}
-	for (const [, list] of byConf) list.sort((a, b) => score(b) - score(a)).slice(0, 10).forEach((p, i) => {
+	for (const [, list] of byConf) hardwarePool(list).sort((a, b) => score(state, b) - score(state, a)).slice(0, 10).forEach((p, i) => {
 		out.push({
 			...row$1("all-conf", i < 5 ? "1st" : "2nd", p, you),
 			season: state.season
 		});
 	});
-	const coach = Object.values(state.teams).filter((t) => !t.guest).slice().sort((a, b) => {
-		const aw = a.wins - a.losses;
-		return b.wins - b.losses - aw || b.confW - a.confW;
-	})[0];
+	const coach = Object.values(state.teams).filter((t) => !t.guest).slice().sort((a, b) => coachScore(state, b.id) - coachScore(state, a.id))[0];
 	if (coach) out.push({
 		season: state.season,
 		kind: "coach",
@@ -16479,13 +16978,12 @@ function makeExpectations(state) {
 	const prestige = state.teams[state.playerTeamId]?.prestige ?? TEAM_BY_ID[state.playerTeamId]?.prestige ?? 60;
 	const rot = state.players.filter((p) => p.teamId === state.playerTeamId && !p.redshirt).sort((a, b) => b.ovr - a.ovr);
 	const talent = rot.slice(0, 8).reduce((n, p) => n + p.ovr, 0) / Math.max(1, Math.min(8, rot.length));
-	const wins = clamp(Math.round(7 + (prestige - 50) * .26 + (talent - 72) * .35), 6, 27);
+	const wins = clamp$1(Math.round(7 + (prestige - 50) * .26 + (talent - 72) * .35), 6, 27);
 	const ncaa = prestige >= 74 || wins >= 20 || talent >= 80;
-	const school = TEAM_BY_ID[state.playerTeamId]?.name ?? "this program";
 	return {
 		wins,
 		ncaa,
-		note: ncaa ? `${wins} wins and a Sunday in March. That's what they hired you for at ${school}.` : `${wins} wins. A bid would be gravy and everybody knows it.`
+		note: `Projection, not the contract. This roster looks like a ${wins}-win team. ${ncaa ? "An NCAA bid is in range." : "An NCAA bid would be a bonus."}`
 	};
 }
 function grade(label, score, note) {
@@ -16502,34 +17000,34 @@ function makeReportCard(state) {
 	const ncaa = Boolean(sel?.ncaa?.some((b) => b.teamId === you.id));
 	const title = sel?.champ === you.id;
 	const conf = sel?.confTourney === you.id || sel?.autos?.[you.conference] === you.id;
-	const winScore = clamp(55 + (you.wins - exp.wins) * 6 + (you.losses === 0 ? 8 : 0), 20, 99);
+	const winScore = clamp$1(55 + (you.wins - exp.wins) * 6 + (you.losses === 0 ? 8 : 0), 20, 99);
 	const postScore = title ? 99 : ncaa ? exp.ncaa ? 86 : 94 : exp.ncaa ? 38 : 70;
 	const grew = state.offseasonReport?.grew?.length ?? 0;
 	const campJumps = state.camp?.jumps?.length ?? grew;
-	const devScore = clamp(48 + campJumps * 6 + ((state.coachSkills?.development ?? 46) - 46) * .4, 28, 96);
+	const devScore = clamp$1(48 + campJumps * 6 + ((state.coachSkills?.development ?? 46) - 46) * .4, 28, 96);
 	const promises = (state.promises ?? []).filter((p) => p.season === state.season);
 	const kept = promises.filter((p) => p.kept === true).length;
 	const broke = promises.filter((p) => p.kept === false).length;
-	const lockerScore = promises.length ? clamp(70 + kept * 8 - broke * 16, 24, 96) : 68;
+	const lockerScore = promises.length ? clamp$1(70 + kept * 8 - broke * 16, 24, 96) : 68;
 	const signed = state.recruits.filter((r) => r.committedTo === state.playerTeamId);
 	const stars = signed.reduce((n, r) => n + r.stars, 0);
-	const recScore = clamp(40 + stars * 4 + signed.length * 2, 28, 96);
+	const recScore = clamp$1(40 + stars * 4 + signed.length * 2, 28, 96);
 	const heat = state.compliance?.heat ?? 0;
-	const compScore = clamp(92 - heat * 1.4, 20, 96);
+	const compScore = clamp$1(92 - heat * 1.4, 20, 96);
 	const awards = yourAwards(state).length;
-	const awardScore = clamp(50 + awards * 10, 50, 98);
+	const awardScore = clamp$1(50 + awards * 10, 50, 98);
 	const grades = [
 		grade("Wins", winScore, `${you.wins}-${you.losses} against a ${exp.wins}-win ask.`),
-		grade("March", postScore, title ? "They cut the nets." : ncaa ? "An NCAA bid." : exp.ncaa ? "Home for March." : "No bid, none asked."),
-		grade("Development", devScore, campJumps ? `${campJumps} jump${campJumps === 1 ? "" : "s"} on the film.` : "Quiet gym."),
+		grade("March", postScore, title ? "National champion." : ncaa ? "NCAA Tournament bid." : exp.ncaa ? "Missed the tournament." : "No bid expected."),
+		grade("Development", devScore, campJumps ? `${campJumps} jump${campJumps === 1 ? "" : "s"} in camp.` : "No jumps."),
 		grade("Locker room", lockerScore, promiseLine(state)),
 		grade("Class", recScore, `${signed.length} signed · ${stars} stars in the class.`),
-		grade("NCAA", compScore, heat ? `Heat ${heat}. Keep the office close.` : "Clean. Nobody's calling Durham."),
+		grade("NCAA", compScore, heat ? `Compliance heat ${heat}.` : "No compliance issues."),
 		grade("Hardware", awardScore, awards ? `${awards} national honor${awards === 1 ? "" : "s"}.` : "Nobody on the lists.")
 	];
 	const overall = letterOf(grades.reduce((n, g) => n + (g.letter.startsWith("A") ? 90 : g.letter.startsWith("B") ? 75 : g.letter.startsWith("C") ? 58 : g.letter.startsWith("D") ? 42 : 28), 0) / grades.length + (conf ? 4 : 0) + (title ? 8 : 0));
 	const school = TEAM_BY_ID[you.id]?.name ?? "the program";
-	const letter = overall.startsWith("A") ? `${school} looked like itself this year. Don't waste it.` : overall.startsWith("B") ? `Solid year. Next one still has to show up, and they know it.` : overall.startsWith("C") ? `The AD's being polite. Next year he won't be.` : `Not good enough. They're already making calls. You can feel it in the hallway.`;
+	const letter = overall.startsWith("A") ? `Great year at ${school}.` : overall.startsWith("B") ? `Solid year. The next one still has to be good.` : overall.startsWith("C") ? `Average year. The AD is going to want more.` : `Not good enough. They're going to look at other coaches.`;
 	return {
 		season: state.season,
 		expectedWins: exp.wins,
@@ -16540,11 +17038,328 @@ function makeReportCard(state) {
 	};
 }
 //#endregion
+//#region src/game/podcast-lines.ts
+var JARRED$1 = "Jarred";
+var BEN$1 = "Ben";
+var KALEB$1 = "Kaleb";
+var TRILL$1 = "Trill Raff";
+var ORDERS = [
+	[
+		JARRED$1,
+		BEN$1,
+		KALEB$1,
+		TRILL$1,
+		JARRED$1,
+		BEN$1,
+		KALEB$1
+	],
+	[
+		JARRED$1,
+		KALEB$1,
+		BEN$1,
+		TRILL$1,
+		BEN$1,
+		JARRED$1,
+		TRILL$1
+	],
+	[
+		JARRED$1,
+		TRILL$1,
+		BEN$1,
+		KALEB$1,
+		JARRED$1,
+		BEN$1,
+		TRILL$1
+	],
+	[
+		JARRED$1,
+		BEN$1,
+		TRILL$1,
+		KALEB$1,
+		TRILL$1,
+		BEN$1,
+		JARRED$1
+	],
+	[
+		JARRED$1,
+		KALEB$1,
+		TRILL$1,
+		BEN$1,
+		KALEB$1,
+		JARRED$1,
+		BEN$1
+	],
+	[
+		JARRED$1,
+		BEN$1,
+		KALEB$1,
+		TRILL$1,
+		KALEB$1,
+		BEN$1,
+		JARRED$1
+	],
+	[
+		JARRED$1,
+		TRILL$1,
+		KALEB$1,
+		BEN$1,
+		JARRED$1,
+		KALEB$1,
+		TRILL$1
+	],
+	[
+		JARRED$1,
+		KALEB$1,
+		BEN$1,
+		TRILL$1,
+		JARRED$1,
+		TRILL$1,
+		BEN$1
+	]
+];
+function beat(speaker, line) {
+	return {
+		speaker,
+		line
+	};
+}
+function shuffle(rng, list) {
+	const out = [...list];
+	for (let i = out.length - 1; i > 0; i--) {
+		const j = Math.floor(rng() * (i + 1));
+		const t = out[i];
+		out[i] = out[j];
+		out[j] = t;
+	}
+	return out;
+}
+function pick(rng, list) {
+	return list[Math.floor(rng() * list.length)];
+}
+function assemble(rng, banks) {
+	const order = pick(rng, ORDERS);
+	const bags = {};
+	for (const sp of Object.keys(banks)) bags[sp] = shuffle(rng, banks[sp].filter(Boolean));
+	const n = {};
+	const beats = order.map((sp) => {
+		const i = n[sp] ?? 0;
+		n[sp] = i + 1;
+		const bag = bags[sp] ?? ["Yeah."];
+		return beat(sp, bag[i % bag.length]);
+	});
+	if (!beats.some((b) => b.line.length <= 40)) beats.push(beat(TRILL$1, "Yeah, I saw it."));
+	if (!beats.some((b) => b.line.length >= 90)) beats.splice(2, 0, beat(BEN$1, banks[BEN$1]?.find((l) => l.length >= 90) ?? "I watched the whole thing back. It was a normal basketball game, not a crisis, and we can talk about the next one without turning this into a funeral."));
+	return beats;
+}
+function gameBanks(opts) {
+	const { opp, score, won, margin, where, lead, pts, fg, reb, to, ot, rec, coach } = opts;
+	const boards = reb === 1 ? "1 rebound" : reb > 1 ? `${reb} rebounds` : "";
+	const guy = lead && pts ? `${lead} had ${pts}${fg ? ` on ${fg}` : ""}${boards ? ` and ${boards}` : ""}` : "";
+	const recSentence = rec ? `They're ${rec}.` : "It's early.";
+	const recClause = rec ? `they're ${rec}` : "it's early";
+	const jarred = won ? [
+		`Cats beat ${opp}, ${score}, ${where}.`,
+		`${opp}. Final was ${score}.`,
+		`They got the win. ${score}.`,
+		rec ? `Win. ${score}. ${recSentence}` : `Win. ${score}.`,
+		"Alright, we can start."
+	] : [
+		`Cats lost to ${opp}, ${score}.`,
+		`${opp} got them ${where}. ${score}.`,
+		`Not the result. ${score}.`,
+		"We should just say what happened.",
+		rec ? `Loss. ${recSentence}` : "Loss. Next one matters more."
+	];
+	const kaleb = won ? margin >= 14 ? [
+		"That's closer to how they should look.",
+		"I'll take a comfortable one. Not every night has to be a movie.",
+		"They played like the better team. Good.",
+		"Fine by me."
+	] : [
+		"A win is a win. I didn't love the last few minutes.",
+		"They found enough. That's the job.",
+		ot ? "Overtime and they still got it. I'll sleep." : "Messy, and it still counts.",
+		"I'm good with it."
+	] : margin <= 5 ? [
+		"They had a chance. That's the annoying part.",
+		"One or two plays. I'm not going to pretend it was a blowout.",
+		"That one sits with you.",
+		"Yeah. Stings."
+	] : [
+		"No point dressing that up.",
+		`${opp} was better. Move.`,
+		"I don't want to relitigate every possession.",
+		"Not our night."
+	];
+	const benWin = guy ? `${guy}. ${to ? `They still turned it over ${to} times, which is the part I'll mention if I were on the staff. ` : ""}After that, ${opp} didn't have another run. The Cats were steadier ${where}, and ${recClause}. That's a normal good night, not a coronation.` : `${to ? `${to} turnovers, and they still won ${score}. ` : `They won ${score} ${where}. `}${opp} hung around early and then the game got away from them. ${recSentence} I don't need it to be perfect. I need it to be a win they can build on.`;
+	const benLoss = guy ? `${guy}. That wasn't enough, because ${opp} got the looks they wanted and the Cats didn't answer. ${to ? `${to} turnovers made it worse. ` : ""}${margin <= 5 ? "It was right there." : "It wasn't that close."} ${recSentence} ${coach} has to clean up the simple stuff before this becomes a habit.` : `${opp} controlled it ${where}. ${to ? `The Cats turned it over ${to} times. ` : ""}Final was ${score}. ${recSentence} No conspiracy. Just a game they didn't play well enough.`;
+	const ben = [won ? benWin : benLoss, won ? `I liked parts of it and I didn't like parts of it. ${ot ? "They needed overtime, which tells you it wasn't clean. " : ""}${guy || `The score was ${score}`}. ${where === "on the road" ? "Road wins still count extra, even the ugly ones." : "Home should look like that more often."} ${recSentence}` : `You can tell when a team is searching, and they were searching. ${guy || `${opp} scored enough and got the stops.`}. ${recSentence} I'm not calling for anybody's job. The film is just going to be uncomfortable.`];
+	const trill = [
+		won ? "I caught most of the second half." : "I watched it. Wish I hadn't, a little.",
+		margin >= 14 && won ? "I could've left during the last few minutes." : "How was the crowd?",
+		ot ? "Overtime games age me." : "What did you think of the guard play?",
+		"I don't have a big speech.",
+		won ? "Good win." : "Rough.",
+		"Yeah."
+	];
+	return {
+		[JARRED$1]: jarred,
+		[KALEB$1]: kaleb,
+		[BEN$1]: ben,
+		[TRILL$1]: trill
+	};
+}
+function campBanks(star, bench) {
+	return {
+		[JARRED$1]: [
+			"Camp. The Cats haven't played a game.",
+			"We're on. No results yet.",
+			"Just camp talk.",
+			"No score to argue about."
+		],
+		[KALEB$1]: [
+			star ? `If ${star} is the lead guy, I'm comfortable.` : "I've got the Cats until somebody takes it.",
+			"It's October. I'm still picking them.",
+			"Ask me again in January.",
+			"I'm in."
+		],
+		[BEN$1]: [star ? `I went through the roster and ${star} is the one I'd give the ball to in November. ${bench ? `${bench} is the other name I kept coming back to, because if those minutes are real the rotation gets interesting. ` : ""}Everybody looks fine in October. The real test is who still wants the ball when the first look isn't there.` : "Camp rosters always look deep until somebody has to guard for thirty minutes. I'd rather see who takes the late shot than guess off a practice clip. We do this every fall and then November tells us who was actually ready.", "The useful question is minutes, not slogans. Who closes, who sits, who can guard a bigger wing. We won't know for a few weeks, and pretending we do is how people end up surprised in November."],
+		[TRILL$1]: [
+			"So we're guessing.",
+			"I miss games already.",
+			"Have they even scrimmaged?",
+			"Ok."
+		]
+	};
+}
+function byeBanks(star, rec) {
+	return {
+		[JARRED$1]: [
+			"No game this week.",
+			rec ? `They're off. Record's ${rec}.` : "Bye week.",
+			"Nothing tipped.",
+			"Short one."
+		],
+		[KALEB$1]: [
+			star ? `${star} doesn't need a bye-week speech from me.` : "I'm fine. They'll play again.",
+			rec ? `${rec} is a real record. Enjoy the quiet.` : "Still the team I'd pick.",
+			"We can wait.",
+			"Next week."
+		],
+		[BEN$1]: [rec ? `They're ${rec}, and a week off is useful if they actually rest. I keep wanting to invent a problem because that's what these shows do, and I'm going to try not to. ${star ? `${star} just needs to stay healthy.` : "The rotation needs the rest more than it needs another take."} We'll know more when they play.` : "No game means I don't have a box score to nitpick, which is probably good for everyone in this room. The questions are the same ones: who closes, who defends, who they trust. We get answers when they tip again.", "A bye is just a bye. If they use it to clean up the stuff that showed up last time, great. If they just sit, also fine. Not every week needs a crisis."],
+		[TRILL$1]: [
+			"Then why are we taping?",
+			"I almost forgot to get on.",
+			"Go do something else.",
+			"Fair."
+		]
+	};
+}
+function marchBanks(opts) {
+	const { champ, seed, region, playIn, nit, opp, score, won } = opts;
+	if (champ) return {
+		[JARRED$1]: [
+			"They won it.",
+			"That's the championship.",
+			"I'm going to say it plain. They won.",
+			"Ok. Wow."
+		],
+		[KALEB$1]: [
+			"I had them. I don't need a trophy for saying it.",
+			"Best night of the year.",
+			"That's the whole point of this.",
+			"Yeah. Yeah."
+		],
+		[BEN$1]: ["They were the better team when it counted, and that's the only sentence I trust tonight. Everybody's going to add a speech to it by morning. Right now it's just that they played well, they made the plays, and they get to keep the trophy. I'm happy. I don't have a cleaner way to put it.", "I keep rewinding the last few minutes because I want to see it again, not because I'm looking for a flaw. They earned it. The other team had chances. The Cats answered. That's a championship game."],
+		[TRILL$1]: [
+			"I called my dad. He already knew.",
+			"I'm not going to be normal about this.",
+			"Unreal.",
+			"Go Cats."
+		]
+	};
+	if (seed && region) return {
+		[JARRED$1]: [
+			`They're in. ${seed} seed, ${region}.`,
+			"Selection's out. They made it.",
+			`${seed} in the ${region}.`,
+			"Write the seed down."
+		],
+		[KALEB$1]: [
+			playIn ? "Play-in. Fine. Win it." : "I don't care about the number. They're in.",
+			"Now they have to play.",
+			"Seed arguments are for tomorrow.",
+			"Good."
+		],
+		[BEN$1]: [`It's a ${seed} seed in the ${region}${playIn ? ", and they have to play in the play-in, which nobody loves" : ""}. You can be annoyed about the number. The bracket is the bracket. They have a game, they have a path, and none of that matters if they don't show up Thursday. I'm relieved they're in. That's the honest version.`, "People are going to spend the night arguing the seed. I'd rather look at who they might see in the second weekend, then go to sleep. They're in the tournament. That was the hurdle. The rest is basketball."],
+		[TRILL$1]: [
+			"I refreshed it like six times.",
+			"We can breathe, right?",
+			"Ok.",
+			"Screenshot's saved. Don't ask why."
+		]
+	};
+	const result = opp && score ? won ? `They beat ${opp} ${score}.` : `${opp} beat them ${score}.` : "";
+	return {
+		[JARRED$1]: [
+			nit ? "They're in the other tournament." : "This part of the calendar is miserable.",
+			result || "No score in front of me yet.",
+			"Say it straight.",
+			"Alright."
+		],
+		[KALEB$1]: [
+			nit ? "It's still a game. Play it." : "I don't love the week. I'm still watching.",
+			won ? "They're still alive. Next." : "If it's over, it's over. Don't drag it.",
+			"One game at a time.",
+			"Yeah."
+		],
+		[BEN$1]: [nit ? `The NIT isn't the thing we wanted, and pretending otherwise is how you sound ridiculous. ${result || "They still have games."} Show up, play well, and treat it like basketball. That's all I've got that isn't just disappointment.` : `${result || "We're waiting on a result."} ${won ? "That's how you stay in it. Don't make it bigger than the next game." : opp ? `${opp} was better tonight. You can be mad tomorrow. Tonight the score is the score.` : "This week is just waiting, and waiting makes everybody mean."} I'll be normal about it when I can.`, "March makes people talk like every possession is a referendum. Sometimes it's just a game that went the other way, or a bid that wasn't there. The Cats will be judged on what they actually did. That's fair. The rest is noise."],
+		[TRILL$1]: [
+			"My phone's been hot all day.",
+			"I don't know what to do with my hands.",
+			"Rough week.",
+			"Still here."
+		]
+	};
+}
+function offseasonBanks(star, names) {
+	const list = names.length ? `The names I actually buy are ${names.join(", ")}.` : "Nothing loud has happened yet.";
+	return {
+		[JARRED$1]: [
+			"Nobody's playing. Just phones.",
+			"Offseason check-in.",
+			"Gym's empty.",
+			"We'll keep this short."
+		],
+		[KALEB$1]: [
+			star ? `If ${star} stays, the winter is a lot simpler.` : "Somebody's going to enter. We'll deal with it.",
+			"I can wait for real news.",
+			"Rumors aren't a roster.",
+			"Sure."
+		],
+		[BEN$1]: [`${list} If they need a piece, they'll try to get a piece. If they don't, leave it alone. I don't want a mock lineup in the group chat. I want to know who's actually on the team when practice starts, and we are not there yet.`, star ? `${star} is the decision that matters. Everything else is people filling the quiet. ${list} I'll care more when somebody signs.` : `Minutes, not graphics. ${list} The portal is a tool. It isn't a personality, and it isn't a finished team.`],
+		[TRILL$1]: [
+			"I miss games.",
+			"This is just people texting.",
+			"Is that the whole list?",
+			"I'm out after this."
+		]
+	};
+}
+function youLine(school, won) {
+	return won ? beat(BEN$1, `${school} made them work. Still came up short.`) : beat(KALEB$1, `${school} beat the Cats. That's the score. I'm not adding a speech.`);
+}
+function portalLine() {
+	return beat(JARRED$1, "Portal's open. If they need somebody, go get somebody. Not a whole episode.");
+}
+//#endregion
 //#region src/game/podcast.ts
 var JARRED = "Jarred";
 var BEN = "Ben";
 var KALEB = "Kaleb";
 var TRILL = "Trill Raff";
+var DANA = "Dana";
+var COLE = "Cole";
 var POD_SHOWS = [{
 	id: "catican",
 	name: "The Catican",
@@ -16570,6 +17385,20 @@ var POD_SHOWS = [{
 			name: TRILL
 		}
 	]
+}, {
+	id: "lockedon",
+	name: "Locked On",
+	tagline: "Your school. The record. The last game.",
+	kicker: "Locked On",
+	network: "Locked On",
+	homeId: "kentucky",
+	hosts: [{
+		id: "dana",
+		name: DANA
+	}, {
+		id: "cole",
+		name: COLE
+	}]
 }];
 var CATICAN_ID = "kentucky";
 var RUNTIMES = [
@@ -16584,18 +17413,37 @@ var RUNTIMES = [
 	"1:26:13"
 ];
 var TICKER = [
-	"new one dropped",
-	"stop asking about merch",
-	"go cats",
-	"Barry still isn't coming",
-	"Kaleb made another poll",
-	"Trill unmute"
+	"new episode",
+	"they're talking hoops",
+	"Locked On your school",
+	"Ben watched it back",
+	"Kaleb already has a take"
 ];
-function showOf(id) {
-	return POD_SHOWS.find((s) => s.id === id) ?? POD_SHOWS[0];
+function paintShow(show, state) {
+	if (!state || show.id !== "lockedon") return show;
+	const school = teamOf(state.playerTeamId);
+	return {
+		...show,
+		name: `Locked On ${school.name}`,
+		tagline: `${school.name}, every week. Record, last game, what it means.`,
+		kicker: `${school.mascot} · Locked On`,
+		homeId: state.playerTeamId
+	};
 }
-function podcastTicker() {
-	return TICKER.join("  ·  ");
+function showOf(id, state) {
+	return paintShow(POD_SHOWS.find((s) => s.id === id) ?? POD_SHOWS[0], state);
+}
+function showsFor(state) {
+	return POD_SHOWS.filter((s) => s.id !== "catican" || state.playerTeamId === CATICAN_ID).map((s) => paintShow(s, state));
+}
+function podcastTicker(state) {
+	return (state?.playerTeamId === CATICAN_ID ? TICKER : [
+		"new episode",
+		"they're talking hoops",
+		"Locked On your school",
+		"the last game",
+		"the record"
+	]).join("  ·  ");
 }
 function episodesOf(state, showId) {
 	const all = state.podcasts ?? [];
@@ -16603,12 +17451,18 @@ function episodesOf(state, showId) {
 	return all.filter((e) => e.showId === showId);
 }
 function podcastTease(state) {
-	const ep = (state.podcasts ?? [])[0];
-	if (!ep) return {
-		head: "The Catican",
-		note: "No tape yet. Play a week."
-	};
-	const show = showOf(ep.showId);
+	const ep = (state.podcasts ?? []).find((e) => state.playerTeamId === CATICAN_ID || e.showId !== "catican");
+	if (!ep) {
+		const school = teamOf(state.playerTeamId).name;
+		return state.playerTeamId === CATICAN_ID ? {
+			head: "The Catican",
+			note: "No episode yet. Play a week."
+		} : {
+			head: `Locked On ${school}`,
+			note: "No episode yet. Play a week."
+		};
+	}
+	const show = showOf(ep.showId, state);
 	return {
 		head: ep.title,
 		note: `${show.name} · ${ep.runtime}`
@@ -16636,9 +17490,6 @@ function benchOf(state, teamId) {
 }
 function nm$2(p) {
 	return `${p.first} ${p.last}`;
-}
-function first(p) {
-	return p.first;
 }
 function gameThisWeek(state, teamId) {
 	return [...state.results].reverse().find((r) => r.week === state.week && (r.homeId === teamId || r.awayId === teamId));
@@ -16681,65 +17532,6 @@ function catsBox(r) {
 		ot: (r.minutes ?? 40) > 40
 	};
 }
-function beat(speaker, line) {
-	return {
-		speaker,
-		line
-	};
-}
-function youNote(state, rng) {
-	if (state.playerTeamId === CATICAN_ID) return [];
-	const you = teamOf(state.playerTeamId);
-	const played = [...state.results].reverse().find((r) => r.homeId === CATICAN_ID && r.awayId === state.playerTeamId || r.awayId === CATICAN_ID && r.homeId === state.playerTeamId);
-	if (played && played.week === state.week) {
-		if (won(played, CATICAN_ID)) return pick(rng, [[
-			beat(JARRED, `That's ${you.name}.`),
-			beat(TRILL, `Who.`),
-			beat(JARRED, `The other team.`),
-			beat(TRILL, `Oh. We won though right.`)
-		], [
-			beat(KALEB, `${you.name} thought it was gonna be a thing.`),
-			beat(JARRED, `And.`),
-			beat(KALEB, `It wasn't.`)
-		]]);
-		return pick(rng, [
-			[
-				beat(BEN, `Do we have to say ${you.name}.`),
-				beat(JARRED, `They just beat us.`),
-				beat(BEN, `I know. I'm asking if we have to say it.`)
-			],
-			[
-				beat(KALEB, `Don't say ${you.name}.`),
-				beat(JARRED, `Kaleb.`),
-				beat(KALEB, `I'm not saying it.`)
-			],
-			[beat(TRILL, `${you.name} got us. I had a joke and then I looked at the score. Never mind.`)]
-		]);
-	}
-	const yt = state.teams[state.playerTeamId];
-	if (yt && yt.wins + yt.losses >= 8 && yt.wins >= 12 && yt.prestige >= 78 && rng() < .38) return [beat(pick(rng, [BEN, TRILL]), `Why is ${you.name} on the graphic. I need to go outside.`)];
-	return [];
-}
-function aside(rng) {
-	return pick(rng, [
-		beat(TRILL, "Wait was I muted"),
-		beat(JARRED, "Yes"),
-		beat(KALEB, "Is that a dog"),
-		beat(TRILL, "It's my dog"),
-		beat(BEN, "Someone's eating"),
-		beat(TRILL, "It's leftovers leave me alone"),
-		beat(JARRED, "Can we not"),
-		beat(KALEB, "Chat said calm down"),
-		beat(BEN, "Don't open it"),
-		beat(TRILL, "Hold on door"),
-		beat(JARRED, "You good"),
-		beat(TRILL, "Yeah sorry"),
-		beat(KALEB, "Is my mic weird"),
-		beat(BEN, "It's you"),
-		beat(JARRED, "We're still on just talk"),
-		beat(TRILL, "I muted myself on purpose and then forgot")
-	]);
-}
 function namesFor(state, r) {
 	const out = [];
 	const star = starOf(state, CATICAN_ID);
@@ -16764,419 +17556,358 @@ function namesFor(state, r) {
 	}
 	return out.slice(0, 4);
 }
-function maybeAside(beats, rng) {
-	if (rng() < .34 && beats.length > 3) {
-		const a = aside(rng);
-		const i = 2 + Math.floor(rng() * Math.max(1, beats.length - 2));
-		beats.splice(i, 0, a);
-	}
-	return beats;
+function pack(title, dek, runtime, beats, names, resultId) {
+	return {
+		title,
+		dek,
+		runtime,
+		beats,
+		names,
+		resultId
+	};
 }
-function takeScript(rng, scripts) {
-	return pick(rng, scripts).map((b) => ({
-		speaker: b.speaker,
-		line: b.line
-	}));
+function mentionYou(state) {
+	if (state.playerTeamId === CATICAN_ID) return [];
+	const played = [...state.results].reverse().find((r) => r.homeId === CATICAN_ID && r.awayId === state.playerTeamId || r.awayId === CATICAN_ID && r.homeId === state.playerTeamId);
+	if (!played || played.week !== state.week) return [];
+	return [youLine(teamOf(state.playerTeamId).name, won(played, CATICAN_ID))];
 }
-function caticanPreview(state, rng) {
+function makeCatican(state, rng) {
 	const star = starOf(state, CATICAN_ID);
 	const bench = benchOf(state, CATICAN_ID);
 	const starN = star ? nm$2(star) : null;
-	const starF = star ? first(star) : null;
 	const benchN = bench && bench.id !== star?.id ? nm$2(bench) : null;
-	const title = pick(rng, [
-		"are we on",
-		"trill unmute",
-		"camp I guess",
-		"kaleb already voted",
-		"we haven't played"
-	]);
-	const beats = takeScript(rng, [
-		[
-			beat(JARRED, `Are we on. Cats camp.`),
-			beat(TRILL, `What`),
-			beat(JARRED, `Unmute.`),
-			beat(TRILL, `I am.`),
-			beat(BEN, starN ? `I had the roster up at lunch, I was supposed to be doing something else, and I kept going back to it because I think ${starN} is just their guy, like that's who they're giving the ball to in November and I don't even think that's a question.` : `Roster's long which is not automatically good, somebody's gotta sit and nobody in camp wants to hear that, we do this every October, we pretend twelve guys can play thirty minutes.`),
-			beat(KALEB, `Number one. BBN.`),
-			beat(JARRED, `We haven't played.`),
-			beat(KALEB, `And`),
-			beat(TRILL, benchN ? `Wait. ${benchN} is gonna play more than people think.` : `Wait did they already play.`),
-			beat(JARRED, `No. Camp.`)
-		],
-		[
-			beat(JARRED, `Hold on. Kaleb already started.`),
-			beat(KALEB, `Cats are number one. I was saying it in the car.`),
-			beat(JARRED, `Mics were off.`),
-			beat(KALEB, `Don't care.`),
-			beat(BEN, starN ? `He's not totally wrong about ${starN} which I hate, I watched like four clips at lunch and I kept going back, kid looks like the best player they have until somebody actually guards him, I don't even know what I'm looking for I just keep looking.` : `What I care about is who takes a shot with two minutes left when the first look isn't there, we don't know that yet, we never know that in October and we still sit here for an hour.`),
-			beat(TRILL, `Are we saying they're good`),
-			beat(JARRED, `I think so.`),
-			beat(TRILL, `Cool. I had a burrito.`),
-			beat(JARRED, `Why.`),
-			beat(TRILL, `There's no game.`)
-		],
-		[
-			beat(JARRED, `Hey. Camp. No bits.`),
-			beat(TRILL, `Where's Barry`),
-			beat(JARRED, `No.`),
-			beat(TRILL, `Okay`),
-			beat(BEN, starN && benchN ? `I'm gonna try. ${starN} is the guy. ${benchN} is the one I keep flipping back to on those practice clips because if those minutes are real then November is gonna be messy and somebody's mom is gonna be in the comments.` : `I'm gonna try. Everybody looks like a rotation guy right now until they have to guard a wing for twenty eight minutes and then we'll find out who actually wants to be out there.`),
-			beat(KALEB, starF ? `${starF} on the poster. Poll's up. BBN.` : `I've been waiting since spring. BBN.`),
-			beat(BEN, `You're yelling.`),
-			beat(KALEB, `Yeah.`),
-			beat(JARRED, `Anyway.`)
-		]
-	]);
-	maybeAside(beats, rng);
-	return {
-		title,
-		dek: pick(rng, [
-			"We haven't played.",
-			"Kaleb already voted.",
-			"Trill was muted."
-		]),
-		runtime: pick(rng, RUNTIMES),
-		beats,
-		names: namesFor(state, void 0)
-	};
-}
-function caticanGame(state, rng, r) {
+	const runtime = pick$1(rng, RUNTIMES);
+	const rec = recordOf(state, CATICAN_ID);
+	if (state.phase === "offseason") {
+		const names = portalOf(state).transfers.filter((t) => t.fromId === CATICAN_ID || t.committedTo === CATICAN_ID).slice(0, 3).map((t) => `${t.first} ${t.last}`);
+		return pack(pick$1(rng, [
+			"nobody's playing",
+			"just phones",
+			"is he staying",
+			"offseason"
+		]), names.length ? names.join(", ") : "Quiet so far.", runtime, assemble(rng, offseasonBanks(starN, names)), namesFor(state, void 0));
+	}
+	if (state.phase === "conference" || state.phase === "selection" || state.phase === "ncaa" || state.phase === "nit" || state.phase === "crown") {
+		const sel = state.selection;
+		const bid = sel?.ncaa?.find((b) => b.teamId === CATICAN_ID);
+		const r = gameThisWeek(state, CATICAN_ID);
+		const champ = sel?.champ === CATICAN_ID;
+		return pack(champ ? pick$1(rng, [
+			"they won it",
+			"that's the one",
+			"championship"
+		]) : bid ? pick$1(rng, [
+			`${bid.seed} seed`,
+			"they're in",
+			`${bid.region}`
+		]) : pick$1(rng, [
+			"this week",
+			"selection",
+			"where they landed"
+		]), champ ? "They won the tournament." : bid ? `${bid.seed} seed, ${bid.region}.` : r ? `${scoreLine(r, CATICAN_ID)}.` : "March.", runtime, assemble(rng, marchBanks({
+			champ: Boolean(champ),
+			seed: bid?.seed,
+			region: bid?.region,
+			playIn: bid?.playIn,
+			nit: Boolean(sel?.nit?.includes(CATICAN_ID)),
+			opp: r ? teamOf(oppOf(r, CATICAN_ID)).name : void 0,
+			score: r ? scoreLine(r, CATICAN_ID) : void 0,
+			won: r ? won(r, CATICAN_ID) : void 0
+		})), namesFor(state, r), r?.id);
+	}
+	const r = gameThisWeek(state, CATICAN_ID);
+	if (!r && !state.results.some((x) => x.homeId === CATICAN_ID || x.awayId === CATICAN_ID)) return pack(pick$1(rng, [
+		"camp",
+		"no games yet",
+		"roster talk",
+		"before they tip"
+	]), "They haven't played.", runtime, assemble(rng, campBanks(starN, benchN)), namesFor(state, void 0));
+	if (!r) return pack(pick$1(rng, [
+		"no game",
+		"bye week",
+		"off this week",
+		"nothing tipped"
+	]), rec ? `They're ${rec}. No game.` : "No game.", runtime, assemble(rng, byeBanks(starN, rec)), namesFor(state, void 0));
 	const opp = teamOf(oppOf(r, CATICAN_ID)).name;
-	const line = scoreLine(r, CATICAN_ID);
+	const score = scoreLine(r, CATICAN_ID);
 	const w = won(r, CATICAN_ID);
 	const margin = Math.abs(r.homeScore - r.awayScore);
 	const lead = leadName(state, r, CATICAN_ID);
-	const leadN = lead?.name ?? null;
-	const leadF = lead ? lead.name.split(" ")[0] : null;
-	const leadPts = lead?.pts;
-	const coach = catsCoach(state);
-	const rec = recordOf(state, CATICAN_ID);
-	const extra = youNote(state, rng);
 	const box = catsBox(r);
-	const title = w ? margin >= 16 ? pick(rng, [
-		`they handled ${opp}`,
-		`yeah they won`,
-		`${line} lol`
-	]) : pick(rng, [
-		`we survived`,
-		`${line}`,
-		`past ${opp}`
-	]) : margin <= 4 ? pick(rng, [
-		`I need a walk`,
-		`one possession`,
-		`${line} ugh`
-	]) : pick(rng, [
-		`${opp} got us`,
-		`I don't want to`,
-		`yeah that one`
-	]);
-	const blowoutWin = [[
-		beat(JARRED, `They won. ${line}.`),
-		beat(KALEB, `Obviously.`),
-		beat(BEN, leadPts && box.fg ? `Yeah they got cooked, ${leadN} had ${leadPts} on ${box.fg} and then ${opp} just stopped, I was eating and I forgot I was eating, I looked down and the plate was still full.` : leadPts ? `Yeah they got cooked, ${leadN} had ${leadPts} and then ${opp} just stopped, I was eating and I forgot I was eating, I looked down and the plate was still full.` : `Yeah they got cooked, after like eight minutes ${opp} was just waiting on the clock, I was eating and I forgot I was eating, I looked down and the plate was still full.`),
-		beat(TRILL, `What were you eating`),
-		beat(BEN, `What`),
-		beat(TRILL, `You said you were eating.`),
-		beat(JARRED, `Can we not.`),
-		beat(KALEB, rec ? `Poll stays. ${rec}. Number one.` : `Told you.`),
-		beat(TRILL, `They won though right.`),
-		beat(JARRED, `Yes.`)
-	], [
-		beat(JARRED, `Mics up. They won. ${line}.`),
-		beat(BEN, box.to ? `It was over after the first timeout, they still had ${box.to} turnovers and they were hunting those long twos I hate, I'll take it, I have work tomorrow and I would like to sleep.` : `It was over after the first timeout, they were hunting those long twos I hate, I'll take it, I have work tomorrow and I would like to sleep.`),
-		beat(JARRED, `Kaleb.`),
-		beat(KALEB, `I'm talking.`),
-		beat(KALEB, leadF ? `${leadF} was the best player in the gym. If he does that in March I am going to be impossible to live with.` : `Cats get one. I don't want to hear about the last four minutes.`),
-		beat(TRILL, `I missed the dunk I was on my phone.`),
-		beat(BEN, `Of course you did.`),
-		beat(JARRED, `Anyway.`)
-	]];
-	const closeWin = [[
-		beat(JARRED, `Cats got it. ${line}. Last four minutes though.`),
-		beat(KALEB, `They won.`),
-		beat(JARRED, `I know.`),
-		beat(KALEB, `So`),
-		beat(BEN, leadPts ? `No because they had it and then they started chucking, I was sitting there going walk it in walk it in and they did not walk it in, ${leadN} had ${leadPts} which is fine, the empty possessions after the under four were not fine, I was standing in my kitchen.` : box.to ? `No because they had it and then they started chucking, ${box.to} turnovers, I was sitting there going walk it in walk it in and they did not, empty possessions after the under four, I was standing in my kitchen for no reason.` : `No because they had it and then they started chucking, I was sitting there going walk it in walk it in and they did not walk it in, I was standing in my kitchen for no reason.`),
-		beat(TRILL, `I missed that I was in the chat.`),
-		beat(KALEB, `They won though.`),
-		beat(BEN, `I know they won.`),
-		beat(JARRED, `Everybody stop.`)
-	], [
-		beat(JARRED, r.homeId === CATICAN_ID ? `Home. ${line}. Breathe.` : `Road. ${line}. Kaleb wait.`),
-		beat(BEN, box.ot ? `I liked the spacing for a while and then they needed overtime and I was walking around my apartment like that was going to help, they still got it, I am drinking water like a crazy person.` : `I liked the spacing for a while, second half got sloppy, turnovers, those long twos again, they still got it, I am taking that to bed with me whether Kaleb likes it or not.`),
-		beat(KALEB, rec ? `Ugly. Still ${rec}. Still counts.` : `Ugly still counts.`),
-		beat(JARRED, `I know.`),
-		beat(TRILL, `Go Cats`),
-		beat(JARRED, `Ball security. Tomorrow.`)
-	]];
-	const closeLoss = [[
-		beat(JARRED, `They lost. ${line}. ${opp}.`),
-		beat(KALEB, `Don't.`),
-		beat(JARRED, `I'm saying it.`),
-		beat(BEN, leadN ? `${leadN} did what he could and then the extra pass died like four times in the last six minutes, that's how you lose a game you already had, I tried to go to sleep and I just sat there looking at my phone.` : box.ot ? `One possession, overtime, I walked to the fridge and forgot why I was there, the shot chart's gonna look fine tomorrow, watching it was not fine.` : `One possession. I walked to the fridge and forgot why I was there. I tried to go to sleep and I just sat there looking at my phone.`),
-		beat(KALEB, leadN ? `You cannot leave ${leadN} out there and brick the kick-out. That's how you lose to ${opp}. That's how you lose to anybody.` : `The last six minutes. I can't. I liked the first thirty four and then they just... I can't.`),
-		beat(TRILL, `I had food out. I don't want it.`),
-		beat(JARRED, `Go to bed.`)
-	], [
-		beat(JARRED, `We lost. Sit down. ${line}.`),
-		beat(BEN, `${opp} punched first and we chased the rest of the night, you could feel it from the jump, I keep wanting to say it was one possession so it's fine and it's not fine, I don't know man.`),
-		beat(TRILL, `Get Barry.`),
-		beat(JARRED, `No.`),
-		beat(KALEB, `I'm not firing ${coach}. I'm just saying.`),
-		beat(BEN, `Say it tomorrow.`),
-		beat(JARRED, `Yeah.`)
-	]];
-	const blowoutLoss = [[
-		beat(JARRED, `Yeah. That one. ${line}.`),
-		beat(BEN, box.to ? `They got cooked. ${box.to} turnovers, ${opp} punched, we chased, then we stopped chasing, I turned it off, I turned it back on, still cooked, I don't know why I did that.` : `They got cooked. ${opp} punched, we chased, then we stopped chasing, I turned it off, I turned it back on, still cooked, I don't know why I did that.`),
-		beat(KALEB, `I'm going outside.`),
-		beat(TRILL, `It's cold.`),
-		beat(KALEB, `Don't care.`),
-		beat(JARRED, `Don't tweet.`),
-		beat(KALEB, `I'm not.`),
-		beat(JARRED, `You are.`),
-		beat(TRILL, `${opp}. What.`)
-	], [
-		beat(JARRED, `We lost. Wasn't close. ${line}.`),
-		beat(BEN, leadN ? `${leadN} couldn't do it by himself and we asked him to, everybody else just kind of watched, it was gone by the second timeout, I don't have a nicer way to say that, they weren't in it.` : `It was gone by the second timeout, they weren't in it, you could tell they knew, I don't have a nicer way to say that.`),
-		beat(KALEB, `I—`),
-		beat(JARRED, `Not yet.`),
-		beat(KALEB, `Fine`),
-		beat(TRILL, `I was gonna joke. I'm not. ${opp}.`),
-		beat(KALEB, `Now`),
-		beat(JARRED, `Short.`),
-		beat(KALEB, `I'm not firing ${coach}. I'm also not calm.`),
-		beat(JARRED, `Go home.`)
-	]];
-	const beats = takeScript(rng, w ? margin >= 16 ? blowoutWin : closeWin : margin <= 4 ? closeLoss : blowoutLoss);
-	maybeAside(beats, rng);
-	if (portalOpen(state) && rng() < .52) beats.push(pick(rng, [
-		beat(BEN, `Portal's open so the replies think they're the GM. If they need a guy, go get a guy. I'm going to bed.`),
-		beat(KALEB, `Go get a guy if you need a guy.`),
-		beat(JARRED, `We're not doing roster stuff right now. Tomorrow.`)
-	]));
-	if (extra.length) beats.push(...extra);
+	const where = r.homeId === CATICAN_ID ? "at home" : "on the road";
+	const beats = assemble(rng, gameBanks({
+		opp,
+		score,
+		won: w,
+		margin,
+		where,
+		lead: lead?.name ?? null,
+		pts: lead?.pts,
+		fg: box.fg,
+		reb: box.reb,
+		to: box.to,
+		ot: box.ot,
+		rec,
+		coach: catsCoach(state)
+	}));
+	beats.push(...mentionYou(state));
+	if (portalOpen(state) && rng() < .35) beats.push(portalLine());
+	return pack(w ? margin >= 16 ? pick$1(rng, [
+		lead ? `${lead.name.split(" ")[0]} went off` : `They handled ${opp}`,
+		"Comfortable night",
+		`${opp} had no answer`,
+		where === "at home" ? "Rupp was easy" : `Easy one at ${opp}`,
+		score
+	]) : pick$1(rng, [
+		lead ? `${lead.name.split(" ")[0]} and a win` : `Past ${opp}`,
+		"They got it",
+		`${opp}, not comfortably`,
+		"Good enough",
+		score
+	]) : margin <= 4 ? pick$1(rng, [
+		`${opp}, one possession`,
+		"That one stings",
+		"They had the last shot",
+		score,
+		"Should have had it"
+	]) : pick$1(rng, [
+		`${opp} got them`,
+		"Not their night",
+		`${opp} was the better team`,
+		"Ugly film",
+		score
+	]), `${score} ${where}.${rec ? ` ${rec}.` : ""}`, runtime, beats, namesFor(state, r), r.id);
+}
+function teamNames(state, teamId, r) {
+	const out = [];
+	const star = starOf(state, teamId);
+	if (star) out.push({
+		name: nm$2(star),
+		id: star.id,
+		kind: "player"
+	});
+	const bench = benchOf(state, teamId);
+	if (bench && bench.id !== star?.id) out.push({
+		name: nm$2(bench),
+		id: bench.id,
+		kind: "player"
+	});
+	if (r) {
+		const lead = leadName(state, r, teamId);
+		if (lead && !out.some((n) => n.id === lead.id)) out.push({
+			name: lead.name,
+			id: lead.id,
+			kind: "player"
+		});
+	}
+	return out.slice(0, 4);
+}
+function recentForm(state, teamId) {
+	const games = state.results.filter((r) => r.homeId === teamId || r.awayId === teamId).slice(-5);
+	let w = 0;
+	let l = 0;
+	for (const r of games) if (won(r, teamId)) w += 1;
+	else l += 1;
 	return {
-		title,
-		dek: w ? pick(rng, [
-			`${line}. Nobody stayed calm.`,
-			`Win. They still picked at it.`,
-			`They got the one.`
-		]) : pick(rng, [
-			`${opp}. Don't tweet.`,
-			`${line}. Sit down.`,
-			`Loss. Kaleb go outside.`
-		]),
-		runtime: pick(rng, RUNTIMES),
-		beats,
-		resultId: r.id,
-		names: namesFor(state, r)
+		w,
+		l,
+		n: games.length
 	};
 }
-function caticanBye(state, rng) {
-	const star = starOf(state, CATICAN_ID);
-	const rec = recordOf(state, CATICAN_ID);
-	const title = pick(rng, [
-		"no game",
-		"then why are we here",
-		"bye week",
-		"off"
-	]);
-	const beats = takeScript(rng, [
-		[
-			beat(JARRED, `No game.`),
-			beat(TRILL, `Then why are we here.`),
-			beat(JARRED, `You said tape.`),
-			beat(TRILL, `I didn't have anything else on.`),
-			beat(BEN, rec ? `I keep opening the schedule like something's gonna pop up. They're ${rec} which is a real record, I just don't know if it's a real team yet because we haven't seen them on a random Wednesday in January.` : `They're off and I'm inventing problems, I made coffee, it didn't help, I keep opening the schedule like a crazy person.`),
-			beat(KALEB, star ? `${nm$2(star)} should not be a secret. National people can catch up whenever.` : `Number one. Next.`),
-			beat(JARRED, `There's no game.`),
-			beat(KALEB, `Correct.`)
-		],
-		[
-			beat(JARRED, `Bye week. Trill wanted to tape.`),
-			beat(TRILL, `Yeah.`),
-			beat(JARRED, `That's not a reason.`),
-			beat(TRILL, `We're already here.`),
-			beat(BEN, rec ? `Record's ${rec}. Eye test is mostly matching it I think. I keep almost saying something loud and then I remember they haven't played this week, which is growth for me, sort of.` : `I have notes on a game that did not happen. I'm gonna sit on them. That's the most professional I've been all year.`),
-			beat(KALEB, star ? `I've got ${first(star)} as the best player in the league and I'm not taking questions.` : `Still number one. I don't need a game.`),
-			beat(JARRED, `Come back when they play.`)
-		],
-		[
-			beat(JARRED, `Nothing tipped. Chat's still going.`),
-			beat(KALEB, rec ? `They're ${rec}. I'm fine.` : `I'm fine.`),
-			beat(BEN, star ? `I'll just say ${nm$2(star)} has to keep the usage honest, if the shots are there take them, if they're not make somebody else be a grown-up for once, that's all I got, there's no game.` : `It's minutes, who has them, who should have them, we don't get to find out until they play again and I hate guessing on a bye week.`),
-			beat(TRILL, `Wait. Are we doing a show.`),
-			beat(JARRED, `Apparently.`),
-			beat(TRILL, `Go Cats`),
-			beat(JARRED, `Goodnight.`)
-		]
-	]);
-	maybeAside(beats, rng);
+function streakLine(state, teamId) {
+	const games = state.results.filter((r) => r.homeId === teamId || r.awayId === teamId);
+	if (!games.length) return "";
+	const lastWin = won(games[games.length - 1], teamId);
+	let n = 0;
+	for (let i = games.length - 1; i >= 0; i--) {
+		if (won(games[i], teamId) !== lastWin) break;
+		n += 1;
+	}
+	if (n < 2) return "";
+	return `${n}-game ${lastWin ? "winning" : "losing"} streak`;
+}
+var LOCKED_TIMES = [
+	"26:40",
+	"29:18",
+	"31:55",
+	"34:02",
+	"36:44",
+	"38:11",
+	"41:07"
+];
+function say(speaker, line) {
 	return {
-		title,
-		dek: pick(rng, [
-			"No game.",
-			"Trill had nothing else on.",
-			"Chat didn't sleep."
-		]),
-		runtime: pick(rng, RUNTIMES),
-		beats,
-		names: namesFor(state, void 0)
+		speaker,
+		line
 	};
 }
-function caticanMarch(state, rng) {
-	const sel = state.selection;
-	const bid = sel?.ncaa?.find((b) => b.teamId === CATICAN_ID);
-	const r = gameThisWeek(state, CATICAN_ID);
-	const champ = sel?.champ === CATICAN_ID;
-	const title = champ ? pick(rng, [
-		"they won it",
-		"stop",
-		"they did it"
-	]) : bid ? pick(rng, [
-		`${bid.seed} seed`,
-		`we got in`,
-		`they're in`
-	]) : pick(rng, [
-		"this week sucks",
-		"did we make it",
-		"selection"
-	]);
-	const champTape = [[
-		beat(JARRED, `They won it.`),
-		beat(TRILL, `Stop.`),
-		beat(JARRED, `They won the whole thing.`),
-		beat(KALEB, `I told you. Camp. I have the texts.`),
-		beat(BEN, `I don't have anything, I keep smiling and my face hurts, they were the best team tonight I don't know what else you want from me, I have been waiting to say that and now I said it and I still don't believe it.`),
-		beat(TRILL, `I called my dad.`),
-		beat(JARRED, `What'd he say.`),
-		beat(TRILL, `He already knew.`),
-		beat(KALEB, `BBN.`),
-		beat(JARRED, `Go Cats.`)
-	], [
-		beat(JARRED, `Okay. They just won the whole thing.`),
-		beat(TRILL, `I'm gone.`),
-		beat(KALEB, `I told you. I have the texts.`),
-		beat(BEN, `You did, he did, I hate that he did, they were the best team tonight and that's the only sentence I have that isn't just yelling, my hands are shaking, I'm gonna sit on the floor.`),
-		beat(JARRED, `Go Cats.`),
-		beat(KALEB, `Go Cats.`),
-		beat(TRILL, `Go Cats.`)
-	]];
-	const inTape = [[
-		beat(JARRED, `They're in. ${bid?.seed} seed.`),
-		beat(TRILL, `Wait we got in.`),
-		beat(JARRED, `Yes.`),
-		beat(KALEB, `I knew.`),
-		beat(TRILL, `I didn't.`),
-		beat(BEN, `I keep refreshing the graphic, ${bid?.seed} seed ${bid?.region}${bid?.playIn ? ", play-in which I hate saying" : ""}, you can be mad about the number, I don't care, they're in, my hands are cold, I need to go outside.`),
-		beat(KALEB, `If you're calm I don't trust you.`),
-		beat(JARRED, `Nobody's calm.`),
-		beat(TRILL, `I screenshotted it.`),
-		beat(JARRED, `Why.`),
-		beat(TRILL, `I don't know.`)
-	], [
-		beat(JARRED, `${bid?.seed} in the ${bid?.region}. Write it down.`),
-		beat(TRILL, `We got in.`),
-		beat(KALEB, `Told you.`),
-		beat(BEN, `It's a real seed, don't let the internet talk you into a heart attack before Thursday, the games still have to be played, I know that sounds boring, it's the only true thing I have tonight.`),
-		beat(JARRED, `Call somebody. Don't tweet.`)
-	]];
-	const otherTape = [[
-		beat(JARRED, `I don't love this week.`),
-		beat(BEN, sel?.nit?.includes(CATICAN_ID) ? `They're in the other tournament. I'm not doing a whole thing about it. It's still basketball. Play the games. I already said that twice in the chat and I'm saying it again because I don't have anything else.` : r ? won(r, CATICAN_ID) ? `Cats ${scoreLine(r, CATICAN_ID)}. That's how you stay alive. Next. I keep trying to make it bigger than it is and I also keep trying to make it smaller and both of those are me coping.` : `${teamOf(oppOf(r, CATICAN_ID)).name} sent us home ${scoreLine(r, CATICAN_ID)}. I'll be normal about it later. Not tonight. I tried to watch something else and I put it back on.` : `We don't have a score yet and I'm already sweating, I hate this part of the calendar, I also cannot look away from it, that's the whole month, I know.`),
-		beat(KALEB, pick(rng, [`Committee can keep the envelopes. We have a poll. One team in it.`, `If this ends early I am going to be unwell. BBN.`])),
-		beat(TRILL, `Go Cats.`),
-		beat(TRILL, `If we lose I'm deleting the app. I'm not. I am. I'm not.`),
-		beat(JARRED, `Don't open Twitter.`)
-	], [
-		beat(JARRED, `Somebody talk.`),
-		beat(KALEB, `They're the Cats. I don't care what a committee thinks.`),
-		beat(BEN, r && !won(r, CATICAN_ID) ? `${teamOf(oppOf(r, CATICAN_ID)).name} got us ${scoreLine(r, CATICAN_ID)}. That's the result. Everything else is coping and I say that as someone standing in my kitchen coping poorly with a bag of chips.` : `If they're in they're in, if they're not we play whoever's in front of us, I'm not doing the envelope thing on here, I don't have the stomach for it.`),
-		beat(TRILL, `My phone's hot.`),
-		beat(JARRED, `Water. Thursday.`)
-	]];
-	const beats = takeScript(rng, champ ? champTape : bid ? inTape : otherTape);
-	maybeAside(beats, rng);
-	return {
-		title,
-		dek: champ ? pick(rng, ["They won it.", "Go Cats."]) : pick(rng, [
-			"Try to sleep.",
-			"Don't open Twitter.",
-			"Nobody's calm."
-		]),
-		runtime: pick(rng, RUNTIMES),
-		beats,
-		resultId: r?.id,
-		names: namesFor(state, r)
-	};
-}
-function caticanOffseason(state, rng) {
-	const portal = portalOf(state).transfers.filter((t) => t.fromId === CATICAN_ID || t.committedTo === CATICAN_ID);
-	const star = starOf(state, CATICAN_ID);
-	const names = portal.slice(0, 3).map((t) => `${t.first} ${t.last}`);
-	const title = pick(rng, [
-		"nobody's playing",
-		"is he staying",
-		"then hang up",
-		"phones"
-	]);
-	const beats = takeScript(rng, [
-		[
-			beat(JARRED, `Nobody's playing.`),
-			beat(TRILL, `Then hang up.`),
-			beat(JARRED, `You're muted half the time anyway.`),
-			beat(KALEB, star ? `If ${nm$2(star)} stays we talk title. If he walks we talk for ten seconds and then we lie about it.` : `Somebody's gonna enter. Somebody's gonna land. I'll have a take in ninety seconds.`),
-			beat(BEN, portal.length ? `Names I actually believe: ${names.join(", ")}. That's the list. Don't send me a mock, I will not look at it, I have to be at work in the morning.` : `They haven't blown anything up yet which is a good morning, it might not last, I'll take the quiet, don't send me a mock I will not look at it.`),
-			beat(TRILL, `I miss games.`),
-			beat(JARRED, `Same.`),
-			beat(TRILL, `This is just phones.`),
-			beat(JARRED, `Yeah. We're done.`)
-		],
-		[
-			beat(JARRED, `Gym's empty. Phones aren't.`),
-			beat(KALEB, star ? `${first(star)} is the whole winter. Don't complicate it.` : `I'm building the superteam anyway.`),
-			beat(JARRED, `It's May.`),
-			beat(KALEB, `And`),
-			beat(BEN, portal.length ? `A few names in, a few names out. If they need a piece they'll get a piece. Don't text me a mock at lunch, I will see it and I will be mad about it for no reason.` : `Nothing loud yet. Enjoy it. The loud part always finds us, usually around lunch, usually from a guy with a fake insider name.`),
-			beat(TRILL, `Is this the phone episode.`),
-			beat(JARRED, `Yes. I'm out.`)
-		],
-		[
-			beat(JARRED, `I turned the mics on. Already regret it.`),
-			beat(TRILL, `Where's Barry`),
-			beat(JARRED, `It's May.`),
-			beat(TRILL, `Still`),
-			beat(BEN, star ? `If we're doing this, ${nm$2(star)} is the decision. Everything else is noise. I don't care what mock has a four-star wing landing on Tuesday.` : `If we're doing this, minutes not vibes, the portal is a tool, it is not a personality, I am so tired of explaining that to people who think a graphic is a roster.`),
-			beat(KALEB, `Culture is winning. That's it.`),
-			beat(JARRED, `I'm going outside.`)
-		]
-	]);
-	maybeAside(beats, rng);
-	return {
-		title,
-		dek: pick(rng, [
-			"Nobody's playing.",
-			"Then hang up.",
-			"Phones."
-		]),
-		runtime: pick(rng, RUNTIMES),
-		beats,
-		names: namesFor(state, void 0)
-	};
-}
-function makeCatican(state, rng) {
-	if (state.phase === "offseason") return caticanOffseason(state, rng);
-	if (state.phase === "preseason") return caticanPreview(state, rng);
-	if (state.phase === "conference" || state.phase === "selection" || state.phase === "ncaa" || state.phase === "nit" || state.phase === "crown") return caticanMarch(state, rng);
-	const r = gameThisWeek(state, CATICAN_ID);
-	if (r) return caticanGame(state, rng, r);
-	if (!state.results.some((x) => x.homeId === CATICAN_ID || x.awayId === CATICAN_ID)) return caticanPreview(state, rng);
-	return caticanBye(state, rng);
+function makeLockedOn(state, rng) {
+	const id = state.playerTeamId;
+	const name = teamOf(id).name;
+	const runtime = pick$1(rng, LOCKED_TIMES);
+	const rt = state.teams[id];
+	const rec = recordOf(state, id);
+	const conf = rt && rt.confW + rt.confL > 0 ? `${rt.confW}-${rt.confL} in conference` : "";
+	const home = rt ? `${rt.homeW}-${rt.homeL} at home` : "";
+	const form = recentForm(state, id);
+	const formLine = form.n ? `Last ${form.n} is ${form.w}-${form.l}.` : "";
+	const streak = streakLine(state, id);
+	const star = starOf(state, id);
+	const starN = star ? nm$2(star) : null;
+	const coach = identityName(state.identity);
+	if (state.phase === "offseason") {
+		const portal = portalOf(state).transfers.filter((t) => t.fromId === id || t.committedTo === id);
+		const leaving = portal.filter((t) => t.fromId === id).map((t) => `${t.first} ${t.last}`);
+		const arriving = portal.filter((t) => t.committedTo === id).map((t) => `${t.first} ${t.last}`);
+		const bits = [leaving.length ? `Out: ${leaving.slice(0, 3).join(", ")}.` : "Nobody notable has left.", arriving.length ? `In: ${arriving.slice(0, 3).join(", ")}.` : "Nobody has signed in yet."].join(" ");
+		return pack(pick$1(rng, [
+			leaving[0] ? `${leaving[0].split(" ")[0]} is out` : "Summer desk",
+			arriving[0] ? `${arriving[0].split(" ")[0]} is in` : "Who's coming back",
+			starN ? `${starN.split(" ")[0]} and the summer` : "No games, just the roster",
+			"The portal, then the gym",
+			rec ? `They finished ${rec}` : "Offseason, no spin"
+		]), bits, runtime, [
+			say(DANA, `Locked On ${name}. The season is over. ${rec ? `They finished ${rec}.` : "The record is in the book."}`),
+			say(COLE, bits),
+			say(DANA, starN ? `${starN} is the name that decides how next winter feels.` : "The roster is the whole show until they tip again."),
+			say(COLE, `${coach} has the summer. Minutes, not rumors, are what we'll grade.`),
+			say(DANA, "We'll be back when there's a game that counts.")
+		], teamNames(state, id, void 0));
+	}
+	if (state.phase === "conference" || state.phase === "selection" || state.phase === "ncaa" || state.phase === "nit" || state.phase === "crown") {
+		const sel = state.selection;
+		const bid = sel?.ncaa?.find((b) => b.teamId === id);
+		const r = gameThisWeek(state, id);
+		const champ = sel?.champ === id;
+		const opp = r ? teamOf(oppOf(r, id)).name : "";
+		const score = r ? scoreLine(r, id) : "";
+		const w = r ? won(r, id) : false;
+		const lead = r ? leadName(state, r, id) : null;
+		return pack(champ ? pick$1(rng, [
+			"They cut the nets",
+			"Banner night",
+			"That's the one",
+			`${name} won it`
+		]) : bid ? pick$1(rng, [
+			`${bid.seed} line, ${bid.region}`,
+			bid.playIn ? "Play-in first" : `A ${bid.seed} seed`,
+			"The committee's number",
+			`${bid.region} bracket`
+		]) : r ? pick$1(rng, w ? [
+			`Past ${opp}`,
+			`${opp}, and they're still alive`,
+			score,
+			"March win"
+		] : [
+			`${opp} ends it`,
+			`Out to ${opp}`,
+			score,
+			"Season's over"
+		]) : pick$1(rng, [
+			"March, no game yet",
+			"Waiting on the bracket",
+			rec ? `The résumé is ${rec}` : "Selection week"
+		]), champ ? `National champions. ${rec}.` : bid ? `${bid.seed} seed, ${bid.region}. ${rec}.` : r ? `${score} against ${opp}.` : rec, runtime, [
+			say(DANA, champ ? `Locked On ${name}. They won the tournament. ${rec ? `The year ends ${rec}.` : ""}`.trim() : bid ? `Locked On ${name}. The committee put them on the ${bid.seed} line in ${bid.region}${bid.playIn ? ", play-in" : ""}.` : `Locked On ${name}. March, and the résumé is ${rec || "still thin"}.`),
+			say(COLE, r ? `${w ? "Win" : "Loss"} against ${opp}, ${score}. ${lead?.pts ? `${lead.name} had ${lead.pts}.` : ""} ${formLine}`.replace(/\s+/g, " ").trim() : `${formLine || "No game in the book this week."} ${conf}`.trim()),
+			say(DANA, sel?.nit?.includes(id) && !bid ? "No NCAA bid. The NIT is the season they have left." : champ ? "That's the banner. Everything else was a step." : bid ? `A ${bid.seed} is the job in front of them, not a trophy.` : "The bracket is the performance now. The regular season is context."),
+			say(COLE, streak ? `${streak}. ${home}.` : home || "One game at a time from here."),
+			say(DANA, "That's the show. Same team next time.")
+		], teamNames(state, id, r), r?.id);
+	}
+	const r = gameThisWeek(state, id);
+	const played = state.results.some((x) => x.homeId === id || x.awayId === id);
+	if (!r && !played) {
+		const exp = state.expectations;
+		return pack(pick$1(rng, [
+			starN ? `${starN.split(" ")[0]} is the plan` : "Before they tip",
+			exp ? `Win total: ${exp.wins}` : "Camp, not results",
+			"No games yet",
+			"The rotation is a guess"
+		]), exp ? `Win total: ${exp.wins}.` : "No games yet.", runtime, [
+			say(DANA, `Locked On ${name}. They have not played a game that counts.`),
+			say(COLE, starN ? `${starN} is the first option. The rest of the rotation has to prove it.` : "The rotation is still a guess."),
+			say(DANA, exp ? `The preseason win total is ${exp.wins}. ${exp.note}` : `${coach} does not have a result to hide behind yet.`),
+			say(COLE, "Camp talk is cheap. The first loss or the first comfortable win will tell us more than this episode."),
+			say(DANA, "We'll do this every week once the ball is live.")
+		], teamNames(state, id, void 0));
+	}
+	if (!r) return pack(pick$1(rng, [
+		"Bye week",
+		"Nothing tipped",
+		streak || "A week off the floor",
+		rec ? `${rec}, and they sit` : "Off this week"
+	]), rec ? `${rec}. No game this week.` : "No game this week.", runtime, [
+		say(DANA, `Locked On ${name}. Bye week. ${rec ? `They're ${rec}.` : "No line in the book yet."}`),
+		say(COLE, [
+			formLine,
+			conf,
+			home,
+			streak
+		].filter(Boolean).join(" ") || "Nothing new on the floor."),
+		say(DANA, starN ? `The week off does not change what ${starN} has to be when they play again.` : "An off week does not move the résumé."),
+		say(COLE, "We'll pick it up when they actually tip.")
+	], teamNames(state, id, void 0));
+	const opp = teamOf(oppOf(r, id)).name;
+	const score = scoreLine(r, id);
+	const w = won(r, id);
+	const margin = Math.abs(r.homeScore - r.awayScore);
+	const where = r.homeId === id ? "at home" : "on the road";
+	const lead = leadName(state, r, id);
+	const row = (r.homeId === id ? r.recap?.homeLeaders : r.recap?.awayLeaders)?.[0];
+	const fg = row && row.fga ? `${row.fgm} for ${row.fga}` : "";
+	const boards = row?.reb ? `${row.reb} rebounds` : "";
+	const dimes = row?.ast ? `${row.ast} assists` : "";
+	const guy = lead ? `${lead.name}${lead.pts != null ? ` had ${lead.pts}` : ""}${fg ? ` on ${fg}` : ""}${boards ? `, ${boards}` : ""}${dimes ? `, ${dimes}` : ""}.` : "No one line jumped off the box.";
+	const read = w ? margin >= 16 ? "They looked like the better team for most of the night. That's the version you want on film." : margin <= 4 ? "A win, and it was tight. The record will not say how nervous it was." : "They got it done. Not a masterpiece, and it still counts." : margin <= 4 ? "They had a real chance. One or two possessions the other way and this episode sounds different." : `${opp} was the better team. No reason to dress the margin up.`;
+	const first = lead?.name.split(" ")[0];
+	return pack(w ? margin >= 16 ? pick$1(rng, [
+		first ? `${first}'s night` : `They rolled ${opp}`,
+		`${opp} never had it`,
+		`${margin} points, no drama`,
+		`Comfortable one against ${opp}`,
+		score
+	]) : margin <= 4 ? pick$1(rng, [
+		`${opp}, one possession`,
+		first ? `${first} at the end` : `${name} survives`,
+		"It was tight",
+		`${score}, and thinner than that`,
+		`Survived ${opp}`
+	]) : pick$1(rng, [
+		`Past ${opp}`,
+		first ? `${first} showed up` : "They got the win",
+		where === "at home" ? "Home win" : `Road win at ${opp}`,
+		streak || score,
+		`Not pretty, still ${opp}`
+	]) : margin <= 4 ? pick$1(rng, [
+		`${opp} by a possession`,
+		"They had it",
+		first ? `${first} wasn't enough` : `${score} the wrong way`,
+		`One or two plays against ${opp}`,
+		"That one sits"
+	]) : pick$1(rng, [
+		`${opp} was better`,
+		`Not ${name}'s night`,
+		first ? `Quiet night for ${first}` : `${opp} ran them off it`,
+		where === "at home" ? `Home loss to ${opp}` : `Road loss at ${opp}`,
+		score
+	]), `${score} ${where}. ${rec ? `Season ${rec}.` : ""}`.trim(), runtime, [
+		say(DANA, `Locked On ${name}. ${w ? "Win" : "Loss"} ${where} against ${opp}, ${score}. ${rec ? `The year is ${rec}.` : ""}`.replace(/\s+/g, " ").trim()),
+		say(COLE, [
+			conf,
+			home,
+			formLine,
+			streak
+		].filter(Boolean).join(" ") || "Still early."),
+		say(DANA, guy),
+		say(COLE, read),
+		say(DANA, `${coach} does not get a trophy for the explanation. The next game is the correction.`),
+		say(COLE, "That's the performance. We'll be back after the next one.")
+	], teamNames(state, id, r), r.id);
 }
 function buildEpisode(state, show, rng) {
-	const body = show.id === "catican" ? makeCatican(state, rng) : makeCatican(state, rng);
+	const body = show.id === "lockedon" ? makeLockedOn(state, rng) : makeCatican(state, rng);
 	const week = state.phase === "preseason" ? 0 : state.week;
 	return {
 		id: `${show.id}-${state.season}-${week}-${state.phase}-${state.results.length}`,
@@ -17187,16 +17918,23 @@ function buildEpisode(state, show, rng) {
 		...body
 	};
 }
+function catalogOf(state, showId) {
+	const stored = episodesOf(state, showId);
+	if (showId !== "lockedon" || stored.length > 0) return stored;
+	const roll = mulberry32(state.seed ^ hashString("locked-live") ^ state.results.length ^ state.week);
+	return [buildEpisode(state, showOf("lockedon", state), roll)];
+}
 function tickPodcasts(state, rng) {
 	const roll = rng ?? mulberry32(state.seed ^ state.week * 104729 ^ hashString("pod") ^ state.results.length);
 	let list = state.podcasts ?? [];
-	for (const show of POD_SHOWS) {
+	for (const show of showsFor(state)) {
 		const ep = buildEpisode(state, show, roll);
 		list = [ep, ...list.filter((e) => e.id !== ep.id)];
 	}
+	if (state.playerTeamId !== CATICAN_ID) list = list.filter((e) => e.showId !== "catican");
 	return {
 		...state,
-		podcasts: list.slice(0, 36)
+		podcasts: list.slice(0, 40)
 	};
 }
 function hydratePodcasts(raw) {
@@ -17277,11 +18015,11 @@ function prestigeFit(r, teamId) {
 	if (r.path === "juco") {
 		const ready = (66 - prestige) * .28;
 		const brand = (prestige - 50) * .14;
-		return clamp(Math.round(30 + ready + brand), 12, 76);
+		return clamp$1(Math.round(30 + ready + brand), 12, 76);
 	}
 	const brand = (prestige - 50) * (.35 + r.stars * .08);
 	const minutes = r.stars <= 2 ? (62 - prestige) * .18 : 0;
-	return clamp(Math.round(24 + brand + minutes), 10, 74);
+	return clamp$1(Math.round(24 + brand + minutes), 10, 74);
 }
 function seedHeat(r, teamId) {
 	const stored = r.interest[teamId];
@@ -17292,10 +18030,10 @@ function recruitInterest(r, teamId) {
 	if (r.committedTo === teamId) return 99;
 	const offered = r.offers.includes(teamId) ? 8 : 0;
 	const visited = r.visits.includes(teamId) ? 10 : 0;
-	return clamp(seedHeat(r, teamId) + offered + visited, 0, 99);
+	return clamp$1(seedHeat(r, teamId) + offered + visited, 0, 99);
 }
 function compositeOvr(s) {
-	return clamp(Math.round(s.shoot * .28 + s.finish * .24 + s.defense * .28 + s.iq * .2), 40, 99);
+	return clamp$1(Math.round(s.shoot * .28 + s.finish * .24 + s.defense * .28 + s.iq * .2), 40, 99);
 }
 function skillsFromOvr(ovr, pos, rng) {
 	const wobble = () => Math.round(gaussian(rng) * 4);
@@ -17332,20 +18070,20 @@ function skillsFromOvr(ovr, pos, rng) {
 		}
 	}[pos];
 	const raw = {
-		shoot: clamp(ovr + wobble() + bias.shoot, 40, 99),
-		finish: clamp(ovr + wobble() + bias.finish, 40, 99),
-		defense: clamp(ovr + wobble() + bias.defense, 40, 99),
-		iq: clamp(ovr + wobble() + bias.iq, 40, 99)
+		shoot: clamp$1(ovr + wobble() + bias.shoot, 40, 99),
+		finish: clamp$1(ovr + wobble() + bias.finish, 40, 99),
+		defense: clamp$1(ovr + wobble() + bias.defense, 40, 99),
+		iq: clamp$1(ovr + wobble() + bias.iq, 40, 99)
 	};
 	const diff = ovr - compositeOvr(raw);
 	if (diff) {
-		raw.shoot = clamp(raw.shoot + diff, 40, 99);
-		raw.finish = clamp(raw.finish + Math.round(diff * .6), 40, 99);
+		raw.shoot = clamp$1(raw.shoot + diff, 40, 99);
+		raw.finish = clamp$1(raw.finish + Math.round(diff * .6), 40, 99);
 	}
 	return raw;
 }
 function potentialFor(ovr, year, rng) {
-	return clamp(ovr + (year <= 1 ? randInt(rng, 3, 8) : year === 2 ? randInt(rng, 2, 6) : year === 3 ? randInt(rng, 1, 4) : randInt(rng, 0, 2)), ovr, 92);
+	return clamp$1(ovr + (year <= 1 ? randInt(rng, 3, 8) : year === 2 ? randInt(rng, 2, 6) : year === 3 ? randInt(rng, 1, 4) : randInt(rng, 0, 2)), ovr, 92);
 }
 function makePlayer(opts) {
 	const skills = opts.skills ?? skillsFromOvr(opts.ovr, opts.pos, opts.rng);
@@ -17372,7 +18110,7 @@ function makePlayer(opts) {
 		injury: null,
 		focus: "balanced",
 		growth: [],
-		usage: clamp(Math.round(opts.mpg * 2.15), 8, 38)
+		usage: clamp$1(Math.round(opts.mpg * 2.15), 8, 38)
 	};
 }
 var POS$1 = [
@@ -17404,6 +18142,7 @@ function fillTeam(id, t) {
 		gymPf: Number(t?.gymPf) || 0,
 		gymPa: Number(t?.gymPa) || 0,
 		coachName: t?.coachName || "Staff",
+		coachYear: Number(t?.coachYear) > 0 ? Number(t.coachYear) : void 0,
 		allWins: Number(t?.allWins) || 0,
 		allLosses: Number(t?.allLosses) || 0,
 		series: t?.series && typeof t.series === "object" ? t.series : void 0,
@@ -17412,8 +18151,8 @@ function fillTeam(id, t) {
 }
 function ensurePlayer(p, rng) {
 	const pos = asPos(p?.pos);
-	const ovr = clamp(Number(p?.ovr) || 70, 40, 99);
-	const year = clamp(Number(p?.year) || 2, 1, 4);
+	const ovr = clamp$1(Number(p?.ovr) || 70, 40, 99);
+	const year = clamp$1(Number(p?.year) || 2, 1, 4);
 	const skills = p?.skills && Number.isFinite(p.skills.shoot) ? p.skills : skillsFromOvr(ovr, pos, rng);
 	const computed = p?.skills ? compositeOvr(skills) : ovr;
 	return {
@@ -17439,13 +18178,13 @@ function ensurePlayer(p, rng) {
 		usedRedshirt: Boolean(p?.usedRedshirt),
 		injury: p?.injury && Number(p.injury.weeksLeft) > 0 ? {
 			part: String(p.injury.part || "ankle"),
-			weeksLeft: clamp(Number(p.injury.weeksLeft), 1, 12)
+			weeksLeft: clamp$1(Number(p.injury.weeksLeft), 1, 12)
 		} : null,
 		portalFrom: typeof p?.portalFrom === "string" ? p.portalFrom : void 0,
 		portalSeason: Number.isFinite(p?.portalSeason) ? p.portalSeason : void 0,
 		focus: p?.focus === "shoot" || p?.focus === "finish" || p?.focus === "defense" || p?.focus === "iq" || p?.focus === "balanced" ? p.focus : "balanced",
 		growth: Array.isArray(p?.growth) ? p.growth.filter((g) => g && Number.isFinite(g.season) && Number.isFinite(g.ovr)).slice(-12) : [],
-		usage: Number.isFinite(p?.usage) ? clamp(Number(p.usage), 6, 40) : clamp(Math.round((Number.isFinite(p?.mpg) ? Number(p.mpg) : 12) * 2.15), 8, 38),
+		usage: Number.isFinite(p?.usage) ? clamp$1(Number(p.usage), 6, 40) : clamp$1(Math.round((Number.isFinite(p?.mpg) ? Number(p.mpg) : 12) * 2.15), 8, 38),
 		country: typeof p?.country === "string" ? p.country : void 0,
 		freak: Boolean(p?.freak) || void 0,
 		freakTag: typeof p?.freakTag === "string" ? p.freakTag : void 0,
@@ -17455,14 +18194,14 @@ function ensurePlayer(p, rng) {
 }
 function ensureRecruit(r, rng) {
 	const pos = asPos(r?.pos);
-	const ovr = clamp(Number(r?.ovr) || 70, 40, 99);
+	const ovr = clamp$1(Number(r?.ovr) || 70, 40, 99);
 	return {
 		...r,
 		id: r?.id || `r-${Math.abs(hashString(`${pos}-${ovr}`))}`,
 		first: r?.first || "Recruit",
 		last: r?.last || "Unknown",
 		pos,
-		stars: clamp(Number(r?.stars) || 2, 1, 5),
+		stars: clamp$1(Number(r?.stars) || 2, 1, 5),
 		ovr,
 		skills: r?.skills && Number.isFinite(r.skills.shoot) ? r.skills : skillsFromOvr(ovr, pos, rng),
 		potential: Number.isFinite(r?.potential) ? r.potential : potentialFor(ovr, 1, rng),
@@ -17651,10 +18390,10 @@ function hydrateState(state) {
 	const identity = {
 		first: state.identity?.first?.trim() || "Coach",
 		last: state.identity?.last?.trim() || "Stone",
-		age: clamp(Number(state.identity?.age) || 38, 28, 82),
-		almaMaterId: state.identity?.almaMaterId || playerTeamId
+		age: clamp$1(Number(state.identity?.age) || 38, 28, 82),
+		almaMaterId: state.identity?.almaMaterId && TEAM_BY_ID[state.identity.almaMaterId] ? state.identity.almaMaterId : null
 	};
-	return repairStoredMonsters(tickPodcasts(ensureProgram({
+	return refreshVoice(repairStoredMonsters(tickPodcasts(ensureProgram({
 		...state,
 		version: Number(state.version) || 0,
 		seed,
@@ -17726,6 +18465,9 @@ function hydrateState(state) {
 			captainId: null
 		},
 		fatigue: state.fatigue && typeof state.fatigue === "object" ? state.fatigue : {},
+		coachMoves: Array.isArray(state.coachMoves) ? state.coachMoves : [],
+		carousel: state.carousel ?? null,
+		snake: state.snake ?? null,
 		results: (Array.isArray(state.results) ? state.results : []).map((r) => expandResult(r)).filter((r) => r).map((r) => {
 			if (!(r.homeId === playerTeamId || r.awayId === playerTeamId)) return r;
 			return fillResultBox(r, mulberry32(seed ^ hashString(r.id) ^ 2817));
@@ -17736,7 +18478,39 @@ function hydrateState(state) {
 		fanMood: Number.isFinite(state.fanMood) ? state.fanMood : 60,
 		scholarships: Number.isFinite(state.scholarships) ? state.scholarships : 13,
 		pendingPresser: state.pendingPresser ?? null
-	})));
+	}))));
+}
+function refreshVoice(state) {
+	const canned = (a) => /smells like last year|has the keys|like each other|make an open shot|gets the first look|after a week of practice/.test(`${a?.dek ?? ""} ${(a?.grafs ?? []).join(" ")}`);
+	let news = state.news ?? [];
+	if (news.some(canned)) {
+		const fresh = campCopy(state);
+		news = news.map((a) => canned(a) ? {
+			...fresh,
+			id: a.id
+		} : a);
+	}
+	let expectations = state.expectations;
+	if (expectations?.note && /gravy/.test(expectations.note)) expectations = {
+		...expectations,
+		note: expectations.note.replace("A bid would be gravy and everybody knows it.", "An NCAA bid would be a bonus.")
+	};
+	let mail = state.mail ?? [];
+	if (mail.some((m) => /love it back|papers write it|doorway in April/.test(m.body ?? ""))) {
+		const fresh = openingLetter(state);
+		mail = mail.map((m) => /love it back|papers write it|doorway in April/.test(m.body ?? "") ? {
+			...m,
+			subject: fresh.subject,
+			body: fresh.body
+		} : m);
+	}
+	if (news === state.news && expectations === state.expectations && mail === (state.mail ?? [])) return state;
+	return {
+		...state,
+		news,
+		expectations,
+		mail
+	};
 }
 function fillResultBox(r, rng) {
 	if (r.homeBox && r.awayBox && r.minutes) return r;
@@ -17751,7 +18525,7 @@ function fillResultBox(r, rng) {
 function bumpSkill(s, key, n, cap) {
 	return {
 		...s,
-		[key]: clamp(s[key] + n, 40, cap)
+		[key]: clamp$1(s[key] + n, 40, cap)
 	};
 }
 function inSeasonGrowth(state, teamId, rng) {
@@ -17763,7 +18537,7 @@ function inSeasonGrowth(state, teamId, rng) {
 		const floor = 22 + Math.round(lead * .08);
 		p = {
 			...p,
-			morale: clamp(p.morale, floor, 99)
+			morale: clamp$1(p.morale, floor, 99)
 		};
 		if (p.ovr >= p.potential) return p;
 		if (p.redshirt || p.injury && p.injury.weeksLeft > 0) return p;
@@ -17798,7 +18572,7 @@ function inSeasonGrowth(state, teamId, rng) {
 function recruitToPlayer(r, teamId, mpg, rng, i) {
 	const school = 68 + ((TEAM_BY_ID[teamId]?.prestige ?? 60) - 50) * .32;
 	const cap = r.path === "juco" ? 90 : 88;
-	const ovr = clamp(Math.round(r.ovr * .64 + school * .36), 54, cap);
+	const ovr = clamp$1(Math.round(r.ovr * .64 + school * .36), 54, cap);
 	return {
 		...makePlayer({
 			id: `${teamId}-in-${r.id}-${i}`,
@@ -17827,7 +18601,7 @@ function walkOn(teamId, prestige, i, rng, used, season) {
 		"PF",
 		"C"
 	][i % 5];
-	const ovr = clamp(Math.round(prestige * .4 + 36 + gaussian(rng) * 3 - i), 52, 78);
+	const ovr = clamp$1(Math.round(prestige * .4 + 36 + gaussian(rng) * 3 - i), 52, 78);
 	const name = randomPersonName(rng, used);
 	return makePlayer({
 		id: `${teamId}-wo-${season}-${i}-${Math.floor(rng() * 1e6)}`,
@@ -17868,7 +18642,7 @@ function resolveCommits(state, rng) {
 			};
 		}
 		if (rng() < .35) {
-			const school = pick(rng, TEAMS.map((t) => t.id));
+			const school = pick$1(rng, TEAMS.map((t) => t.id));
 			return {
 				...r,
 				committedTo: school
@@ -18051,7 +18825,7 @@ function spendCoachPoint(state, axis) {
 			skillPoints: state.skillPoints - 1,
 			coachSkills: {
 				...cur,
-				[axis]: clamp(cur[axis] + 4, 20, 99)
+				[axis]: clamp$1(cur[axis] + 4, 20, 99)
 			}
 		}
 	};
@@ -18060,16 +18834,10 @@ function setPlayerMpg(state, id, mpg) {
 	bustChemCache();
 	return {
 		...state,
-		players: state.players.map((p) => {
-			if (p.id !== id) return p;
-			const nextMpg = clamp(mpg, 0, 38);
-			const usage = clamp(Math.round((p.usage ?? Math.round(p.mpg * 2.15)) * (p.mpg > 0 ? nextMpg / Math.max(1, p.mpg) : 1)), 6, 40);
-			return {
-				...p,
-				mpg: nextMpg,
-				usage
-			};
-		})
+		players: state.players.map((p) => p.id === id ? {
+			...p,
+			mpg: clamp$1(mpg, 0, 38)
+		} : p)
 	};
 }
 function setPlayerUsage(state, id, usage) {
@@ -18077,7 +18845,7 @@ function setPlayerUsage(state, id, usage) {
 		...state,
 		players: state.players.map((p) => p.id === id ? {
 			...p,
-			usage: clamp(usage, 6, 40)
+			usage: clamp$1(usage, 6, 40)
 		} : p)
 	};
 }
@@ -18100,7 +18868,7 @@ function nextSeason(state) {
 			seasonGames: 0,
 			stats: void 0,
 			career: p.career,
-			morale: clamp(p.morale + 2, 40, 88)
+			morale: clamp$1(p.morale + 2, 40, 88)
 		};
 		return {
 			...p,
@@ -18111,7 +18879,7 @@ function nextSeason(state) {
 			careerGames: p.careerGames ?? 0,
 			career: rollCareer(p.stats, p.career),
 			stats: void 0,
-			morale: clamp(p.morale + 4, 40, 88),
+			morale: clamp$1(p.morale + 4, 40, 88),
 			injury: null,
 			redshirt: false
 		};
@@ -18264,8 +19032,8 @@ function makeJuco(season, n, stars, rng, _used, name) {
 		"PF",
 		"C"
 	][n % 5];
-	const ovr = clamp(Math.round((stars === 4 ? 80 : stars === 3 ? 74 : 68) + (rng() - .5) * 5), 60, 86);
-	const roll = (b) => clamp(Math.round(22 + rng() * 48 + b), 10, 96);
+	const ovr = clamp$1(Math.round((stars === 4 ? 80 : stars === 3 ? 74 : 68) + (rng() - .5) * 5), 60, 86);
+	const roll = (b) => clamp$1(Math.round(22 + rng() * 48 + b), 10, 96);
 	return {
 		id: `r-${season}-j-${n}`,
 		first: name.first,
@@ -18273,8 +19041,8 @@ function makeJuco(season, n, stars, rng, _used, name) {
 		pos,
 		stars,
 		ovr,
-		potential: clamp(ovr + Math.floor(rng() * 5), ovr, 90),
-		state: pick(rng, [
+		potential: clamp$1(ovr + Math.floor(rng() * 5), ovr, 90),
+		state: pick$1(rng, [
 			"TX",
 			"CA",
 			"FL",
@@ -18303,7 +19071,7 @@ function makeJuco(season, n, stars, rng, _used, name) {
 			scheme: roll(4),
 			academics: roll(-4),
 			nil: roll(stars >= 3 ? 10 : -6),
-			style: pick(rng, [
+			style: pick$1(rng, [
 				"motion",
 				"spread",
 				"post",
@@ -18312,10 +19080,10 @@ function makeJuco(season, n, stars, rng, _used, name) {
 			])
 		},
 		skills: {
-			shoot: clamp(ovr + Math.round((rng() - .5) * 8), 48, 92),
-			finish: clamp(ovr + Math.round((rng() - .5) * 8) + 3, 48, 92),
-			defense: clamp(ovr + Math.round((rng() - .5) * 8), 48, 92),
-			iq: clamp(ovr + Math.round((rng() - .5) * 6) + 2, 48, 92)
+			shoot: clamp$1(ovr + Math.round((rng() - .5) * 8), 48, 92),
+			finish: clamp$1(ovr + Math.round((rng() - .5) * 8) + 3, 48, 92),
+			defense: clamp$1(ovr + Math.round((rng() - .5) * 8), 48, 92),
+			iq: clamp$1(ovr + Math.round((rng() - .5) * 6) + 2, 48, 92)
 		},
 		path: "juco"
 	};
@@ -18386,18 +19154,18 @@ function recruitsFor(seed, season) {
 			"PF",
 			"C"
 		][n % 5];
-		const intl = rng() < .09 ? pick(rng, INTL) : null;
-		const freak = rng() < (stars >= 5 ? .14 : stars >= 4 ? .08 : .02) ? pick(rng, FreakKinds) : null;
+		const intl = rng() < .09 ? pick$1(rng, INTL) : null;
+		const freak = rng() < (stars >= 5 ? .14 : stars >= 4 ? .08 : .02) ? pick$1(rng, FreakKinds) : null;
 		const pos = freak?.pos ?? pos0;
-		const ovr = clamp(Math.round((stars === 5 ? 84 : stars === 4 ? 78 : stars === 3 ? 71 : stars === 2 ? 64 : 58) + gaussian(rng) * 2), 52, 90);
+		const ovr = clamp$1(Math.round((stars === 5 ? 84 : stars === 4 ? 78 : stars === 3 ? 71 : stars === 2 ? 64 : 58) + gaussian(rng) * 2), 52, 90);
 		const skills0 = skillsFromOvr(ovr, pos, rng);
 		const skills = freak ? {
-			shoot: clamp(skills0.shoot + freak.bump.shoot, 40, 99),
-			finish: clamp(skills0.finish + freak.bump.finish, 40, 99),
-			defense: clamp(skills0.defense + freak.bump.defense, 40, 99),
-			iq: clamp(skills0.iq + freak.bump.iq, 40, 99)
+			shoot: clamp$1(skills0.shoot + freak.bump.shoot, 40, 99),
+			finish: clamp$1(skills0.finish + freak.bump.finish, 40, 99),
+			defense: clamp$1(skills0.defense + freak.bump.defense, 40, 99),
+			iq: clamp$1(skills0.iq + freak.bump.iq, 40, 99)
 		} : skills0;
-		const roll = (b) => clamp(Math.round(18 + rng() * 50 + b), 8, 96);
+		const roll = (b) => clamp$1(Math.round(18 + rng() * 50 + b), 8, 96);
 		const name = intl ? randomIntlName(rng, used, intl.country) : randomPersonName(rng, used);
 		out.push({
 			id: `r-${season}-${n}`,
@@ -18407,7 +19175,7 @@ function recruitsFor(seed, season) {
 			stars,
 			ovr: compositeOvr(skills),
 			potential: potentialFor(ovr, 1, rng) + (freak ? 2 : 0),
-			state: intl ? intl.country : pick(rng, STATES),
+			state: intl ? intl.country : pick$1(rng, STATES),
 			scouted: false,
 			offers: [],
 			visits: [],
@@ -18420,7 +19188,7 @@ function recruitsFor(seed, season) {
 				scheme: roll(8),
 				academics: roll(rng() < .18 ? 28 : -10),
 				nil: roll(stars >= 4 ? 22 : -8),
-				style: pick(rng, styles)
+				style: pick$1(rng, styles)
 			},
 			skills,
 			path: "hs",
@@ -18539,6 +19307,7 @@ function forceEndgameState(state) {
 			awayLines: paintBoard(live.awayLines, awayScore),
 			parked12: true,
 			lateChoice: null,
+			sandbox: true,
 			log: [{
 				t: "H2 0:08",
 				text: "Late game. Up 3. They have the ball.",
@@ -18577,6 +19346,7 @@ function forceTwoForState(state) {
 			lateChoice: null,
 			pace: "normal",
 			parked2Half: void 0,
+			sandbox: true,
 			log: [{
 				t: "H2 0:36",
 				text: "2-for-1 window. You have the ball.",
@@ -18727,10 +19497,10 @@ function crowdFill(state, live) {
 	const slot = state.schedule.find((g) => g.id === live.slotId);
 	const neutral = slot?.site === "neutral" || slot?.kind === "ncaa" || slot?.kind === "nit" || slot?.kind === "crown" || slot?.kind === "mte" || slot?.kind === "conf-tourney";
 	const gym = gymCrowd(state, live.homeId);
-	const home = clamp(Math.max((hp - 32) / 62, gym.fill), .28, .98);
-	const away = clamp((ap - 40) / 70, .12, .72);
+	const home = clamp$1(Math.max((hp - 32) / 62, gym.fill), .28, .98);
+	const away = clamp$1((ap - 40) / 70, .12, .72);
 	if (neutral) {
-		const mix = clamp((home + away) / 2, .35, .9);
+		const mix = clamp$1((home + away) / 2, .35, .9);
 		return {
 			home: mix,
 			away: mix,
@@ -18830,12 +19600,12 @@ function clash(off, def) {
 		note = "They pressed a hold. You burned clock.";
 	} else if (off === "delay" && def === "foul") {
 		ft += .35;
-		note = "They sent you to the line on purpose.";
+		note = "Intentional foul. The offense shoots.";
 	} else if (def === "foul") {
 		ft += .4;
 		two -= .15;
 		three -= .15;
-		note = "Intentional foul. Live at the stripe.";
+		note = "Intentional foul. The offense shoots.";
 	} else if (def === "press") {
 		to += .07;
 		note = "Pressure on the ball.";
@@ -18926,11 +19696,15 @@ function rollKind(rng, off, def) {
 	if (x < m.two + m.three + m.ft) return "ft";
 	return "to";
 }
-function describe(off, def, kind, made, a, b, defP, and1) {
+function intentionalFoulText(youOff, defender, shooter) {
+	if (youOff) return `${defender} fouls ${shooter}. They sent you to the line.`;
+	return `${defender} fouls ${shooter}. You sent them to the line.`;
+}
+function describe(off, def, kind, made, a, b, defP, and1, youOff) {
 	const A = nm$1(a);
 	const B = nm$1(b);
 	const D = nm$1(defP);
-	if (def === "foul") return `${A} to the line. Intentional foul.`;
+	if (def === "foul") return intentionalFoulText(youOff, D, A);
 	if (kind === "to") {
 		if (off === "push") return `Turnover in the open floor! Stolen by ${D}.`;
 		if (def === "press" || def === "trap") return `The press gets ${A}! ${D} steals it.`;
@@ -18938,20 +19712,21 @@ function describe(off, def, kind, made, a, b, defP, and1) {
 		return `Turnover! ${D} steals it from ${A}.`;
 	}
 	if (kind === "ft") {
-		if (off === "post") return `${A} is hacked in the post.`;
-		if (off === "push") return `Foul in transition on ${A}.`;
-		return `${A} at the stripe.`;
+		if (off === "post") return `${D} fouls ${A} in the post.`;
+		if (off === "push") return `${D} fouls ${A} in transition.`;
+		return `${D} fouls ${A}. ${A} at the stripe.`;
 	}
 	if (kind === "three") {
 		if (made) {
-			if (off === "post") return `${A} kicks it out... ${B} for three!`;
-			if (off === "push") return `${B} pulls up in transition... BANG!`;
-			if (off === "hammer") return `${B} in the corner... three!`;
-			if (off === "pnr") return `${A} draws two, ${B} pops... three!`;
-			return `${B} for three!`;
+			if (off === "post" && b.id !== a.id) return `${B} kicks it out... ${A} for three!`;
+			if (off === "push") return `${A} pulls up in transition... BANG!`;
+			if (off === "hammer" && b.id !== a.id) return `${B} finds ${A} in the corner... three!`;
+			if (off === "hammer") return `${A} in the corner... three!`;
+			if (off === "pnr" && b.id !== a.id) return `${B} draws two, ${A} pops... three!`;
+			return `${A} for three!`;
 		}
-		if (off === "push") return `${B} rushes a three. No.`;
-		return `${B} misses from downtown.`;
+		if (off === "push") return `${A} rushes a three. No.`;
+		return `${A} misses from downtown.`;
 	}
 	if (made) {
 		if (and1) return `${A}... AND ONE!`;
@@ -19012,8 +19787,8 @@ function playSpot(kind, off, poss, rng) {
 		y = h.y + Math.sin(ang) * d;
 	}
 	return {
-		x: clamp(x, 1.5, 92.5),
-		y: clamp(y, 1.5, 48.5)
+		x: clamp$1(x, 1.5, 92.5),
+		y: clamp$1(y, 1.5, 48.5)
 	};
 }
 function impactLine(_off, _def, _kind, _made, _pts, note, _youOff) {
@@ -19126,7 +19901,7 @@ function setPlanSlot(state, side, index, id) {
 	};
 	if (side === "off") {
 		const off = [...plan.off];
-		off[clamp(index, 0, 2)] = id;
+		off[clamp$1(index, 0, 2)] = id;
 		const next = {
 			...state,
 			gamePlan: {
@@ -19145,7 +19920,7 @@ function setPlanSlot(state, side, index, id) {
 		};
 	}
 	const def = [...plan.def];
-	def[clamp(index, 0, 1)] = id;
+	def[clamp$1(index, 0, 1)] = id;
 	const next = {
 		...state,
 		gamePlan: {
@@ -19305,6 +20080,15 @@ function sitFoul(state) {
 	if (!id) return state;
 	return toggleLiveSub(state, id);
 }
+/** First half: 3 fouls, or 2 early for a starter. Later: 4. Five fouls is a disqualification, not a prompt. */
+function isFoulTrouble(half, clock, fouls, starter = false) {
+	if (fouls >= 5 || fouls < 2) return false;
+	if (half <= 1) {
+		if (fouls >= 3) return true;
+		return Boolean(starter) && fouls >= 2 && clock >= 900;
+	}
+	return fouls >= 4;
+}
 function liveYouOffense(state) {
 	const live = state.liveGame;
 	if (!live) return true;
@@ -19393,12 +20177,12 @@ function offeredCalls(state) {
 	const take = [...preferred, ...rest];
 	const n = live.half === 2 && !live.htAdj ? 6 : 4;
 	while (take.length < n) {
-		const extra = youOff ? pick(rng, [
+		const extra = youOff ? pick$1(rng, [
 			"motion",
 			"pnr",
 			"iso",
 			"push"
-		]) : pick(rng, pressLegal(state) ? [
+		]) : pick$1(rng, pressLegal(state) ? [
 			"man",
 			"zone",
 			"pack",
@@ -19528,16 +20312,23 @@ function simRestLive(state, opts = {}) {
 	return s;
 }
 function liveFive(rng, roster, lines, pinned) {
-	if (pinned && pinned.length >= 5) {
+	const foulOut = (id) => (lines?.find((x) => x.id === id)?.pf ?? 0) >= 5;
+	const pool = roster.filter((p) => !foulOut(p.id));
+	const use = pool.length >= 5 ? pool : roster;
+	if (pinned && pinned.length) {
 		const on = [];
 		for (const id of pinned) {
-			const p = roster.find((x) => x.id === id);
-			if (p && !on.some((q) => q.id === p.id)) on.push(p);
+			const p = use.find((x) => x.id === id);
+			if (p && !foulOut(p.id) && !on.some((q) => q.id === p.id)) on.push(p);
+		}
+		for (const p of [...use].sort((a, b) => b.mpg - a.mpg)) {
+			if (on.length >= 5) break;
+			if (!on.some((q) => q.id === p.id)) on.push(p);
 		}
 		if (on.length >= 5) return on.slice(0, 5);
 	}
-	const played = roster.map((p) => lines?.find((x) => x.id === p.id)?.min ?? 0);
-	return onCourtFive(rng, roster, roster.map((p) => Math.max(8, p.mpg)), played);
+	const played = use.map((p) => lines?.find((x) => x.id === p.id)?.min ?? 0);
+	return onCourtFive(rng, use, use.map((p) => Math.max(8, p.mpg)), played);
 }
 function assistGuy(rng, five, shooter) {
 	const mates = (five ?? []).filter((p) => p && p.id && p.id !== shooter?.id && p.id !== "walk");
@@ -19631,9 +20422,9 @@ function onePoss(state) {
 	if (a.pos === "SG" && kind === "two" && shoot > .72 && rng() < .16) kind = "three";
 	if (!eraHasThree(state.eraDecade) && kind === "three") kind = "two";
 	else if (kind === "three" && eraThreeScale(state.eraDecade) < 1 && rng() > eraThreeScale(state.eraDecade)) kind = "two";
-	if (kind !== "to" && kind !== "ft" && rng() < clamp(.02 + c.to * .04 - iq * .01 - gap * .008, 0, .06)) kind = "to";
-	const make2 = clamp(.48 + finish * .08 - dfn * .05 + gap * .05 + c.two * .04 + chemSwing + gaussian(rng) * .012, .32, .58);
-	const make3 = clamp(.345 + shoot * .06 - dfn * .03 + gap * .03 + c.three * .03 + chemSwing + gaussian(rng) * .01, .24, .42);
+	if (kind !== "to" && kind !== "ft" && rng() < clamp$1(.02 + c.to * .04 - iq * .01 - gap * .008, 0, .06)) kind = "to";
+	const make2 = clamp$1(.48 + finish * .08 - dfn * .05 + gap * .05 + c.two * .04 + chemSwing + gaussian(rng) * .012, .32, .58);
+	const make3 = clamp$1(.345 + shoot * .06 - dfn * .03 + gap * .03 + c.three * .03 + chemSwing + gaussian(rng) * .01, .24, .42);
 	let pts = 0;
 	let made = false;
 	let and1 = false;
@@ -19645,7 +20436,7 @@ function onePoss(state) {
 		if (made && rng() < .08 + finish * .1) {
 			and1 = true;
 			fta = 1;
-			if (rng() < clamp(.72 + (shoot - .68) * .45, .52, .88)) {
+			if (rng() < clamp$1(.72 + (shoot - .68) * .45, .52, .88)) {
 				ftm = 1;
 				pts = 3;
 			}
@@ -19654,7 +20445,7 @@ function onePoss(state) {
 		made = rng() < make3;
 		pts = made ? 3 : 0;
 	} else if (kind === "ft") {
-		const ft = clamp(.72 + (shoot - .68) * .5, .52, .88);
+		const ft = clamp$1(.72 + (shoot - .68) * .5, .52, .88);
 		const attempts = 2;
 		fta = attempts;
 		for (let i = 0; i < attempts; i++) if (rng() < ft) ftm++;
@@ -19690,12 +20481,12 @@ function onePoss(state) {
 			pts = made ? 2 : 0;
 		}
 	}
-	let text = describe(offPlay, defPlay, kind, made, a, b, d, and1);
+	let text = describe(offPlay, defPlay, kind, made, a, b, d, and1, youOff);
 	if (offPlay === "delay" && youOff && live.clock <= 70) text = `Holding for last. ${text}`;
 	if (live.lateChoice === "twofor") text = `2-for-1. Early shot. ${text}`;
 	if (live.lateChoice === "letplay") text = `Don't foul — playing out the possession. ${text}`;
-	if (live.lateChoice === "foul3" || !youOff && defPlay === "foul" && live.half >= 2 && live.clock <= 12 && defScore - offScore === 3) text = `Foul up 3. Clock stops. ${nm$1(a)} at the line. ${text}`;
-	if (extraPass && made && kind !== "to" && rng() < .45) text = `${text} Kick-out!`;
+	if (live.lateChoice === "foul3" || !youOff && defPlay === "foul" && live.half >= 2 && live.clock <= 12 && defScore - offScore === 3) text = `Foul up 3. Clock stops. ${text}`;
+	if (extraPass && made && (kind === "two" || kind === "three") && b.id !== a.id && rng() < .45) text = `${text} Kick-out!`;
 	if (chem <= 42 && kind === "to" && rng() < .4) text = `${text} Nobody wanted it.`;
 	if (kind === "ft") text = `${text} ${pts} of ${fta || 2}.`;
 	const believe = believeLine(live, rng, kind, made);
@@ -19718,7 +20509,8 @@ function onePoss(state) {
 	const awayScore = live.awayScore + (live.poss === "away" ? pts : 0);
 	const spot = playSpot(kind, offPlay, live.poss, rng);
 	let poss = live.poss === "home" ? "away" : "home";
-	const ast = made && kind !== "to" && kind !== "ft" ? assistGuy(rng, offFive, a) : null;
+	const astRaw = made && kind !== "to" && kind !== "ft" ? assistGuy(rng, offFive, a) : null;
+	const ast = astRaw && astRaw.id !== a.id ? astRaw : null;
 	const events = [{
 		t: clockLabel(half, Math.max(0, clock)),
 		text,
@@ -19790,17 +20582,49 @@ function onePoss(state) {
 		if (!row) return;
 		if ((row.pf ?? 0) >= 5) return;
 		credit(row, { pf: 1 });
-		if (defId !== state.playerTeamId) return;
 		const pf = row.pf ?? 0;
-		if (![...defR].sort((x, y) => y.mpg - x.mpg).slice(0, 5).some((p) => p.id === row.id)) return;
-		if (half === 1 && pf === 2 || half >= 2 && pf === 4) foulAlert = {
+		if (defId !== state.playerTeamId) return;
+		if (pf >= 5) {
+			foulAlert = foulAlert?.id === row.id ? null : foulAlert;
+			return;
+		}
+		const starter = (state.players.find((p) => p.id === row.id)?.mpg ?? 0) >= 22;
+		foulAlert = isFoulTrouble(live.half, live.clock, pf, starter) ? {
 			id: row.id,
 			name: row.name,
 			fouls: pf
-		};
+		} : foulAlert?.id === row.id ? null : foulAlert;
 	};
 	if (kind === "ft" || and1 || defPlay === "foul") touchFoul(d);
 	else if (rng() < (defPlay === "press" || defPlay === "trap" ? .12 : .07)) touchFoul(defPool[Math.floor(rng() * defPool.length)] ?? d);
+	const sitFive = (teamId, lines, on) => {
+		const dead = new Set(lines.filter((l) => (l.pf ?? 0) >= 5).map((l) => l.id));
+		if (!dead.size) return on;
+		const team = availableRoster(state, teamId);
+		const base = on && on.length ? on.slice() : team.slice().sort((a, b) => b.mpg - a.mpg).slice(0, 5).map((p) => p.id);
+		const kept = base.filter((id) => !dead.has(id));
+		const bench = team.filter((p) => !kept.includes(p.id) && !dead.has(p.id)).sort((a, b) => b.mpg - a.mpg);
+		const next = kept.slice();
+		for (const p of bench) {
+			if (next.length >= 5) break;
+			next.push(p.id);
+		}
+		for (const id of dead) {
+			if (!base.includes(id)) continue;
+			const p = team.find((x) => x.id === id);
+			if (!p) continue;
+			events.unshift({
+				t: clockLabel(half, Math.max(0, clock)),
+				text: `${p.first} ${p.last} has five fouls and sits.`,
+				homeScore,
+				awayScore,
+				kind: "period"
+			});
+		}
+		return next;
+	};
+	const homeOn = sitFive(live.homeId, homeLines, live.homeOn);
+	const awayOn = sitFive(live.awayId, awayLines, live.awayOn);
 	if (clock <= 0) {
 		if (half === 1) {
 			half = 2;
@@ -19816,10 +20640,10 @@ function onePoss(state) {
 		} else if (half === 2 && homeScore === awayScore) {
 			half = 3;
 			clock = 300;
-			poss = "home";
+			const otId = poss === "home" ? live.homeId : live.awayId;
 			events.unshift({
 				t: "OT 5:00",
-				text: "Tied. Five more minutes. Extra timeout.",
+				text: `Tied. ${TEAM_BY_ID[otId]?.abbr ?? "They"} ball to start overtime.`,
 				homeScore,
 				awayScore,
 				kind: "period"
@@ -19827,10 +20651,10 @@ function onePoss(state) {
 		} else if (half >= 3 && homeScore === awayScore && half < 5) {
 			half = half + 1;
 			clock = 300;
-			poss = "home";
+			const otId = poss === "home" ? live.homeId : live.awayId;
 			events.unshift({
 				t: "OT 5:00",
-				text: "Still tied. Another extra session.",
+				text: `Still tied. ${TEAM_BY_ID[otId]?.abbr ?? "They"} ball.`,
 				homeScore,
 				awayScore,
 				kind: "period"
@@ -19878,6 +20702,11 @@ function onePoss(state) {
 			};
 		}
 	}
+	if (foulAlert) {
+		const on = live.homeId === state.playerTeamId ? homeOn : awayOn;
+		const starter = (state.players.find((p) => p.id === foulAlert.id)?.mpg ?? 0) >= 22;
+		if (!on?.includes(foulAlert.id) || !isFoulTrouble(half, Math.max(0, clock), foulAlert.fouls, starter)) foulAlert = null;
+	}
 	return {
 		...state,
 		liveGame: {
@@ -19893,6 +20722,8 @@ function onePoss(state) {
 			htAdj: half !== live.half ? false : live.htAdj,
 			homeLines,
 			awayLines,
+			homeOn,
+			awayOn,
 			foulAlert,
 			timeoutBoost: 0,
 			timeoutsHome: half === 3 && live.half === 2 ? (live.timeoutsHome ?? 4) + 1 : live.timeoutsHome,
@@ -19917,7 +20748,7 @@ function cpuOff(rng, userDef, lastDef) {
 	if (d === "pack") return rng() < .5 ? "spread" : "hammer";
 	if (d === "trap") return rng() < .5 ? "motion" : "horns";
 	if (d === "foul") return "delay";
-	return pick(rng, [
+	return pick$1(rng, [
 		"motion",
 		"pnr",
 		"post",
@@ -19934,7 +20765,7 @@ function cpuDef(rng, userOff, lastOff) {
 	if (o === "push") return rng() < .45 ? "press" : "man";
 	if (o === "iso") return rng() < .4 ? "trap" : "pack";
 	if (o === "delay") return rng() < .35 ? "foul" : "man";
-	return pick(rng, [
+	return pick$1(rng, [
 		"man",
 		"man",
 		"zone",
@@ -20411,29 +21242,29 @@ function rollStory(state) {
 		"rumor"
 	];
 	if (nilOn) kinds.push("nil");
-	const kind = pick(rng, kinds);
+	const kind = pick$1(rng, kinds);
 	const id = `st-${state.season}-${state.week}-${kind}`;
 	let ev;
 	if (kind === "minutes") ev = {
 		id,
 		week: state.week,
-		title: `${nm(star)} wants the ball`,
-		body: `${nm(star)} is at ${star.mpg} a night and he wants more. He said it in the hallway, not in a meeting. The next guy heard it.`,
+		title: `${star.first} wants more minutes`,
+		body: `${nm(star)} is at ${star.mpg} minutes a game and he told a teammate he wants more. It got around the locker room.`,
 		playerIds: [star.id],
 		choices: [
 			{
 				id: "feed",
-				label: `Give ${star.first} the ball. Live with it.`,
+				label: `Play ${star.first} more.`,
 				tone: "hot"
 			},
 			{
 				id: "even",
-				label: "Hold the rotation. Minutes are earned.",
+				label: "Leave the rotation alone.",
 				tone: "even"
 			},
 			{
 				id: "bench",
-				label: "Sit him a half. The locker room needs to see it.",
+				label: `Sit ${star.first} for a half.`,
 				tone: "cool"
 			}
 		]
@@ -20441,23 +21272,23 @@ function rollStory(state) {
 	else if (kind === "clash") ev = {
 		id,
 		week: state.week,
-		title: `${star.first} and ${voice.first} in the hallway`,
-		body: `${nm(star)} and ${nm(voice)} went at it after film. Not a shove. They just stopped talking. Now the locker room is picking sides.`,
+		title: `${star.first} and ${voice.first} aren't talking`,
+		body: `${nm(star)} and ${nm(voice)} got into it after film. Nobody threw a punch. They just stopped speaking, and the locker room noticed.`,
 		playerIds: [star.id, voice.id],
 		choices: [
 			{
 				id: "star",
-				label: `Back ${star.first}. He's the engine.`,
+				label: `Back ${star.first}.`,
 				tone: "hot"
 			},
 			{
 				id: "even",
-				label: "Close the door. They work it out.",
+				label: "Tell them to handle it.",
 				tone: "even"
 			},
 			{
 				id: "voice",
-				label: `Back ${voice.first}. The locker room follows the senior.`,
+				label: `Back ${voice.first}.`,
 				tone: "cool"
 			}
 		]
@@ -20465,23 +21296,23 @@ function rollStory(state) {
 	else if (kind === "flash") ev = {
 		id,
 		week: state.week,
-		title: `${nm(frosh)} on a heater`,
-		body: `${nm(frosh)} just stacked a week. Assistants want him in the closing group. ${nm(star)} has those minutes now, and he knows they're looking at the freshman.`,
+		title: `${frosh.first} is playing well`,
+		body: `${nm(frosh)} had a good week. The assistants want him in the closing lineup. Those minutes belong to ${nm(star)} right now.`,
 		playerIds: [frosh.id, star.id],
 		choices: [
 			{
 				id: "promote",
-				label: `Close with ${frosh.first}. Don't wait on him.`,
+				label: `Close with ${frosh.first}.`,
 				tone: "hot"
 			},
 			{
 				id: "even",
-				label: "Spot minutes. Don't blow up a rotation midweek.",
+				label: "Give him a few extra minutes.",
 				tone: "even"
 			},
 			{
 				id: "hold",
-				label: "Veterans close. The kid waits.",
+				label: "Keep the veterans in late.",
 				tone: "cool"
 			}
 		]
@@ -20489,23 +21320,23 @@ function rollStory(state) {
 	else if (kind === "nil") ev = {
 		id,
 		week: state.week,
-		title: `A booster dinner for ${star.first}`,
-		body: `Someone with a checkbook wants ${nm(star)} at a downtown table Thursday. Compliance already called me. They didn't say no. They said "be careful."`,
+		title: `Booster wants ${star.first} at dinner`,
+		body: `A booster wants ${nm(star)} at dinner Thursday. Compliance called. They didn't ban it. They said be careful.`,
 		playerIds: [star.id],
 		choices: [
 			{
 				id: "go",
-				label: "Take the dinner. The number goes up. Heat goes up.",
+				label: "Let him go. NIL goes up. So does heat.",
 				tone: "hot"
 			},
 			{
 				id: "even",
-				label: "Staff only. Keep it clean with compliance.",
+				label: "Staff only. Keep compliance happy.",
 				tone: "even"
 			},
 			{
 				id: "pass",
-				label: "Shut it down. Tell the booster no.",
+				label: "Tell the booster no.",
 				tone: "cool"
 			}
 		]
@@ -20513,23 +21344,23 @@ function rollStory(state) {
 	else if (kind === "voice") ev = {
 		id,
 		week: state.week,
-		title: `${nm(voice)} wants the floor`,
-		body: `${nm(voice)} asked for a closed-door. He thinks the staff has lost the locker room. He said it like a guy who still wants to be here.`,
+		title: `${voice.first} wants a meeting`,
+		body: `${nm(voice)} asked for a meeting. He thinks the staff has lost the locker room. He still wants to be here.`,
 		playerIds: [voice.id],
 		choices: [
 			{
 				id: "listen",
-				label: "Give him the floor. Change a call.",
+				label: "Hear him out and change a call.",
 				tone: "hot"
 			},
 			{
 				id: "even",
-				label: "Hear him. Don't change the rotation.",
+				label: "Hear him out. Don't change the rotation.",
 				tone: "even"
 			},
 			{
 				id: "shut",
-				label: "This is still your gym.",
+				label: "Tell him the rotation is yours.",
 				tone: "cool"
 			}
 		]
@@ -20537,23 +21368,23 @@ function rollStory(state) {
 	else if (kind === "homesick") ev = {
 		id,
 		week: state.week,
-		title: `${nm(bench)} wants a ticket home`,
-		body: `${nm(bench)} is averaging ${bench.mpg} minutes and his mom called the AD. He wants a ticket home. He hasn't packed. Yet.`,
+		title: `${bench.first} wants to leave`,
+		body: `${nm(bench)} is at ${bench.mpg} minutes a game. His mom called the AD. He wants to go home. He hasn't entered the portal yet.`,
 		playerIds: [bench.id],
 		choices: [
 			{
 				id: "minutes",
-				label: `Promise him a look. ${bench.mpg + 6} a night.`,
+				label: `Promise him ${bench.mpg + 6} minutes.`,
 				tone: "hot"
 			},
 			{
 				id: "even",
-				label: "Honest talk. The rotation is the rotation.",
+				label: "Be honest about the rotation.",
 				tone: "even"
 			},
 			{
 				id: "portal",
-				label: "Bless the portal. Don't chain him to the bench.",
+				label: "Tell him he can enter the portal.",
 				tone: "cool"
 			}
 		]
@@ -20561,23 +21392,23 @@ function rollStory(state) {
 	else ev = {
 		id,
 		week: state.week,
-		title: `A rumor on ${nm(star)}`,
-		body: `A national story has ${nm(star)} "exploring options." He hasn't said it. The group chat has. He looked at his phone all morning.`,
+		title: `Portal rumor on ${star.first}`,
+		body: `A national site says ${nm(star)} is looking around. He hasn't said that to you. He's been on his phone all morning.`,
 		playerIds: [star.id],
 		choices: [
 			{
 				id: "podium",
-				label: "Put him at the podium. Kill it in public.",
+				label: "Have him deny it publicly.",
 				tone: "hot"
 			},
 			{
 				id: "even",
-				label: "Private meeting. No statement.",
+				label: "Talk to him privately.",
 				tone: "even"
 			},
 			{
 				id: "ignore",
-				label: "It's noise. Don't feed it.",
+				label: "Ignore it.",
 				tone: "cool"
 			}
 		]
@@ -20592,7 +21423,7 @@ function resolveStory(state, choiceId) {
 	if (!ev) return {
 		state,
 		feedback: {
-			title: "Quiet",
+			title: "Nothing to do",
 			detail: "",
 			parts: []
 		}
@@ -20604,7 +21435,7 @@ function resolveStory(state, choiceId) {
 			pendingStory: null
 		},
 		feedback: {
-			title: "Quiet",
+			title: "Nothing to do",
 			detail: "",
 			parts: []
 		}
@@ -20617,13 +21448,13 @@ function resolveStory(state, choiceId) {
 	const hit = (id, n) => {
 		players = players.map((p) => p.id === id ? {
 			...p,
-			morale: clamp(p.morale + n, 20, 99)
+			morale: clamp$1(p.morale + n, 20, 99)
 		} : p);
 	};
 	const bumpMpg = (id, n) => {
 		players = players.map((p) => p.id === id ? {
 			...p,
-			mpg: clamp(p.mpg + n, 0, 38)
+			mpg: clamp$1(p.mpg + n, 0, 38)
 		} : p);
 	};
 	switch (choice.id) {
@@ -20699,9 +21530,9 @@ function resolveStory(state, choiceId) {
 			...state,
 			pendingStory: null,
 			players,
-			adHeat: clamp((state.adHeat ?? 55) + ad, 10, 99),
-			fanMood: clamp((state.fanMood ?? 60) + fans, 10, 99),
-			donorMood: clamp((state.donorMood ?? 58) + donor, 10, 99),
+			adHeat: clamp$1((state.adHeat ?? 55) + ad, 10, 99),
+			fanMood: clamp$1((state.fanMood ?? 60) + fans, 10, 99),
+			donorMood: clamp$1((state.donorMood ?? 58) + donor, 10, 99),
 			news: [{
 				id: `${ev.id}-out`,
 				week: state.week,
@@ -20824,7 +21655,7 @@ var EMPTY = {
 	games: 0
 };
 function addBox(b, box, pts) {
-	const poss = box?.poss ?? clamp(gamePossessions(box, void 0, pts, pts), 56, 86);
+	const poss = box?.poss ?? clamp$1(gamePossessions(box, void 0, pts, pts), 56, 86);
 	return {
 		fga: b.fga + (box?.fga ?? Math.round(poss * .84)),
 		fta: b.fta + (box?.fta ?? Math.round(poss * .27)),
@@ -21087,11 +21918,11 @@ function matchup(state, youId, oppId, week, site) {
 		tempo,
 		expYou,
 		expOpp,
-		note: edge >= 8 ? `The tape says you by ${edge} ${floor}. Don't give it back on the glass.` : edge <= -8 ? `You're the underdog by ${-edge} ${floor}. You need the extra possessions.` : `A coin-flip ${floor}. Efficiency, not the highlight, decides it.`
+		note: edge >= 8 ? `Favored by ${edge} ${floor}. Win the rebounding.` : edge <= -8 ? `Underdog by ${-edge} ${floor}. You'll need extra possessions.` : `Toss-up ${floor}. The team that executes wins it.`
 	};
 }
 function tapeLine(tape) {
-	if (!tape.games) return "No tape yet. Lock and play.";
+	if (!tape.games) return "No games yet.";
 	if (!tape.kp) return `${tape.games} games · ${tape.off.ppp.toFixed(2)} PPP`;
 	return `${`${tape.kp.adjEM >= 0 ? "+" : ""}${tape.kp.adjEM.toFixed(1)}`} AdjEM · ${tape.kp.rank} national · ${tape.off.ppp.toFixed(2)} PPP`;
 }
@@ -21113,25 +21944,25 @@ function buildScout(state, oppId, week, site) {
 	const card = matchup(state, state.playerTeamId, oppId, week, site);
 	const keys = [];
 	if (tape.games) {
-		if (tape.off.tov >= .2) keys.push("They turn it over. Pressure pays.");
-		else if (tape.off.tov <= .13) keys.push("They don't give it away. Don't gamble.");
-		if (tape.off.ts >= .56) keys.push("They shoot it. Contest every catch.");
-		if (tape.off.orb >= .34) keys.push("They crash. Box out or get buried.");
-		if (tape.def.tov <= .14) keys.push("Their defense doesn't steal. Beat the set.");
-		if (tape.awayW + tape.awayL > 0 && tape.awayPpp + .08 < tape.homePpp) keys.push("They shrink on the road.");
+		if (tape.off.tov >= .2) keys.push("They turn the ball over. Press them.");
+		else if (tape.off.tov <= .13) keys.push("They take care of the ball. Don't gamble.");
+		if (tape.off.ts >= .56) keys.push("They can shoot. Contest everything.");
+		if (tape.off.orb >= .34) keys.push("They crash the offensive glass. Box out.");
+		if (tape.def.tov <= .14) keys.push("They don't force many turnovers. Beat them in the half court.");
+		if (tape.awayW + tape.awayL > 0 && tape.awayPpp + .08 < tape.homePpp) keys.push("They struggle on the road.");
 	}
 	if (kp) {
-		if (kp.adjORank <= 40) keys.push(`KenPom offense ${kp.adjORank}. Make them play slow.`);
-		if (kp.adjDRank <= 40) keys.push(`KenPom defense ${kp.adjDRank}. Extra pass or a brick.`);
-		if (kp.adjTRank <= 50) keys.push("They want to run.");
-		if (kp.adjTRank >= 280) keys.push("They stall. Shot clock matters.");
+		if (kp.adjORank <= 40) keys.push(`Top-40 offense on KenPom (${kp.adjORank}). Slow them down.`);
+		if (kp.adjDRank <= 40) keys.push(`Top-40 defense on KenPom (${kp.adjDRank}). Move the ball.`);
+		if (kp.adjTRank <= 50) keys.push("They want to push the pace.");
+		if (kp.adjTRank >= 280) keys.push("They play slow. Use the shot clock.");
 	}
-	if (!keys.length) keys.push("Thin tape. Play your stuff. Don't get cute.");
-	const identity = kp ? kp.adjO - kp.adjD >= 8 ? "A real team" : kp.adjORank < kp.adjDRank ? "Offense first" : "They guard" : "Unknown";
-	const pace = kp ? kp.adjT >= 70 ? "Push it" : kp.adjT <= 64 ? "Walk it up" : "Ordinary tempo" : "Ordinary tempo";
+	if (!keys.length) keys.push("Small sample. Run your offense.");
+	const identity = kp ? kp.adjO - kp.adjD >= 8 ? "Balanced" : kp.adjORank < kp.adjDRank ? "Offense-first" : "Defense-first" : "Unknown";
+	const pace = kp ? kp.adjT >= 70 ? "Up-tempo" : kp.adjT <= 64 ? "Half-court" : "Average pace" : "Average pace";
 	const shot = tape.games ? tape.off.ts >= .55 ? "They make shots" : tape.off.ts <= .5 ? "Cold from the floor" : "Average shooting" : "No sample";
 	const defense = tape.games ? tape.def.tov >= .2 ? "They gamble" : tape.def.ppp <= .95 ? "They guard" : "Ordinary defense" : "No sample";
-	if (net) keys.push(`NET ${net.rank} · Q1 ${net.q1w}-${net.q1l}`);
+	if (net && netReleased(state)) keys.push(`NET ${net.rank} · Q1 ${net.q1w}-${net.q1l}`);
 	if (card.note) keys.push(card.note);
 	return {
 		teamId: oppId,
@@ -21324,7 +22155,7 @@ function rosterFor(seed, teamId, prestige) {
 		][i % 5];
 		const base = 68 + (prestige - 50) * .32;
 		const decay = i < 5 ? i * .22 : 1.7 + (i - 5) * .75;
-		const ovr = clamp(Math.round(base + gaussian(rng) * 2 - decay), 58, 93);
+		const ovr = clamp$1(Math.round(base + gaussian(rng) * 2 - decay), 58, 93);
 		const name = randomPersonName(rng, used);
 		out.push(makePlayer({
 			id: `${teamId}-p${i}`,
@@ -21490,7 +22321,7 @@ function newDynasty(teamId, seed, opts) {
 		first: "Coach",
 		last: "Stone",
 		age: 38,
-		almaMaterId: teamId
+		almaMaterId: null
 	};
 	const eraDecade = opts.eraDecade ?? null;
 	const nilOn = eraHasNil(eraDecade);
@@ -21529,7 +22360,7 @@ function newDynasty(teamId, seed, opts) {
 		seed
 	});
 	return tickEventsOpen(ensureProgram(tickPodcasts({
-		version: 30,
+		version: 31,
 		seed,
 		season,
 		week: 0,
@@ -21558,7 +22389,8 @@ function newDynasty(teamId, seed, opts) {
 			season,
 			seed,
 			week: 0,
-			teams: aligned
+			teams: aligned,
+			players
 		})],
 		identity,
 		careerMode: opts.careerMode,
@@ -21687,11 +22519,12 @@ function coachRecord(state) {
 	const t = state.teams[state.playerTeamId];
 	const jobW = t?.wins ?? 0;
 	const jobL = t?.losses ?? 0;
+	const booked = (state.history?.log ?? []).some((row) => row.season === state.season && row.counted);
 	return {
 		jobW,
 		jobL,
-		careerW: (state.history?.wins ?? 0) + jobW,
-		careerL: (state.history?.losses ?? 0) + jobL
+		careerW: (state.history?.wins ?? 0) + (booked ? 0 : jobW),
+		careerL: (state.history?.losses ?? 0) + (booked ? 0 : jobL)
 	};
 }
 function unreadMail(state) {
@@ -22120,7 +22953,6 @@ function lockSchedule(state) {
 	if (state.phase !== "preseason") return state;
 	const schedule = fillBoard(state);
 	const youNext = schedule.filter((g) => !g.declined && (g.homeId === state.playerTeamId || g.awayId === state.playerTeamId)).sort((a, b) => a.week - b.week)[0];
-	const filled = schedule.length - state.schedule.length;
 	const next = {
 		...state,
 		phase: "regular",
@@ -22136,7 +22968,7 @@ function lockSchedule(state) {
 	};
 	return tickProgramWeek(tickPodcasts({
 		...next,
-		news: [lockCopy(next, filled), ...next.news].slice(0, 60)
+		news: [lockCopy(next), ...next.news].slice(0, 60)
 	}, mulberry32(state.seed ^ 4300)));
 }
 function openDraft(state) {
@@ -22153,8 +22985,8 @@ function openDraft(state) {
 function settleDraft(state) {
 	return closeProClass(openDraft(settleDraft$1(state)));
 }
-function newsFor(state, slot, result) {
-	const article = gameStory(state, slot, result);
+function newsFor(state, slot, result, plays) {
+	const article = gameStory(state, slot, result, plays);
 	return {
 		...state,
 		news: [article, ...state.news].slice(0, 60)
@@ -22263,7 +23095,7 @@ function simSlot(state, slot, rng, forced) {
 		home: simmed.homeLines,
 		away: simmed.awayLines
 	} : void 0;
-	const result = withRecap(state, {
+	const result = withRecap$1(state, {
 		id: `res-${slot.id}`,
 		slotId: slot.id,
 		homeId: slot.homeId,
@@ -22335,31 +23167,27 @@ function simSlot(state, slot, rng, forced) {
 		...next,
 		recordBook: stampBook(next, result)
 	};
-	if (youIn || notable && rng() < .2 || rng() < .05) next = newsFor(next, slot, result);
+	if (youIn || notable && rng() < .2 || rng() < .05) next = newsFor(next, slot, result, {
+		log: forced?.log,
+		tape: simmed?.tape
+	});
 	next = rollGameInjuries(next, slot, rng);
 	if (youIn) {
 		const ctx = gameCtx(next, slot.id);
-		if (ctx) {
-			next = {
-				...next,
-				mail: afterGameMail(next, ctx)
-			};
-			const prng = mulberry32(next.seed ^ hashString(slot.id) ^ 81);
-			if (shouldHoldPresser(next, ctx, prng)) {
-				const presser = buildPresser(next, slot.id);
-				if (presser) next = {
-					...next,
-					pendingPresser: presser,
-					recentQuestionIds: rememberQuestions(next, presser)
-				};
-			}
-		}
+		if (ctx) next = {
+			...next,
+			mail: afterGameMail(next, ctx)
+		};
 	}
 	return next;
 }
 function closeLive(state) {
 	const live = state.liveGame;
 	if (!live) return state;
+	if (live.sandbox) return {
+		...state,
+		liveGame: null
+	};
 	const slot = state.schedule.find((g) => g.id === live.slotId);
 	if (!slot) return {
 		...state,
@@ -22588,7 +23416,7 @@ function cpuRecruitWeek(state, rng) {
 			if (rng() > .11) continue;
 			const fit = prestigeFit(r, t.id);
 			const cur = interest[t.id] ?? Math.round(fit * .82);
-			interest[t.id] = clamp(cur + randInt(rng, 2, 6) + Math.round((t.prestige >= 88 ? 3 : t.prestige >= 76 ? 1 : 0) * g), 0, 99);
+			interest[t.id] = clamp$1(cur + randInt(rng, 2, 6) + Math.round((t.prestige >= 88 ? 3 : t.prestige >= 76 ? 1 : 0) * g), 0, 99);
 		}
 		if (r.committedTo === state.playerTeamId) return {
 			...r,
@@ -22774,7 +23602,7 @@ function runLabel(run) {
 }
 function interestIn(r, teamId, state) {
 	const mem = state ? memoryBump(state, teamId, r) : null;
-	return clamp(recruitInterest(r, teamId) + (mem ? mem.pipe + mem.bond : pipelineBonus(r, teamId)) + (state && teamId === state.playerTeamId ? recruitBias(state) + staffRecruitBonus(state) : 0), 0, 99);
+	return clamp$1(recruitInterest(r, teamId) + (mem ? mem.pipe + mem.bond : pipelineBonus(r, teamId)) + (state && teamId === state.playerTeamId ? recruitBias(state) + staffRecruitBonus(state) : 0), 0, 99);
 }
 function isTargeted(r, teamId) {
 	if (r.dropped && r.committedTo !== teamId) return false;
@@ -22798,8 +23626,8 @@ function dropTarget(state, id) {
 	if (r.committedTo === state.playerTeamId) return {
 		state,
 		feedback: {
-			title: "He's ink",
-			detail: "You already signed him.",
+			title: "Already committed",
+			detail: `${r.first} ${r.last} is already in the class.`,
 			parts: []
 		}
 	};
@@ -22867,7 +23695,7 @@ function pitchNil(state, id) {
 			...x,
 			interest: {
 				...x.interest,
-				[state.playerTeamId]: clamp(cur + bump, 0, 99)
+				[state.playerTeamId]: clamp$1(cur + bump, 0, 99)
 			}
 		};
 	});
@@ -22891,7 +23719,11 @@ function pitchNil(state, id) {
 	};
 }
 function recruitStage(r, teamId, state) {
-	if (r.committedTo === teamId) return "signed";
+	if (r.committedTo === teamId) {
+		const flips = state ? settingsOf(state).flipsOn : false;
+		const late = state ? state.phase === "offseason" || state.week >= 14 : false;
+		return flips && !late ? "verbal" : "signed";
+	}
 	const heat = interestIn(r, teamId, state);
 	const offered = r.offers.includes(teamId);
 	if (offered && heat >= 68) return "close";
@@ -22978,7 +23810,7 @@ function scoutRecruit(state, id) {
 		scouted: true,
 		interest: {
 			...x.interest,
-			[state.playerTeamId]: clamp(seedHeat(x, state.playerTeamId) + 3, 0, 99)
+			[state.playerTeamId]: clamp$1(seedHeat(x, state.playerTeamId) + 3, 0, 99)
 		}
 	} : x);
 	return {
@@ -23032,13 +23864,13 @@ function offerRecruit(state, id) {
 			parts: []
 		}
 	};
-	const nilBump = state.nilCap <= 0 ? r.wants.nil > 60 ? -3 : 0 : clamp(Math.round((state.nilCap - r.nilAsk) / 12), -4, 5);
+	const nilBump = state.nilCap <= 0 ? r.wants.nil > 60 ? -3 : 0 : clamp$1(Math.round((state.nilCap - r.nilAsk) / 12), -4, 5);
 	const bump = 10 + Math.round(((state.coachSkills?.recruiting ?? 50) - 50) / 8) + nilBump + recruitBias(state) * .15;
 	const recruits = paid.recruits.map((x) => {
 		if (x.id !== id) return x;
 		const interest = {
 			...x.interest,
-			[state.playerTeamId]: clamp(seedHeat(x, state.playerTeamId) + bump, 0, 99)
+			[state.playerTeamId]: clamp$1(seedHeat(x, state.playerTeamId) + bump, 0, 99)
 		};
 		return {
 			...x,
@@ -23098,7 +23930,7 @@ function visitRecruit(state, id) {
 		const visits = x.visits.includes(state.playerTeamId) ? x.visits : [...x.visits, state.playerTeamId];
 		const interest = {
 			...x.interest,
-			[state.playerTeamId]: clamp(seedHeat(x, state.playerTeamId) + bump + pipelineBonus(x, state.playerTeamId), 0, 99)
+			[state.playerTeamId]: clamp$1(seedHeat(x, state.playerTeamId) + bump + pipelineBonus(x, state.playerTeamId), 0, 99)
 		};
 		let committedTo = x.committedTo;
 		const prevCommit = x.committedTo;
@@ -23138,6 +23970,11 @@ function visitRecruit(state, id) {
 			}] : []]
 		}
 	};
+}
+function signGate(offered, asked) {
+	if (!offered) return "Put a scholarship on the table first.";
+	if (asked) return "Already asked this week.";
+	return null;
 }
 function signRecruit(state, id) {
 	const r = state.recruits.find((x) => x.id === id);
@@ -23179,7 +24016,7 @@ function signRecruit(state, id) {
 			state: forced.state,
 			feedback: {
 				title: `${r.first} committed`,
-				detail: "God Mode. The pledge is ink.",
+				detail: "God Mode. The pledge is in.",
 				parts: [{
 					label: "Commit",
 					delta: 1
@@ -23194,30 +24031,56 @@ function signRecruit(state, id) {
 			}
 		};
 	}
-	const heat = interestIn(r, state.playerTeamId, state);
-	const floor = signFloor(state);
-	if (heat < floor) return {
+	const asked = r.signAsk?.season === state.season && r.signAsk.week === state.week;
+	if (asked && r.signAsk && !r.signAsk.hit) return {
 		state,
 		feedback: {
-			title: "Not yet",
-			detail: `He's at ${heat}. You need ${floor} on this difficulty.`,
+			title: "Already asked",
+			detail: `${r.first} said no this week. Ask again next week.`,
 			parts: []
 		}
 	};
+	const blocked = signGate(true, Boolean(asked));
+	if (blocked) return {
+		state,
+		feedback: {
+			title: "Not yet",
+			detail: blocked,
+			parts: []
+		}
+	};
+	const chance = signChance(r, state);
+	const hit = mulberry32(state.seed ^ hashString(id) ^ (state.season * 53 + state.week) * 997 ^ 20905)() * 100 < chance;
+	const verbal = settingsOf(state).flipsOn && state.phase !== "offseason" && state.week < 14;
 	const recruits = state.recruits.map((x) => x.id === id ? {
 		...x,
-		committedTo: state.playerTeamId,
+		signAsk: {
+			season: state.season,
+			week: state.week,
+			hit
+		},
+		committedTo: hit ? state.playerTeamId : x.committedTo,
 		offers: x.offers.includes(state.playerTeamId) ? x.offers : [...x.offers, state.playerTeamId]
 	} : x);
-	const next = absorbBoard(state, markCommit({
-		...state,
-		recruits
-	}, r, `${r.stars}★ ${r.pos}. The class just got louder.`));
-	return {
-		state: next,
+	if (!hit) return {
+		state: {
+			...state,
+			recruits
+		},
 		feedback: {
-			title: `${r.first} ${r.last} committed`,
-			detail: next.flash?.detail ?? "Ink.",
+			title: `${r.first} said no`,
+			detail: `${chance}% this week. Same odds if you ask again before the week turns.`,
+			parts: []
+		}
+	};
+	return {
+		state: absorbBoard(state, markCommit({
+			...state,
+			recruits
+		}, r, verbal ? "Verbal. He can still flip until signing day." : `${r.stars}★ ${r.pos}. Signed.`)),
+		feedback: {
+			title: verbal ? `${r.first} ${r.last} committed` : `${r.first} ${r.last} signed`,
+			detail: verbal ? "Verbal. He can still flip until signing day." : "Signed.",
 			parts: [{
 				label: "Commit",
 				delta: 1
@@ -23353,82 +24216,24 @@ function setAssistedRecruit(state, on) {
 		}
 	};
 }
-function answerPresser(state, id) {
-	const p = state.pendingPresser;
-	if (!p) return {
+function answerPresser(state, _id) {
+	if (!state.pendingPresser) return {
 		state,
 		feedback: {
-			title: "Podium's clear",
+			title: "",
 			detail: "",
 			parts: []
 		}
 	};
-	const q = p.questions[p.asked];
-	if (!q) return {
-		state: {
-			...state,
-			pendingPresser: null
-		},
-		feedback: {
-			title: "Podium's clear",
-			detail: "",
-			parts: []
-		}
-	};
-	const c = q.choices.find((x) => x.id === id) ?? q.choices[0];
-	if (!c) return {
-		state: {
-			...state,
-			pendingPresser: null
-		},
-		feedback: {
-			title: "Podium's clear",
-			detail: "",
-			parts: []
-		}
-	};
-	const asked = p.asked + 1;
-	const log = [...p.log, {
-		question: q.prompt,
-		answer: c.label,
-		morale: c.morale,
-		ad: c.ad,
-		fans: c.fans
-	}];
-	const done = asked >= p.questions.length;
-	const nextPresser = done ? null : {
-		...p,
-		asked,
-		log
-	};
-	let mail = state.mail;
-	if (done) {
-		const follow = presserFollowup(state, log.reduce((n, x) => n + x.ad, 0), log.reduce((n, x) => n + x.fans, 0), log.reduce((n, x) => n + x.morale, 0));
-		if (follow) mail = [follow, ...mail].slice(0, 40);
-	}
 	return {
 		state: {
 			...state,
-			pendingPresser: nextPresser,
-			lastPresserWeek: state.week,
-			adHeat: clamp(state.adHeat + c.ad, 10, 99),
-			fanMood: clamp(state.fanMood + c.fans, 10, 99),
-			players: state.players.map((pl) => pl.teamId === state.playerTeamId ? {
-				...pl,
-				morale: clamp(pl.morale + Math.round(c.morale / 4), 20, 99)
-			} : pl),
-			mail
+			pendingPresser: null
 		},
 		feedback: {
-			title: c.label,
-			detail: q.prompt,
-			parts: [{
-				label: "AD",
-				delta: c.ad
-			}, {
-				label: "Fans",
-				delta: c.fans
-			}]
+			title: "",
+			detail: "",
+			parts: []
 		}
 	};
 }
@@ -23734,7 +24539,7 @@ function slimState(state) {
 	}));
 	return {
 		...state,
-		version: 30,
+		version: 31,
 		teams,
 		players: state.players.map((p) => slimPlayer(p, you)),
 		recruits: state.recruits.map((r) => slimRecruit(r, you)),
@@ -23744,7 +24549,8 @@ function slimState(state) {
 			transfers: (state.portal.transfers ?? []).map((t) => slimTransfer(t, you))
 		} : state.portal,
 		news: (state.news ?? []).slice(0, 24),
-		podcasts: (state.podcasts ?? []).slice(0, 18),
+		podcasts: (state.podcasts ?? []).slice(0, 32),
+		coachMoves: (state.coachMoves ?? []).slice(0, 48),
 		mail: (state.mail ?? []).slice(0, 24),
 		awards: (state.awards ?? []).slice(-80),
 		potw: (state.potw ?? []).slice(-24),
@@ -24138,7 +24944,7 @@ var CHANGELOG = [
 	"Archives keep prior champions, awards, conference tables, box scores, and retired numbers.",
 	"Add a school on Pick a school. It stays on the board, the schedule, and the standings.",
 	"Forced late-game finishes keep a real score. No more 6–1 finals.",
-	"Season card from the gym. Commissioner room code for a local league file.",
+	"Resume from the gym. Commissioner room code for a local league file.",
 	"100% free. No ads, no energy, no loot boxes. Optional tip in Settings.",
 	"Exhibition cups: D2, D3, and NAIA boards you can schedule in the preseason. They are not Division I.",
 	"Recruiting board shows the other schools, a leaning meter, and who in the circle is loudest."
@@ -24155,7 +24961,7 @@ function rivalRows(interest, committed) {
 	};
 }
 function circleLine(w) {
-	if (!w) return "Circle is quiet until you scout.";
+	if (!w) return "Scout him to see what his camp wants.";
 	const rows = [
 		[
 			"Mom",
@@ -24184,7 +24990,7 @@ function circleLine(w) {
 }
 function commitWord(flipsOn, committed) {
 	if (!committed) return "";
-	return flipsOn ? "Soft commit" : "Hard commit";
+	return flipsOn ? "Verbal" : "Signed";
 }
 function signingBlurb(state) {
 	if (!(state.phase === "offseason" || state.week >= 14)) return null;
@@ -24203,7 +25009,8 @@ function signingBlurb(state) {
 		rival = teamOf(id).name;
 	}
 	const rank = 1 + [...bySchool.values()].filter((n) => n > stars).length;
-	return `Signing class: ${yours.length} pledges, ${stars} stars. Rank ${rank} on the board${rival ? ` · ${rival} has ${rivalStars}` : ""}. Flips still happen if that setting is on.`;
+	const lock = !Boolean(state.settings?.flipsOn) ? "These commits are signed." : "Signing day. Earlier verbals are signed now.";
+	return `Signing class: ${yours.length} commits, ${stars} stars. Ranked ${rank}${rival ? `. ${rival} has ${rivalStars} stars` : ""}. ${lock}`;
 }
 function poachWatch(state) {
 	const you = state.playerTeamId;
@@ -24322,7 +25129,7 @@ function bugReport(state) {
 	const errs = recentErrors();
 	return [
 		"Dribble bug report",
-		`Build: 30`,
+		`Build: 31`,
 		`School: ${school}`,
 		`Season ${state.season} week ${state.week} ${state.phase}`,
 		`Record: ${t?.wins ?? 0}-${t?.losses ?? 0}`,
@@ -24588,7 +25395,7 @@ function peekPlayView() {
 }
 function resumeView(state, play) {
 	if (play === "game" && !state.liveGame) return "hub";
-	if (play === "presser" && !state.pendingPresser) return "hub";
+	if (play === "presser") return "hub";
 	if (play === "story" && !state.pendingStory) return "hub";
 	if (play === "selection" && !(state.phase === "selection" && !state.selection?.revealed)) return "hub";
 	if (play === "tutorial") return "hub";
@@ -24668,7 +25475,6 @@ function afterPaint(fn) {
 function afterSimView(next) {
 	if (next.pendingStory) return "story";
 	if (next.phase === "selection" && !next.selection?.revealed) return "selection";
-	if (next.pendingPresser) return "presser";
 	if (next.phase === "selection") return "bracketology";
 	return "hub";
 }
@@ -24790,8 +25596,11 @@ var useGame = create((set, get) => ({
 				if (play) {
 					const loaded = loadSave();
 					if (loaded) {
-						state = loaded;
-						view = resumeView(loaded, play);
+						state = loaded.pendingPresser ? {
+							...loaded,
+							pendingPresser: null
+						} : loaded;
+						view = resumeView(state, play);
 					}
 				}
 			}
@@ -24918,7 +25727,7 @@ var useGame = create((set, get) => ({
 						first: d.first.trim() || "Coach",
 						last: d.last.trim() || "Stone",
 						age: Math.max(28, Math.min(64, d.age || 38)),
-						almaMaterId: d.almaMaterId && TEAM_BY_ID[d.almaMaterId] ? d.almaMaterId : teamId
+						almaMaterId: d.almaMaterId && TEAM_BY_ID[d.almaMaterId] ? d.almaMaterId : null
 					};
 					const state = patchSettings(newDynasty(teamId, readChallengeSeed() || (Date.now() ^ Math.random() * 1e9) >>> 0, {
 						careerMode: mode === "career",
@@ -24935,7 +25744,7 @@ var useGame = create((set, get) => ({
 						view: tuto,
 						feedback: {
 							title: `${identityName(identity)} at ${school.name}`,
-							detail: identity.almaMaterId && identity.almaMaterId !== teamId ? `${TEAM_BY_ID[identity.almaMaterId]?.name} is still home. That job will reach further later.` : "Alma mater is this campus — they'll remember.",
+							detail: identity.almaMaterId ? `${TEAM_BY_ID[identity.almaMaterId]?.name} is still home. That job will reach further later.` : "No alma mater on the file.",
 							parts: [{
 								label: "Rating",
 								delta: school.prestige
@@ -24974,10 +25783,14 @@ var useGame = create((set, get) => ({
 				});
 				return;
 			}
-			const view = state.pendingStory ? "story" : state.pendingPresser ? "presser" : state.phase === "selection" && !state.selection?.revealed ? "selection" : "hub";
+			const opened = state.pendingPresser ? {
+				...state,
+				pendingPresser: null
+			} : state;
+			const view = opened.pendingStory ? "story" : opened.phase === "selection" && !opened.selection?.revealed ? "selection" : "hub";
 			rememberView(view, true);
 			set({
-				state,
+				state: opened,
 				view,
 				saves: listSaves(),
 				toast: null,
@@ -25056,8 +25869,8 @@ var useGame = create((set, get) => ({
 				namePack: pack
 			} : s,
 			feedback: {
-				title: "Facsimile names",
-				detail: "Names are back to the shipped list.",
+				title: "Default names",
+				detail: "School names are back to the built-in list.",
 				parts: []
 			}
 		});
@@ -25134,10 +25947,14 @@ var useGame = create((set, get) => ({
 				});
 				return;
 			}
-			const view = state.pendingStory ? "story" : state.pendingPresser ? "presser" : state.phase === "selection" && !state.selection?.revealed ? "selection" : "hub";
+			const opened = state.pendingPresser ? {
+				...state,
+				pendingPresser: null
+			} : state;
+			const view = opened.pendingStory ? "story" : opened.phase === "selection" && !opened.selection?.revealed ? "selection" : "hub";
 			rememberView(view, true);
 			set({
-				state,
+				state: opened,
 				view,
 				saves: listSaves(),
 				toast: null,
@@ -25228,8 +26045,8 @@ var useGame = create((set, get) => ({
 					busy: null,
 					view: "hub",
 					feedback: {
-						title: "Season's underway",
-						detail: "The schedule is locked. Sim a week when you're ready.",
+						title: "Season started",
+						detail: "The schedule is locked.",
 						parts: []
 					}
 				});
@@ -25276,10 +26093,6 @@ var useGame = create((set, get) => ({
 			set({ view: "story" });
 			return;
 		}
-		if (s.pendingPresser) {
-			set({ view: "presser" });
-			return;
-		}
 		if (s.phase === "selection" && !s.selection?.revealed) {
 			set({ view: "selection" });
 			return;
@@ -25324,10 +26137,6 @@ var useGame = create((set, get) => ({
 		}
 		if (s.pendingStory) {
 			set({ view: "story" });
-			return;
-		}
-		if (s.pendingPresser) {
-			set({ view: "presser" });
 			return;
 		}
 		if (s.phase === "selection" && !s.selection?.revealed) {
@@ -25496,10 +26305,6 @@ var useGame = create((set, get) => ({
 			set({ view: "story" });
 			return;
 		}
-		if (s.pendingPresser) {
-			set({ view: "presser" });
-			return;
-		}
 		if (s.phase === "selection" && !s.selection?.revealed) {
 			set({ view: "selection" });
 			return;
@@ -25662,6 +26467,16 @@ var useGame = create((set, get) => ({
 		const s = get().state;
 		if (!s) return;
 		try {
+			if (s.liveGame?.sandbox) {
+				apply(get, set, {
+					...s,
+					liveGame: null
+				}, {
+					view: "hub",
+					toast: "Test game — not counted."
+				});
+				return;
+			}
 			if (s.liveGame && !s.liveGame.done && !s.liveGame.planned) {
 				apply(get, set, {
 					...s,
@@ -25902,7 +26717,7 @@ var useGame = create((set, get) => ({
 		const p = s.players.find((x) => x.id === id);
 		apply(get, set, setFocus(s, id, focus), { feedback: {
 			title: p ? `${p.first}'s focus` : "Focus",
-			detail: p ? `${p.first} works on that in the gym.` : "Pick a skill.",
+			detail: p ? `${p.first} will work on that.` : "Pick a skill.",
 			parts: []
 		} });
 	},
@@ -25980,8 +26795,8 @@ var useGame = create((set, get) => ({
 			return;
 		}
 		apply(get, set, state, { feedback: {
-			title: "Skill spent",
-			detail: "That point is on your tree now.",
+			title: "Skill point spent",
+			detail: `${axis} went up.`,
 			parts: [{
 				label: axis,
 				delta: 4
@@ -26029,11 +26844,18 @@ var useGame = create((set, get) => ({
 			});
 			return;
 		}
+		if (carouselWaiting(s)) {
+			set({
+				view: "carousel",
+				toast: "The carousel is still open."
+			});
+			return;
+		}
 		const review = s.contractReview;
 		if (review && !review.resolved && (review.decision === "fire" || review.decision === "extend")) {
 			set({
 				view: "contract",
-				toast: review.decision === "fire" ? "The AD wants you out. Take a job." : "Sign the extension or walk."
+				toast: review.decision === "fire" ? "The AD wants a change. You can still stay." : "Sign the extension or walk."
 			});
 			return;
 		}
@@ -26087,10 +26909,10 @@ var useGame = create((set, get) => ({
 			return;
 		}
 		apply(get, set, reseatProgram(next.state, teamId), {
-			view: "hub",
+			view: next.state.carousel && !next.state.carousel.done ? "carousel" : "hub",
 			feedback: {
 				title: "New job",
-				detail: `${next.state.contract?.years} years. The AD already wrote the terms.`,
+				detail: next.state.snake?.season === next.state.season ? `${next.state.snake.to} is yours. The old room already has a name for it.` : `${next.state.contract?.years} years. The AD already wrote the terms.`,
 				parts: [{
 					label: "Years",
 					delta: next.state.contract?.years ?? 0
@@ -26104,6 +26926,23 @@ var useGame = create((set, get) => ({
 		apply(get, set, walkContract(s), { view: "contract" });
 	},
 	openContract: () => set({ view: "contract" }),
+	advanceCarousel: () => {
+		const s = get().state;
+		if (!s) return;
+		const next = advanceCarousel(s);
+		apply(get, set, next, Boolean(next.carousel?.done) ? { view: "hub" } : void 0);
+	},
+	declineCarouselOffer: () => {
+		const s = get().state;
+		if (!s) return;
+		const next = declineCarouselOffer(s);
+		const done = Boolean(next.carousel?.done);
+		const open = Boolean(next.phase === "offseason" && next.carousel && !next.carousel.done);
+		apply(get, set, next, {
+			view: done || !open ? "hub" : "carousel",
+			toast: "You stayed."
+		});
+	},
 	patchLeague: (p) => {
 		const s = get().state;
 		if (!s) return;
@@ -26169,7 +27008,7 @@ var useGame = create((set, get) => ({
 		const { state, feedback } = answerPresser(s, id);
 		apply(get, set, state, {
 			feedback,
-			view: state.pendingPresser ? "presser" : state.phase === "selection" && !state.selection?.revealed ? "selection" : "hub"
+			view: state.phase === "selection" && !state.selection?.revealed ? "selection" : "hub"
 		});
 	},
 	readMail: (id) => {
@@ -26296,8 +27135,8 @@ var useGame = create((set, get) => ({
 			...s,
 			players
 		}, { feedback: {
-			title: "Tournament rotation",
-			detail: "Starters 32. Next three 16. Everyone else mops up.",
+			title: "Tournament minutes",
+			detail: "Starters play 32. The next three play 16. Everyone else plays the leftovers.",
 			parts: []
 		} });
 	},
@@ -26369,8 +27208,8 @@ function PressButton({ onPress, className, children, disabled }) {
 	});
 }
 //#endregion
-//#region src/assets/dribble-title.jpg
-var dribble_title_default = "./assets/dribble-title-CRiVNvrx.jpg";
+//#region src/assets/landing-poster.jpg
+var landing_poster_default = "./assets/landing-poster-DIRwIl9j.jpg";
 //#endregion
 //#region src/components/game/app-frame.tsx
 function AppFrame({ children, footer, className = "" }) {
@@ -26387,8 +27226,8 @@ function AppFrame({ children, footer, className = "" }) {
 var ERAS = [
 	{
 		decade: 1960,
-		kicker: "Wooden's house",
-		blurb: "Westwood doesn't lose in March. No threes, no clock, you live in the paint. Independents still eat out east and the Southwest hasn't gone anywhere.",
+		kicker: "No three, no clock",
+		blurb: "No three-point line and no shot clock. UCLA sets the standard. You win in the paint.",
 		tags: [
 			"No 3s",
 			"No shot clock",
@@ -26397,8 +27236,8 @@ var ERAS = [
 	},
 	{
 		decade: 1970,
-		kicker: "The lid comes off",
-		blurb: "Wooden's last banners, then the door's open. Bloomington, Milwaukee, the independents who wouldn't join a league. Still no arc. Still nobody's getting paid.",
+		kicker: "After Wooden",
+		blurb: "UCLA's run ends and the field opens up. Still no three-point line. Players still don't get paid.",
 		tags: [
 			"No 3s",
 			"No NIL",
@@ -26407,8 +27246,8 @@ var ERAS = [
 	},
 	{
 		decade: 1980,
-		kicker: "They painted the arc",
-		blurb: "They put a line on the floor in '86 and the whole game leaned forward. The Garden on a Saturday. Vegas. Knight in Bloomington. It started to feel like television.",
+		kicker: "The three arrives",
+		blurb: "The three-point line shows up in 1986. The Big East is on national TV. Still no NIL.",
 		tags: [
 			"3s from '86",
 			"No NIL",
@@ -26417,8 +27256,8 @@ var ERAS = [
 	},
 	{
 		decade: 1990,
-		kicker: "Recruit or die",
-		blurb: "Threes are just basketball now. Durham, Lexington, Ann Arbor, a little leftover Vegas. You live on the road in July. The kids still can't take a dime.",
+		kicker: "July recruiting",
+		blurb: "The three is just part of the game. You spend July on the road. Players still can't take money.",
 		tags: [
 			"3-point line",
 			"No NIL",
@@ -26427,8 +27266,8 @@ var ERAS = [
 	},
 	{
 		decade: 2e3,
-		kicker: "One year and out",
-		blurb: "The NBA said you have to sit a year. So the stars show up, win, and leave. Mid-majors crash the dance. Boosters still can't write the checks they want to.",
+		kicker: "One-and-done",
+		blurb: "Stars have to wait a year for the NBA, then they leave. Mid-majors can still crash the tournament.",
 		tags: [
 			"3-point line",
 			"No NIL",
@@ -26437,8 +27276,8 @@ var ERAS = [
 	},
 	{
 		decade: 2010,
-		kicker: "Kids can leave",
-		blurb: "Everybody shoots it. Then '18, the portal opens and a roster isn't a roster anymore. Spokane's a power. A&M and Mizzou go south. The map starts moving.",
+		kicker: "The portal opens",
+		blurb: "Everybody shoots. In 2018 the transfer portal opens and rosters stop staying put.",
 		tags: [
 			"3-point line",
 			"No NIL",
@@ -26447,8 +27286,8 @@ var ERAS = [
 	},
 	{
 		decade: 2020,
-		kicker: "Payball",
-		blurb: "They can get paid now. Then '24 hits and Westwood's in the Big Ten and Texas is in the SEC and you're recruiting the portal like it's November. The job is twelve months.",
+		kicker: "NIL and realignment",
+		blurb: "Players can get paid. By 2024 the conferences have moved and the portal is a second signing period.",
 		tags: [
 			"3-point line",
 			"NIL",
@@ -26509,78 +27348,77 @@ function TitleScreen() {
 	const has = hasSave || saves.length > 0;
 	return /* @__PURE__ */ jsxs("div", {
 		className: `title-screen${armed ? "" : " is-booting"}`,
-		children: [/* @__PURE__ */ jsx("img", {
-			src: dribble_title_default,
-			alt: "",
-			className: "title-poster",
-			draggable: false
-		}), /* @__PURE__ */ jsxs("nav", {
-			className: "title-menu",
-			"aria-label": "Main menu",
-			"aria-busy": !armed,
-			children: [
-				/* @__PURE__ */ jsx("h1", {
-					className: "sr-only",
-					children: "Dribble"
-				}),
-				/* @__PURE__ */ jsxs("div", {
-					className: "title-boot",
-					"aria-hidden": armed,
-					children: [/* @__PURE__ */ jsx("p", {
-						className: "title-boot-kicker",
-						"aria-live": armed ? "off" : "polite",
-						children: queued === "career" ? "Career — one second." : queued === "dynasty" ? "Pick a school — one second." : queued === "eras" ? "Eras — one second." : queued === "continue" ? "Continue — one second." : queued === "saves" ? "Load game — one second." : queued === "hof" ? "Hall of Fame — one second." : "The gym's opening"
-					}), /* @__PURE__ */ jsx("span", {
-						className: "title-boot-track",
-						role: "progressbar",
-						"aria-valuemin": 0,
-						"aria-valuemax": 100,
-						"aria-label": "Loading the menu",
-						children: /* @__PURE__ */ jsx("span", { className: "title-boot-fill" })
-					})]
-				}),
-				/* @__PURE__ */ jsx(TitleBtn, {
-					go: "career",
-					className: `title-btn title-btn-primary${queued === "career" ? " is-queued" : ""}`,
-					children: "Career"
-				}),
-				/* @__PURE__ */ jsx(TitleBtn, {
-					go: "dynasty",
-					className: `title-btn title-btn-ghost${queued === "dynasty" ? " is-queued" : ""}`,
-					children: "Pick a school"
-				}),
-				/* @__PURE__ */ jsx(TitleBtn, {
-					go: "eras",
-					className: `title-btn title-btn-ghost${queued === "eras" ? " is-queued" : ""}`,
-					children: "Eras"
-				}),
-				has && /* @__PURE__ */ jsx(TitleBtn, {
-					go: "continue",
-					className: `title-btn title-btn-ghost${queued === "continue" ? " is-queued" : ""}`,
-					children: "Continue"
-				}),
-				/* @__PURE__ */ jsxs("div", {
-					className: "title-menu-row",
-					children: [/* @__PURE__ */ jsx(TitleBtn, {
-						go: "saves",
-						className: `title-btn title-btn-ghost${queued === "saves" ? " is-queued" : ""}`,
-						children: "Load game"
-					}), /* @__PURE__ */ jsx(TitleBtn, {
-						go: "hof",
-						className: `title-btn title-btn-ghost${queued === "hof" ? " is-queued" : ""}`,
-						children: "Hall of Fame"
-					})]
-				}),
-				/* @__PURE__ */ jsx("p", {
-					className: "title-free",
-					children: "100% free D-I coaching sim — no IAP required"
-				}),
-				toast && /* @__PURE__ */ jsx("p", {
-					className: "mt-3 text-sm text-loss",
-					children: toast
-				})
-			]
-		})]
+		children: [
+			/* @__PURE__ */ jsx("img", {
+				src: landing_poster_default,
+				alt: "",
+				className: "title-poster",
+				draggable: false
+			}),
+			/* @__PURE__ */ jsx("h1", {
+				className: "sr-only",
+				children: "Dribble"
+			}),
+			/* @__PURE__ */ jsxs("nav", {
+				className: "title-menu",
+				"aria-label": "Main menu",
+				"aria-busy": !armed,
+				children: [
+					/* @__PURE__ */ jsxs("div", {
+						className: "title-boot",
+						"aria-hidden": armed,
+						children: [/* @__PURE__ */ jsx("p", {
+							className: "title-boot-kicker",
+							"aria-live": armed ? "off" : "polite",
+							children: queued === "career" ? "Career — one second." : queued === "dynasty" ? "Pick a school — one second." : queued === "eras" ? "Eras — one second." : queued === "continue" ? "Continue — one second." : queued === "saves" ? "Load game — one second." : queued === "hof" ? "Hall of Fame — one second." : "Loading"
+						}), /* @__PURE__ */ jsx("span", {
+							className: "title-boot-track",
+							role: "progressbar",
+							"aria-valuemin": 0,
+							"aria-valuemax": 100,
+							"aria-label": "Loading the menu",
+							children: /* @__PURE__ */ jsx("span", { className: "title-boot-fill" })
+						})]
+					}),
+					/* @__PURE__ */ jsx(TitleBtn, {
+						go: "career",
+						className: `title-btn title-btn-primary${queued === "career" ? " is-queued" : ""}`,
+						children: "Career"
+					}),
+					/* @__PURE__ */ jsx(TitleBtn, {
+						go: "dynasty",
+						className: `title-btn title-btn-ghost${queued === "dynasty" ? " is-queued" : ""}`,
+						children: "Pick a school"
+					}),
+					/* @__PURE__ */ jsx(TitleBtn, {
+						go: "eras",
+						className: `title-btn title-btn-ghost${queued === "eras" ? " is-queued" : ""}`,
+						children: "Eras"
+					}),
+					has && /* @__PURE__ */ jsx(TitleBtn, {
+						go: "continue",
+						className: `title-btn title-btn-ghost${queued === "continue" ? " is-queued" : ""}`,
+						children: "Continue"
+					}),
+					/* @__PURE__ */ jsxs("div", {
+						className: "title-menu-row",
+						children: [/* @__PURE__ */ jsx(TitleBtn, {
+							go: "saves",
+							className: `title-btn title-btn-ghost${queued === "saves" ? " is-queued" : ""}`,
+							children: "Load game"
+						}), /* @__PURE__ */ jsx(TitleBtn, {
+							go: "hof",
+							className: `title-btn title-btn-ghost${queued === "hof" ? " is-queued" : ""}`,
+							children: "Hall of Fame"
+						})]
+					}),
+					toast && /* @__PURE__ */ jsx("p", {
+						className: "mt-3 text-sm text-loss",
+						children: toast
+					})
+				]
+			})
+		]
 	});
 }
 function EraSelect() {
@@ -26604,7 +27442,7 @@ function EraSelect() {
 				}),
 				/* @__PURE__ */ jsx("p", {
 					className: "mt-2 text-sm text-muted",
-					children: "Pick a decade. Rules, money, who actually wins — that's the year you walk into. Career and Pick a school stay in today."
+					children: "Pick a decade. The rules, the money, and which programs are on top all change. Career and Pick a School stay in the present."
 				}),
 				/* @__PURE__ */ jsx(NamesEntry, { from: "eras" }),
 				/* @__PURE__ */ jsx("ul", {
@@ -26832,9 +27670,14 @@ function TeamSelect() {
 	const career = selectMode === "career";
 	const [q, setQ] = useState("");
 	const [conf, setConf] = useState("ALL");
+	const boardCount = TEAMS.length;
 	const pool = useMemo(() => {
 		return career ? TEAMS.filter(careerEligible) : TEAMS.slice();
-	}, [career, namesStamp]);
+	}, [
+		career,
+		namesStamp,
+		boardCount
+	]);
 	const year = selectMode === "eras" && eraDecade != null ? eraDecade : 2026;
 	const list = useMemo(() => {
 		const base = conf === "ALL" ? pool : pool.filter((t) => conferenceInYear(t.id, year) === conf);
@@ -26906,7 +27749,7 @@ function TeamSelect() {
 					}),
 					/* @__PURE__ */ jsxs("p", {
 						className: "mt-2 text-sm text-muted",
-						children: [career ? `Career starts lower. Pick a school for any program. ${pool.length} jobs, rating 62 and under.` : eraDecade ? eraMeta(eraDecade)?.blurb ?? "Tap a school, then take the job." : `Every Division I school is here. ${pool.length} programs. Tap one, then take the job.`, alma ? ` Alma mater: ${alma.name}.` : ""]
+						children: [career ? `Career starts lower. Pick a school for any program. ${pool.length} jobs, rating 62 and under.` : eraDecade ? eraMeta(eraDecade)?.blurb ?? "Tap a school, then take the job." : `Every Division I school is here. ${boardCount} programs. Tap one, then take the job.`, alma ? ` Alma mater: ${alma.name}.` : ""]
 					}),
 					/* @__PURE__ */ jsx(NamesEntry, { from: "select" }),
 					!career && /* @__PURE__ */ jsx(PressButton, {
@@ -26993,7 +27836,7 @@ function TeamSelect() {
 						children: [
 							list.length,
 							" of ",
-							pool.length,
+							career ? pool.length : boardCount,
 							" schools."
 						]
 					})
@@ -27148,115 +27991,115 @@ var MORE = [
 		id: "search",
 		label: "Search",
 		icon: Search,
-		hint: "Players, recruits, anyone in the program"
+		hint: "Find a player, recruit, or coach"
 	},
 	{
 		id: "program",
 		label: "Program",
 		icon: School,
-		hint: "Staff, facilities, practice, starting five"
+		hint: "Staff, facilities, practice, and your lineup"
 	},
 	{
 		id: "inbox",
 		label: "Inbox",
 		icon: Mail,
-		hint: "AD, boosters, and fan mail"
+		hint: "AD, boosters, and fans"
 	},
 	{
 		id: "news",
 		label: "News",
 		icon: Newspaper,
-		hint: "Game stories and national notes"
+		hint: "Stories from this week's games"
 	},
 	{
 		id: "podcasts",
 		label: "Podcasts",
 		icon: Headphones,
-		hint: "The Catican and weekly tape"
+		hint: "Locked On your school"
 	},
 	{
 		id: "burner",
 		label: "The Burner",
 		icon: Flame,
-		hint: "Trilly Donovan, coaching carousel, portal rumors"
+		hint: "Coaching rumors and portal talk"
 	},
 	{
 		id: "standings",
 		label: "Ranks",
 		icon: ListOrdered,
-		hint: "Conference, NET, KenPom, AP Poll"
+		hint: "Conference standings, NET, KenPom, and the AP poll"
 	},
 	{
 		id: "places",
 		label: "Toughest places",
 		icon: Landmark,
-		hint: "Historical home court, live streaks, the gyms that got mean"
+		hint: "Home-court rankings"
 	},
 	{
 		id: "records",
 		label: "Record book",
 		icon: BookOpen,
-		hint: "Program records, national leaders, listed rivals"
+		hint: "Program records and national leaders"
 	},
 	{
 		id: "archives",
 		label: "Archives",
 		icon: Library,
-		hint: "Past seasons, champions, awards, box scores"
+		hint: "Past seasons, champions, and box scores"
 	},
 	{
 		id: "analytics",
 		label: "Stats",
 		icon: Activity,
-		hint: "Four factors, usage, next matchup"
+		hint: "Efficiency, splits, and your next matchup"
 	},
 	{
 		id: "market",
 		label: "Betting odds",
 		icon: TrendingUp,
-		hint: "Spreads, totals, moneylines"
+		hint: "Spreads, totals, and moneylines"
 	},
 	{
 		id: "bracketology",
 		label: "Bracket",
 		icon: Trophy,
-		hint: "If the NCAA Tournament started today"
+		hint: "Projection until Selection Sunday, then the locked field"
 	},
 	{
 		id: "contract",
 		label: "Contract",
 		icon: FileText,
-		hint: "Years, career, open jobs"
+		hint: "Years left and open jobs"
 	},
 	{
 		id: "draft",
 		label: "Draft",
 		icon: GraduationCap,
-		hint: "Stay or go, mock draft"
+		hint: "Who stays and who goes pro"
 	},
 	{
 		id: "camp",
 		label: "Camp",
 		icon: Dumbbell,
-		hint: "Skill work, development, redshirt"
+		hint: "Offseason development"
 	},
 	{
 		id: "awards",
 		label: "Awards",
 		icon: Award,
-		hint: "Player of the Week, All-Americans"
+		hint: "Player of the Week and All-Americans"
 	},
 	{
 		id: "compliance",
 		label: "Compliance",
 		icon: Scale,
-		hint: "APR, NIL, NCAA status"
+		hint: "APR, NIL, and NCAA status"
 	},
 	{
 		id: "hof",
 		label: "Hall of Fame",
 		icon: Award,
-		hint: "Banners across every job on this device"
+		hint: "Banners from every job on this device"
 	},
 	{
 		id: "saves",
@@ -27268,13 +28111,13 @@ var MORE = [
 		id: "names",
 		label: "Names",
 		icon: Type,
-		hint: "Real schools or a custom pack"
+		hint: "Real school names or a custom list"
 	},
 	{
 		id: "settings",
 		label: "Settings",
 		icon: Settings,
-		hint: "Difficulty, NIL, God Mode, color"
+		hint: "Difficulty, NIL, and display"
 	}
 ];
 var MORE_VIEWS = /* @__PURE__ */ new Set([
@@ -27368,9 +28211,10 @@ function Shell({ children }) {
 						}),
 						/* @__PURE__ */ jsx("button", {
 							type: "button",
-							className: "min-h-11 shrink-0 px-2 text-xs text-muted",
+							className: "chrome-menu min-h-11 shrink-0 px-2 text-xs whitespace-nowrap text-muted",
+							"aria-label": "Main menu",
 							...bindTap(leaveToTitle),
-							children: "Title"
+							children: "Menu"
 						})
 					]
 				})
@@ -27414,7 +28258,7 @@ function Shell({ children }) {
 													children: item.label
 												}), /* @__PURE__ */ jsx("span", {
 													className: "block truncate text-xs text-muted",
-													children: item.hint
+													children: item.id === "podcasts" && state?.playerTeamId === "kentucky" ? "The Catican · Locked On" : item.hint
 												})]
 											}),
 											item.id === "inbox" && unread > 0 && /* @__PURE__ */ jsx("span", {
@@ -28248,38 +29092,34 @@ var REPLY_SHORT = [
 	"mood"
 ];
 var LOUNGE_OPEN = [
-	"Anybody watching {home} / {away}, or are we doing jobs again?",
-	"{home} should win this at home, and if they don't the carousel is going to be unusable for forty-eight hours.",
-	"Leaning {away} plus the points because they actually rebound, which I realize is a low bar.",
-	"{away} is not walking into {home} and taking this. I don't care what the sheet says.",
-	"Is {home} / {away} on anywhere or am I staring at the scores like a lunatic?",
-	"{home} has been leaking at home, so {away} should make this ugly in the paint if they have any pride at all.",
-	"Mute the carousel and watch {home} / {away}. There's a ball screen in there, I promise.",
-	"If {home} guards the three they win, and they will not guard the three.",
-	"Putting {home}-{away} on. If this is ugly I'm blaming all of you.",
-	"Game thread. {away} at {home}. Be normal, or at least try.",
-	"Who's got {away} on the road? I might be sick. I might also be right.",
-	"{home} at home should be a dogfight and will be a fourteen-point snooze. Calling it.",
-	"I don't even like either of these teams and I'm still putting {home} / {away} on, so that's where we are."
+	"anybody got {home} and {away} on?",
+	"{away} at {home}. I'm watching if it's on somewhere",
+	"I think {home} wins this, but I've been wrong a lot",
+	"{away} can hang if they rebound. we'll see",
+	"putting {home} / {away} on. no promises",
+	"is this one actually close or is the spread lying",
+	"{home} at home should be fine. should",
+	"who are people taking, {home} or {away}",
+	"I'll watch the first half and then decide if I care",
+	"game's on. {away} at {home}"
 ];
 var LOUNGE_PLAY = [
-	"{home} cannot throw it in the ocean from downtown and we're still picking them, which is a choice.",
-	"{away} is going to live at the charity stripe. Old school. I respect it.",
-	"First team to box out wins this, and neither of them boxes out, so I don't know what to tell you.",
-	"{home} runs the same high-low every trip and {away} knows it's coming, so at some point you have to try a second idea.",
-	"If {away} can throw a skip pass over this 2-3 they walk out of there, and I don't think that's hard, but we'll see.",
-	"{home} gets a paint touch and then panics. Extra pass. I'm begging.",
-	"Onions. That's a road take if {away} has any.",
-	"{away} on the road is a get if {home} keeps playing like this, and {home} is going to keep playing like this.",
-	"Somebody's getting dunked on in the first four minutes, and that's the energy I'm here for.",
-	"This is a halfcourt game, so the first team that actually posts up wins, which should be simple and will not be.",
-	"If {home} makes a free throw I'll eat my hat. They will not.",
-	"{away} is going to zone and {home} is going to jack twenty-seven threes. I can see the future and it's ugly.",
-	"Watch the glass. Whoever wants it more. Neither of them wants it.",
-	"This is a 'who can guard a chair' contest and I don't like either answer.",
-	"{home} after a make is a track meet. Get back. I'm yelling at a TV like my dad.",
-	"Road environment, students showed up, so {away} better have some toughness or this gets loud in a bad way.",
-	"Why does {home} keep settling for the same fadeaway when the paint is empty? I am asking sincerely."
+	"{home} is settling for jumpers early",
+	"{away} is getting to the rim whenever they want",
+	"neither team is taking care of the ball",
+	"that was a good pass. more of those",
+	"{home} keeps switching and it's not working",
+	"free throws are going to matter if this stays close",
+	"{away} looks comfortable on the road, which is annoying",
+	"they need a timeout. that stretch was bad",
+	"ok that was a better possession",
+	"the big is in foul trouble already",
+	"I like {away} if they keep this pace",
+	"{home} has no answer for that matchup",
+	"second half needs to be cleaner",
+	"they're playing hard. the shots just aren't falling",
+	"this got ugly fast",
+	"somebody box out, please"
 ];
 var LOUNGE_POLL = [
 	"{team} at {rank} is a crime. Voters do not watch, and they don't rebound either, which is unrelated but feels true.",
@@ -28499,7 +29339,7 @@ var WARCAT_LINES = [
 	"I'm not doing chaos tonight. Watch the glass. That's the whole post.",
 	"Film doesn't lie on {name}. He teaches, the kids compete, and this server will act shocked when a bigger job calls.",
 	"Y'all arguing a 2-3 and {school} hasn't had the athletes for man in two years. That's the actual read.",
-	"I have the {from} tape. He wins with junk and toughness. That's a coach. Hire him.",
+	"I've watched {from}. He wins with junk and toughness. That's a coach. Hire him.",
 	"Don't @ me with vibes. {school} doesn't box out, {name} would make them, next question."
 ];
 var BONTEMPS_LINES = [
@@ -28606,7 +29446,7 @@ var BLUR_LINES = [
 	"That's a second-side problem and {school} does not have a second side. Comedy, except the standings.",
 	"{name} can teach. {coach} can talk. Hire the first one. I will not be taking questions.",
 	"Witty version: they don't rebound. Longer version: they don't rebound, they don't have a late-clock action, and {record} is the receipt.",
-	"If you watched {from} for a half you'd already know. The tape is not being subtle.",
+	"If you watched {from} for a half you'd already know. It's not subtle.",
 	"Everybody wants a splash. {name} would just win. I know that's less fun. I also know who makes the tournament.",
 	"I would diagram the empty-side stagger but then you'd have to watch basketball, and we can't have that.",
 	"Not a rumor. A diagnosis. {school} lost the glass in November. The job follows in March.",
@@ -28664,7 +29504,7 @@ function fill(tpl, vars) {
 }
 function takeTpl(rng, list, used) {
 	const unused = list.filter((l) => !used.has(l));
-	const t = pick(rng, unused.length ? unused : list);
+	const t = pick$1(rng, unused.length ? unused : list);
 	used.add(t);
 	return t;
 }
@@ -28810,7 +29650,7 @@ function carouselLand(state) {
 	const hot = [...schools].sort((a, b) => b.heat - a.heat).filter((s) => s.games >= 6 && s.heat > .12).slice(0, 6);
 	const jump = [...schools].filter((s) => s.prestige < 74 && s.games >= 5 && s.winPct > s.expected + .12).sort((a, b) => b.winPct - a.winPct).slice(0, 4).map((s) => ({
 		school: s,
-		why: fill(pick(rng, JUMP_WHY), {
+		why: fill(pick$1(rng, JUMP_WHY), {
 			record: s.record,
 			conf: s.conf
 		})
@@ -28821,7 +29661,7 @@ function carouselLand(state) {
 			if (jump.some((j) => j.school.id === s.id)) continue;
 			jump.push({
 				school: s,
-				why: pick(rng, JUMP_WHY_SOFT)
+				why: pick$1(rng, JUMP_WHY_SOFT)
 			});
 			if (jump.length >= 4) break;
 		}
@@ -28859,24 +29699,30 @@ function fieldOrDash(lines, empty = "nothing I'm putting my name on") {
 }
 function landscapeEmbed(state, land) {
 	const L = land ?? carouselLand(state);
+	const moved = (state.coachMoves ?? []).filter((m) => m.season === state.season);
+	const fields = [
+		{
+			name: "Hot seats",
+			value: fieldOrDash(L.hot.slice(0, 4).map((s) => `${s.name} (${s.record})`), "Too early. Ask after they play a month.")
+		},
+		{
+			name: "On the board",
+			value: fieldOrDash(L.jump.slice(0, 3).map((j) => `${j.school.coach} — ${j.school.name}`))
+		},
+		{
+			name: "Openings",
+			value: fieldOrDash(L.openings.slice(0, 3).map((o) => `${o.school.name} · ${o.why}`), "none I believe in")
+		}
+	];
+	if (moved.length) fields.unshift({
+		name: "Already moved",
+		value: fieldOrDash(moved.slice(0, 4).map((m) => `${m.school}: ${m.note}`))
+	});
 	return {
 		color: "#f0b232",
 		title: `The carousel · Week ${state.week}`,
-		desc: "Don't put this on Twitter.",
-		fields: [
-			{
-				name: "Hot seats",
-				value: fieldOrDash(L.hot.slice(0, 4).map((s) => `${s.name} (${s.record})`), "Too early. Ask after they play a month.")
-			},
-			{
-				name: "On the board",
-				value: fieldOrDash(L.jump.slice(0, 3).map((j) => `${j.school.coach} — ${j.school.name}`))
-			},
-			{
-				name: "Openings",
-				value: fieldOrDash(L.openings.slice(0, 3).map((o) => `${o.school.name} · ${o.why}`), "none I believe in")
-			}
-		],
+		desc: moved.length ? "These jobs already turned over." : "Don't put this on Twitter.",
+		fields,
 		footer: "Burner Watch"
 	};
 }
@@ -28897,20 +29743,24 @@ function portalEmbed(state) {
 }
 function burnerSlash(state, id) {
 	const land = carouselLand(state);
-	if (id === "hotseats") return {
-		command: "/hotseats",
-		note: "Burner Watch",
-		embed: {
-			color: "#ed4245",
-			title: "Hot seats",
-			desc: "Who's in trouble. Nobody's been fired.",
-			fields: [{
-				name: "Watching",
-				value: fieldOrDash(land.hot.slice(0, 6).map((s) => `${s.name} · ${s.coach} · ${s.record}`), "Too early. They haven't played a month.")
-			}],
-			footer: "Burner Watch"
-		}
-	};
+	if (id === "hotseats") {
+		const moved = (state.coachMoves ?? []).filter((m) => m.season === state.season);
+		const turned = state.phase === "offseason" && moved.length > 0;
+		return {
+			command: "/hotseats",
+			note: "Burner Watch",
+			embed: {
+				color: "#ed4245",
+				title: "Hot seats",
+				desc: turned ? "These seats already turned over." : "Who's in trouble. Nobody's been fired yet.",
+				fields: [{
+					name: turned ? "Out" : "Watching",
+					value: fieldOrDash(turned ? moved.slice(0, 6).map((m) => `${m.school} · ${m.outName} out · ${m.inName} in`) : land.hot.slice(0, 6).map((s) => `${s.name} · ${s.coach} · ${s.record}`), "Too early. They haven't played a month.")
+				}],
+				footer: "Burner Watch"
+			}
+		};
+	}
 	if (id === "names") return {
 		command: "/names",
 		note: "Burner Watch",
@@ -29074,11 +29924,11 @@ var Thread = class {
 	}
 };
 function speaker(rng, ids) {
-	return pick(rng, ids);
+	return pick$1(rng, ids);
 }
 function other(rng, ids, skip) {
 	const pool = ids.filter((id) => id !== skip);
-	return pick(rng, pool.length ? pool : ids);
+	return pick$1(rng, pool.length ? pool : ids);
 }
 function eggVars(bits) {
 	return {
@@ -29150,12 +30000,71 @@ function eggPool(id, vars = {}) {
 }
 function dropEgg(th, vars, early, replyTo) {
 	const games = Number(vars.games ?? 0);
-	const who = pick(th.rng, [...EGG_IDS]);
+	const who = pick$1(th.rng, [...EGG_IDS]);
 	const v = who === "sass" ? catsVars(vars) : vars;
 	th.add(who, th.tpl(liveLines(eggPool(who, v), early ? 0 : games), v), replyTo ? { replyTo } : void 0);
 }
+function casualLines(kind) {
+	if (kind === "portal") return [
+		"yeah {player} didn't look happy",
+		"{mpg} minutes will do that",
+		"I figured {from} was going to lose him",
+		"{dest} makes sense if they need a {pos}",
+		"not shocked",
+		"his teammates probably knew",
+		"is this a visit or is he actually gone",
+		"{player} can play. the minutes were the issue",
+		"{from} is going to say they wanted him back",
+		"I'd take him if I was {dest}",
+		"wait, {player}?",
+		"that roster was crowded. somebody had to go"
+	];
+	if (kind === "watch") return [
+		"way too early",
+		"{school} hasn't even played",
+		"somebody wants a firing every October",
+		"let them tip first",
+		"{coach} might be fine",
+		"check back in January",
+		"it's a watch list, not a pink slip",
+		"we do this every year"
+	];
+	if (kind === "jump") return [
+		"{name} is a good coach. a bigger job is different",
+		"I've seen {from}. they play hard",
+		"he might get a call. he might not",
+		"winning there doesn't automatically travel",
+		"I like him. not sure the money people will",
+		"{record} is a real season",
+		"has anybody watched them, or just the record",
+		"he'd be a fine hire. not a splashy one"
+	];
+	return [
+		"yeah that tracks",
+		"I'll believe it when the school says it",
+		"{record} is a problem if it holds",
+		"{coach} might survive this",
+		"not the wildest thing this week",
+		"who else is even available",
+		"{name} would be fine there",
+		"the fans are louder than the results right now",
+		"has anyone actually watched them lately",
+		"they looked ordinary last time I saw them",
+		"could just be a bad roster",
+		"this rumor shows up every year",
+		"if the buyout is big, they're staying",
+		"I don't hate it",
+		"is that sourced or a feeling",
+		"{school} fans are going to be loud either way",
+		"wait until the season's over",
+		"lol ok",
+		"not shocked",
+		"maybe"
+	];
+}
 function voiceReply(th, userId, vars, kind, g) {
 	const rng = th.rng;
+	if (userId !== "hopper" && rng() < .58) return th.tpl(casualLines(kind), userId === "sass" ? catsVars(vars) : vars);
 	if (userId === "notbb" && rng() < .78) return th.tpl(liveLines(NOTBB_LINES, g), vars);
 	if (userId === "sass" && rng() < .78) return th.tpl(liveLines(sassPool(vars), g), catsVars(vars));
 	if (userId === "warcat" && rng() < .82) return th.tpl(liveLines(WARCAT_LINES, g), vars);
@@ -29171,19 +30080,19 @@ function voiceReply(th, userId, vars, kind, g) {
 	if (userId === "film" && rng() < .78) return th.tpl(liveLines(kind === "jump" ? JUMP_BALL : REPLY_BALL, g), vars);
 	if (userId === "buyout" && rng() < .72) return th.tpl(REPLY_MONEY, vars);
 	if (kind === "portal") return th.tpl(rng() < .42 ? REPLY_VISIT : REPLY_PORTAL, vars);
-	if (kind === "jump") return th.tpl(pick(rng, [
+	if (kind === "jump") return th.tpl(pick$1(rng, [
 		JUMP_REPLY,
 		JUMP_DOUBT,
 		JUMP_BALL,
 		REPLY_CHAT
 	]), vars);
-	if (kind === "watch") return th.tpl(liveLines(pick(rng, [
+	if (kind === "watch") return th.tpl(liveLines(pick$1(rng, [
 		REPLY_DOUBT,
 		REPLY_ARGUE,
 		REPLY_CHAT,
 		SIDE_CHAT
 	]), 0), vars);
-	return th.tpl(liveLines(pick(rng, [
+	return th.tpl(liveLines(pick$1(rng, [
 		REPLY_BELIEVE,
 		REPLY_DOUBT,
 		REPLY_HOMER,
@@ -29222,7 +30131,7 @@ function around(th, talkers, scoop, vars, kind, early = false) {
 			th.add("portal", th.tpl(REPLY_PORTAL, vars), { replyTo: scoop });
 			dropEgg(th, vars, early, scoop);
 		} else if (shape === 5) {
-			const who = pick(th.rng, [
+			const who = pick$1(th.rng, [
 				"notbb",
 				"sass",
 				"warcat",
@@ -29479,8 +30388,12 @@ function ensureEggs(th, vars, early) {
 	const games = Number(v.games ?? 0);
 	const anchor = lastUserMsg(th);
 	for (const id of EGG_IDS) {
-		if (th.msgs.some((m) => m.userId === id)) continue;
-		th.add(id, th.tpl(liveLines(eggPool(id, v), early ? 0 : games), id === "sass" ? catsVars(v) : v), anchor ? { replyTo: anchor } : void 0);
+		let have = th.msgs.filter((m) => m.userId === id).length;
+		while (have < 2) {
+			const line = have === 0 || th.rng() < .65 ? th.tpl(casualLines("job"), id === "sass" ? catsVars(v) : v) : th.tpl(liveLines(eggPool(id, v), early ? 0 : games), id === "sass" ? catsVars(v) : v);
+			th.add(id, line, anchor ? { replyTo: anchor } : void 0);
+			have++;
+		}
 	}
 }
 function talkersOf(rng) {
@@ -29535,6 +30448,33 @@ function buildCarousel(state, land, rng, talkers) {
 		embed: landscapeEmbed(state, land)
 	});
 	th.add("trilly", early ? `No hot seats yet, they haven't played. Names I'm on: ${jumpNames}. Don't put me on Twitter.` : `Hot seats: ${hotNames}. Names I'm on: ${jumpNames}. More as I get it — don't put me on Twitter.`, { big: true });
+	if (state.snake && state.snake.season === state.season) {
+		const s = state.snake;
+		const scoop = th.add("trilly", `${s.coach} left ${s.from} for ${s.to}. I'm not dressing that up.`, {
+			big: true,
+			ago: 12
+		});
+		th.add("hopper", `${s.from} was a launch pad. That's the whole story.`, {
+			replyTo: scoop,
+			ago: 10
+		});
+		th.add("reborne", `Snake. Smiled for the camera in October and already had the next job in his head.`, {
+			replyTo: scoop,
+			ago: 8
+		});
+		th.add("blur", `${s.coach} used ${s.from} to get a bigger chair. Don't call it a fit.`, {
+			replyTo: scoop,
+			ago: 6
+		});
+		th.add("angelyne", `The kids stay. He doesn't. ${s.to} can have him.`, {
+			replyTo: scoop,
+			ago: 5
+		});
+		th.add("sass", `I knew ${s.from} was a stepping stone the day he took it. Congratulations, I guess.`, {
+			replyTo: scoop,
+			ago: 4
+		});
+	}
 	if (early) {
 		th.add("trilly", "Too early to fire anybody. Names below — ask me again after somebody loses six.", { big: true });
 		th.add(speaker(rng, talkers), "Every year somebody wants a guy fired in November, and every year I have to read it.");
@@ -29712,7 +30652,7 @@ function buildLounge(state, land, rng, talkers) {
 	const a = speaker(rng, talkers);
 	const b = other(rng, talkers, a);
 	const weekGames = state.schedule.filter((g) => g.week === state.week && !g.resultId && (g.kind === "conference" || g.kind === "noncon" || g.kind === "mte"));
-	const pickGame = weekGames.length ? pick(rng, weekGames) : null;
+	const pickGame = weekGames.length ? pick$1(rng, weekGames) : null;
 	if (pickGame) {
 		const home = TEAM_BY_ID[pickGame.homeId]?.name ?? "Home";
 		const away = TEAM_BY_ID[pickGame.awayId]?.name ?? "Away";
@@ -29988,6 +30928,7 @@ function Hub() {
 	const opp = next ? TEAM_BY_ID[next.homeId === state.playerTeamId ? next.awayId : next.homeId] : null;
 	const tipThisWeek = Boolean(next && next.week === state.week);
 	const off = state.phase === "offseason";
+	const carouselOpen = carouselWaiting(state);
 	const stayWaiting = draftWaiting(state);
 	const campOpen = campWaiting(state);
 	const boardWaiting = Boolean(off && state.contractReview && !state.contractReview.resolved && (state.contractReview.decision === "fire" || state.contractReview.decision === "extend"));
@@ -30004,6 +30945,7 @@ function Hub() {
 							identityName(state.identity),
 							" · ",
 							phaseLabel(state.phase, state.week),
+							state.phase === "regular" ? ` · ${weekDateLabel(state.season, state.week)}` : "",
 							" · ",
 							state.season
 						]
@@ -30011,6 +30953,10 @@ function Hub() {
 					/* @__PURE__ */ jsx("h1", {
 						className: "scoreboard-name",
 						children: school.name
+					}),
+					/* @__PURE__ */ jsx("p", {
+						className: "scoreboard-next",
+						children: "What’s new: Polish — school count, Archives copy, Settings cleanup, live fatigue labels."
 					}),
 					/* @__PURE__ */ jsxs("div", {
 						className: "scoreboard-leds",
@@ -30043,21 +30989,15 @@ function Hub() {
 							leagueName(t.conference, state.season),
 							" · rating ",
 							t.prestige,
-							state.identity.almaMaterId && state.identity.almaMaterId !== state.playerTeamId ? ` · alma mater ${TEAM_BY_ID[state.identity.almaMaterId]?.name}` : "",
-							" · ",
-							"This job ",
-							rec.jobW,
-							"-",
-							rec.jobL,
-							" · Career ",
-							rec.careerW,
-							"-",
-							rec.careerL,
-							state.history.seasons ? ` · ${state.history.seasons} yr` : "",
-							state.history.titles ? ` · ${state.history.titles} title${state.history.titles === 1 ? "" : "s"}` : "",
+							state.identity.almaMaterId && state.identity.almaMaterId !== state.playerTeamId ? ` · alma mater ${TEAM_BY_ID[state.identity.almaMaterId]?.name}` : ""
+						]
+					}),
+					/* @__PURE__ */ jsxs("p", {
+						className: "scoreboard-next",
+						children: [
+							siteRecordLine(state),
+							state.history.titles ? ` · ${state.history.titles} national title${state.history.titles === 1 ? "" : "s"}` : "",
 							state.history.finalFour ? ` · ${state.history.finalFour} F4` : "",
-							state.history.elite8 ? ` · ${state.history.elite8} E8` : "",
-							state.history.sweet16 ? ` · ${state.history.sweet16} S16` : "",
 							" · ",
 							goatLine(state)
 						]
@@ -30095,8 +31035,8 @@ function Hub() {
 					/* @__PURE__ */ jsxs("p", {
 						className: "mt-1 text-sm text-muted",
 						children: [
-							next.homeId === state.playerTeamId ? "vs" : next.site === "neutral" ? "n" : "@",
-							" ",
+							siteWord(next, state.playerTeamId),
+							" · ",
 							opp.abbr,
 							" · Week ",
 							next.week,
@@ -30128,27 +31068,34 @@ function Hub() {
 					off ? /* @__PURE__ */ jsx("button", {
 						type: "button",
 						className: "span-2 min-h-12 rounded-lg bg-accent font-semibold text-accent-fg",
-						...bindTap(stayWaiting ? () => setView("draft") : campOpen ? () => setView("camp") : boardWaiting ? openContract : nextSeason),
-						children: stayWaiting ? "Stay or go" : campOpen ? "Training camp" : boardWaiting ? "The AD's waiting" : "Next season"
+						...bindTap(carouselOpen ? () => setView("carousel") : stayWaiting ? () => setView("draft") : campOpen ? () => setView("camp") : boardWaiting ? openContract : nextSeason),
+						children: carouselOpen ? "Coaching carousel" : stayWaiting ? "Players leaving" : campOpen ? "Training camp" : boardWaiting ? "The AD's waiting" : "Next season"
 					}) : state.phase === "preseason" ? /* @__PURE__ */ jsx("button", {
 						type: "button",
 						className: "span-2 min-h-12 rounded-lg bg-accent font-semibold text-accent-fg",
 						...bindTap(() => setView("schedule")),
 						children: "Customize schedule"
 					}) : /* @__PURE__ */ jsxs(Fragment$1, { children: [
-						tipThisWeek ? /* @__PURE__ */ jsxs(Fragment$1, { children: [/* @__PURE__ */ jsx("button", {
-							type: "button",
-							className: "min-h-12 rounded-lg bg-accent font-semibold text-accent-fg",
-							...bindTap(playGame),
-							disabled: seasonRun?.active,
-							children: "Play tonight"
-						}), /* @__PURE__ */ jsx("button", {
-							type: "button",
-							className: "min-h-12 rounded-lg bg-elevated font-semibold",
-							...bindTap(simGame),
-							disabled: seasonRun?.active,
-							children: "Sim game"
-						})] }) : /* @__PURE__ */ jsx("p", {
+						tipThisWeek ? /* @__PURE__ */ jsxs(Fragment$1, { children: [
+							/* @__PURE__ */ jsx("button", {
+								type: "button",
+								className: "span-2 min-h-12 rounded-lg bg-accent font-semibold text-accent-fg",
+								...bindTap(playGame),
+								disabled: seasonRun?.active,
+								children: "Play tonight"
+							}),
+							/* @__PURE__ */ jsx("p", {
+								className: "span-2 text-sm text-muted",
+								children: "Live play-by-play. Tap Start game, then tap a play every time you have the ball. Sim skips all of that."
+							}),
+							/* @__PURE__ */ jsx("button", {
+								type: "button",
+								className: "span-2 min-h-12 rounded-lg bg-elevated font-semibold",
+								...bindTap(simGame),
+								disabled: seasonRun?.active,
+								children: "Sim this game"
+							})
+						] }) : /* @__PURE__ */ jsx("p", {
 							className: "span-2 text-sm text-muted",
 							children: next ? `Next tip is week ${next.week}. Bye this week.` : "No game on the board this week."
 						}),
@@ -30202,15 +31149,12 @@ function Hub() {
 						className: "font-display mt-1 text-2xl",
 						children: [
 							phaseLabel(state.phase, state.week),
+							state.phase === "regular" ? ` · ${weekDateLabel(state.season, state.week)}` : "",
 							" · ",
 							t.wins,
 							"-",
 							t.losses
 						]
-					}),
-					/* @__PURE__ */ jsx("p", {
-						className: "mt-1 text-sm text-muted",
-						children: seasonRun.active ? "Results land after each week. Stop if you want to change the rotation, minutes, or a call." : "Stopped. The games below are already in the book."
 					}),
 					seasonRun.active && /* @__PURE__ */ jsx("button", {
 						type: "button",
@@ -30246,7 +31190,7 @@ function Hub() {
 					type: "button",
 					className: "min-h-12 rounded-lg bg-elevated font-semibold",
 					...bindTap(() => setCardOn((v) => !v)),
-					children: "Season card"
+					children: "Resume"
 				})]
 			}),
 			cardOn && /* @__PURE__ */ jsx(SeasonCard, {}),
@@ -30260,10 +31204,6 @@ function Hub() {
 					/* @__PURE__ */ jsx("p", {
 						className: "font-display mt-1 text-2xl",
 						children: "The field is in."
-					}),
-					/* @__PURE__ */ jsx("p", {
-						className: "mt-1 text-sm text-muted",
-						children: "Conference tournaments are done. The committee named the 68. Watch it before March tips."
 					}),
 					/* @__PURE__ */ jsx("button", {
 						type: "button",
@@ -30290,15 +31230,6 @@ function Hub() {
 							return "Home for March";
 						})()
 					}),
-					/* @__PURE__ */ jsxs("p", {
-						className: "mt-1 text-sm text-muted",
-						children: [
-							state.selection.ncaa.filter((b) => b.path === "auto").length,
-							" auto bids · ",
-							state.selection.ncaa.filter((b) => b.path === "at-large").length,
-							" at-large. Sim week to tip the Play-in."
-						]
-					}),
 					/* @__PURE__ */ jsx("button", {
 						type: "button",
 						className: "mt-3 min-h-11 rounded-lg bg-accent px-3 font-semibold text-accent-fg",
@@ -30307,13 +31238,9 @@ function Hub() {
 					})
 				]
 			}),
-			(state.phase === "ncaa" || state.phase === "nit" || state.phase === "crown" || state.phase === "conference") && /* @__PURE__ */ jsxs("p", {
+			(state.phase === "ncaa" || state.phase === "nit" || state.phase === "crown" || state.phase === "conference") && /* @__PURE__ */ jsx("p", {
 				className: "text-sm text-muted",
-				children: [
-					state.phase === "conference" ? "Conference tournament." : state.phase === "ncaa" ? `NCAA Tournament.` : state.phase === "nit" ? `NIT.` : `CBI.`,
-					" ",
-					"Sim week to play the round; Play game when it's yours."
-				]
+				children: state.phase === "conference" ? "Conference tournament." : state.phase === "ncaa" ? `NCAA Tournament.` : state.phase === "nit" ? `NIT.` : `CBI.`
 			}),
 			off && /* @__PURE__ */ jsx(LastRunBanner, {}),
 			off && state.offseasonReport && /* @__PURE__ */ jsxs("div", {
@@ -30331,7 +31258,7 @@ function Hub() {
 						className: "mt-3 space-y-1 text-sm",
 						children: [state.offseasonReport.grew.length === 0 && /* @__PURE__ */ jsx("li", {
 							className: "text-muted",
-							children: campOpen ? "Camp is open. Spend the points, then lock it." : "Quiet summer. Nobody jumped a level. Minutes and confidence still do the work."
+							children: "No big jumps this summer."
 						}), state.offseasonReport.grew.map((g) => /* @__PURE__ */ jsxs("li", { children: [
 							g.name,
 							" ",
@@ -30393,7 +31320,7 @@ function Hub() {
 					node.dataset.wired = "1";
 					node.open = state.history.log.length > 0;
 				},
-				children: [/* @__PURE__ */ jsx("summary", { children: "The wire · news, podcasts, the Burner" }), /* @__PURE__ */ jsxs("div", {
+				children: [/* @__PURE__ */ jsx("summary", { children: "News · stories, podcasts, the Burner" }), /* @__PURE__ */ jsxs("div", {
 					className: "desk-grid",
 					children: [
 						/* @__PURE__ */ jsx(NewsStrip, {}),
@@ -30412,13 +31339,10 @@ function Hub() {
 					className: "mt-1 size-5 shrink-0 accent-current",
 					checked: Boolean(state.cpuRecruit),
 					onChange: (e) => setAssisted(e.target.checked)
-				}), /* @__PURE__ */ jsxs("span", { children: [/* @__PURE__ */ jsx("span", {
+				}), /* @__PURE__ */ jsx("span", { children: /* @__PURE__ */ jsx("span", {
 					className: "block font-semibold",
 					children: "Assisted recruiting"
-				}), /* @__PURE__ */ jsx("span", {
-					className: "text-xs text-muted",
-					children: "Staff finishes the class. Portal hours are separate. Turn it off if you want to scout and visit yourself."
-				})] })]
+				}) })]
 			}),
 			off && portalOpen(state) && /* @__PURE__ */ jsxs("label", {
 				className: "flex min-h-14 cursor-pointer items-start gap-3 rounded-xl bg-elevated px-3 py-3 panel",
@@ -30427,13 +31351,10 @@ function Hub() {
 					className: "mt-1 size-5 shrink-0 accent-current",
 					checked: Boolean(state.cpuRecruit),
 					onChange: (e) => setAssisted(e.target.checked)
-				}), /* @__PURE__ */ jsxs("span", { children: [/* @__PURE__ */ jsx("span", {
+				}), /* @__PURE__ */ jsx("span", { children: /* @__PURE__ */ jsx("span", {
 					className: "block font-semibold",
 					children: "Assisted portal"
-				}), /* @__PURE__ */ jsx("span", {
-					className: "text-xs text-muted",
-					children: "Staff works the spring portal with those hours. High-school hours don't spend here."
-				})] })]
+				}) })]
 			}),
 			/* @__PURE__ */ jsxs("div", {
 				className: "rounded-xl bg-elevated p-4 panel",
@@ -30453,23 +31374,16 @@ function Hub() {
 							disabled: !state.skillPoints,
 							...bindTap(() => spendSkill(a.id)),
 							className: "rounded-lg bg-bg px-3 py-2 text-left disabled:opacity-60",
-							children: [
-								/* @__PURE__ */ jsxs("span", {
-									className: "flex justify-between text-sm font-semibold",
-									children: [/* @__PURE__ */ jsx("span", { children: a.label }), /* @__PURE__ */ jsx("span", {
-										className: "tabular-nums",
-										children: v
-									})]
-								}),
-								/* @__PURE__ */ jsx("span", {
-									className: "mt-0.5 block text-xs text-muted",
-									children: a.hint
-								}),
-								/* @__PURE__ */ jsx("span", {
-									className: "interest-bar mt-1 block",
-									children: /* @__PURE__ */ jsx("span", { style: { width: `${v}%` } })
-								})
-							]
+							children: [/* @__PURE__ */ jsxs("span", {
+								className: "flex justify-between text-sm font-semibold",
+								children: [/* @__PURE__ */ jsx("span", { children: a.label }), /* @__PURE__ */ jsx("span", {
+									className: "tabular-nums",
+									children: v
+								})]
+							}), /* @__PURE__ */ jsx("span", {
+								className: "interest-bar mt-1 block",
+								children: /* @__PURE__ */ jsx("span", { style: { width: `${v}%` } })
+							})]
 						}, a.id);
 					})
 				})]
@@ -30511,24 +31425,13 @@ function Hub() {
 			}),
 			state.retired && /* @__PURE__ */ jsxs("div", {
 				className: "rounded-xl bg-elevated p-4 panel",
-				children: [
-					/* @__PURE__ */ jsx("p", {
-						className: "text-xs tracking-widest text-muted uppercase",
-						children: "Retired"
-					}),
-					/* @__PURE__ */ jsx("p", {
-						className: "font-display mt-1 text-2xl",
-						children: goatLine(state)
-					}),
-					/* @__PURE__ */ jsx("p", {
-						className: "mt-1 text-sm text-muted",
-						children: "The chair is empty. Title to start another job."
-					})
-				]
-			}),
-			state.phase === "preseason" && /* @__PURE__ */ jsx("p", {
-				className: "text-sm text-muted",
-				children: "Set the non-conference schedule. Thirty games on the year. Begin season when you're ready."
+				children: [/* @__PURE__ */ jsx("p", {
+					className: "text-xs tracking-widest text-muted uppercase",
+					children: "Retired"
+				}), /* @__PURE__ */ jsx("p", {
+					className: "font-display mt-1 text-2xl",
+					children: goatLine(state)
+				})]
 			})
 		]
 	});
@@ -30680,7 +31583,7 @@ function PortalStrip() {
 			}),
 			/* @__PURE__ */ jsxs("p", {
 				className: "desk-note",
-				children: [yours ? `${yours} from your locker room. ` : "Nobody of yours walked. ", signed ? `${signed} signed.` : "Hours don't come off the high-school clock."]
+				children: [yours ? `${yours} of yours in the portal. ` : "None of yours entered. ", signed ? `${signed} signed here.` : "Uses its own hours."]
 			})
 		]
 	});
@@ -30734,15 +31637,13 @@ function ResumeStrip() {
 			/* @__PURE__ */ jsxs("p", {
 				className: "desk-note",
 				children: [
-					"NET ",
-					r.net,
+					netReleased(state) ? `NET ${r.net}` : "NET not out",
 					" · KP ",
 					r.kenpom,
-					" · Q1 ",
-					r.q1,
-					r.quadNext ? ` · next Q${r.quadNext}` : "",
+					netReleased(state) ? ` · Q1 ${r.q1}` : "",
+					netReleased(state) && r.quadNext ? ` · next Q${r.quadNext}` : "",
 					" · ",
-					r.need
+					netReleased(state) ? r.need : netHoldLine(state.season)
 				]
 			})
 		]
@@ -30775,8 +31676,8 @@ function ProgramStrip() {
 					fac.note,
 					" · ",
 					plan,
-					hurt.length ? ` · ${hurt.length} in the training room` : "",
-					load.tired ? ` · ${load.tired} gassed` : load.avg >= 58 ? ` · legs ${load.avg}` : ""
+					hurt.length ? ` · ${hurt.length} injured` : "",
+					load.tired ? ` · ${load.tired} tired` : ""
 				]
 			})
 		]
@@ -30797,11 +31698,11 @@ function ScoutStrip() {
 			}),
 			/* @__PURE__ */ jsx("p", {
 				className: "desk-head",
-				children: card ? card.identity : "Scout next tip"
+				children: card ? card.identity : "Scout opponent"
 			}),
 			/* @__PURE__ */ jsx("p", {
 				className: "desk-note",
-				children: card ? card.keys[0] : "Spend an hour. Get the tape."
+				children: card ? card.keys[0] : "Use a recruiting hour to scout the next opponent."
 			})
 		]
 	});
@@ -30844,7 +31745,7 @@ function CardStrip() {
 		children: [
 			/* @__PURE__ */ jsx("p", {
 				className: "desk-kicker",
-				children: "Report card"
+				children: "Season review"
 			}),
 			/* @__PURE__ */ jsxs("p", {
 				className: "desk-head",
@@ -30861,24 +31762,26 @@ function CardStrip() {
 		]
 	});
 	if (!exp) return null;
+	const need = state.contract?.clauses.find((c) => c.kind === "wins")?.target;
+	const gap = need == null ? null : need - exp.wins;
 	return /* @__PURE__ */ jsxs("div", {
 		className: "desk-tile",
 		children: [
 			/* @__PURE__ */ jsx("p", {
 				className: "desk-kicker",
-				children: "AD wants"
+				children: "Expectations"
 			}),
 			/* @__PURE__ */ jsxs("p", {
 				className: "desk-head",
 				children: [
 					exp.wins,
-					" wins",
-					exp.ncaa ? " · a bid" : ""
+					" projected",
+					need != null ? ` · ${need} required` : ""
 				]
 			}),
-			/* @__PURE__ */ jsx("p", {
+			/* @__PURE__ */ jsxs("p", {
 				className: "desk-note",
-				children: exp.note
+				children: [need == null ? exp.note : gap > 0 ? `Roster projection: ${exp.wins} wins. Contract requirement: ${need}. That's ${gap} above this roster.` : gap < 0 ? `Roster projection: ${exp.wins} wins. Contract requirement: ${need}. This roster is ${-gap} ahead of the job.` : `Roster projection: ${exp.wins} wins. That matches the contract.`, exp.ncaa ? " A bid is in range." : ""]
 			})
 		]
 	});
@@ -30904,7 +31807,7 @@ function AwardsStrip() {
 			}),
 			/* @__PURE__ */ jsx("p", {
 				className: "desk-note",
-				children: mine[0] ? `${mine[0].name} · ${mine[0].kind}` : last ? `National POY · ${last.season}` : "Open the hardware."
+				children: mine[0] ? `${mine[0].name} · ${mine[0].kind}` : last ? `National player of the year · ${last.season}` : "No awards yet."
 			})
 		]
 	});
@@ -30949,7 +31852,7 @@ function AnalyticsStrip() {
 		children: [
 			/* @__PURE__ */ jsx("p", {
 				className: "desk-kicker",
-				children: "Tape"
+				children: "Stats"
 			}),
 			/* @__PURE__ */ jsx("p", {
 				className: "desk-head",
@@ -31005,11 +31908,11 @@ function NewsStrip() {
 			}),
 			/* @__PURE__ */ jsx("p", {
 				className: "desk-head",
-				children: a?.headline ?? "Quiet night"
+				children: a?.headline ?? "No stories yet"
 			}),
 			/* @__PURE__ */ jsx("p", {
 				className: "desk-note",
-				children: a ? `${a.outlet} · ${a.kicker}` : "The wire is quiet."
+				children: a ? `${outletLabel(a.outlet)} · ${a.kicker}` : "Nothing new."
 			})
 		]
 	});
@@ -31244,7 +32147,7 @@ function RaceStrip() {
 		children: [
 			/* @__PURE__ */ jsx("p", {
 				className: "desk-kicker",
-				children: "POY race"
+				children: "Watch list"
 			}),
 			/* @__PURE__ */ jsx("p", {
 				className: "desk-head",
@@ -31253,11 +32156,9 @@ function RaceStrip() {
 			/* @__PURE__ */ jsxs("p", {
 				className: "desk-note",
 				children: [
-					TEAM_BY_ID[lead.teamId]?.abbr ?? "",
-					" ",
-					lead.yours ? "· yours" : "",
-					" · ",
-					race.map((r) => r.name.split(" ").pop()).join(" · ")
+					lead.ppg.toFixed(1),
+					" PPG · projection",
+					lead.yours ? " · yours" : ` · ${TEAM_BY_ID[lead.teamId]?.abbr ?? ""}`
 				]
 			})
 		]
@@ -31273,7 +32174,7 @@ function SeasonCard() {
 		children: [
 			/* @__PURE__ */ jsx("p", {
 				className: "text-xs tracking-[0.18em] text-muted uppercase",
-				children: "Season card"
+				children: "Resume"
 			}),
 			/* @__PURE__ */ jsx("pre", {
 				className: "mt-2 whitespace-pre-wrap text-sm leading-relaxed",
@@ -31291,7 +32192,7 @@ function SeasonCard() {
 				}), /* @__PURE__ */ jsx("button", {
 					type: "button",
 					className: "min-h-11 rounded-lg bg-bg px-3 text-sm font-semibold",
-					...bindTap(() => downloadText(`dribble-${state.season}-card.md`, md, "text/markdown")),
+					...bindTap(() => downloadText(`dribble-${state.season}-resume.md`, md, "text/markdown")),
 					children: "Download"
 				})]
 			}),
@@ -31304,7 +32205,7 @@ function SeasonCard() {
 }
 //#endregion
 //#region src/components/game/schedule-view.tsx
-var KIND = {
+var KIND$1 = {
 	conference: gameKindShort("conference"),
 	noncon: gameKindShort("noncon"),
 	mte: gameKindShort("mte"),
@@ -31314,8 +32215,7 @@ var KIND = {
 	crown: gameKindShort("crown")
 };
 function siteTag(g, you) {
-	if (g.site === "neutral" || g.kind === "mte" || g.kind === "ncaa" || g.kind === "nit" || g.kind === "crown" || g.kind === "conf-tourney") return "N";
-	return g.homeId === you ? "H" : "A";
+	return siteWord(g, you);
 }
 function pickWeek(w, setWeek) {
 	setWeek(w);
@@ -31336,7 +32236,7 @@ function GameTile({ g, state, locked, onDrop, onRecap }) {
 	const won = youScore != null && oppScore != null ? youScore > oppScore : null;
 	const where = siteTag(g, you);
 	const rival = rivalryForSlot(g);
-	const quad = locked ? gameQuad(state, g, you) : null;
+	const quad = locked && netReleased(state) ? gameQuad(state, g, you) : null;
 	return /* @__PURE__ */ jsxs("div", {
 		className: `cal-game ${g.declined ? "is-declined" : ""} ${won === true ? "is-win" : won === false ? "is-loss" : ""} ${res ? "is-final" : ""}`,
 		children: [
@@ -31345,7 +32245,7 @@ function GameTile({ g, state, locked, onDrop, onRecap }) {
 				children: [
 					/* @__PURE__ */ jsx("span", {
 						className: "cal-site",
-						children: where === "H" ? "vs" : where === "A" ? "@" : "n"
+						children: where
 					}),
 					/* @__PURE__ */ jsx("span", {
 						className: "cal-opp",
@@ -31353,7 +32253,7 @@ function GameTile({ g, state, locked, onDrop, onRecap }) {
 					}),
 					/* @__PURE__ */ jsx("span", {
 						className: "cal-kind",
-						children: g.cup ? `${g.cup} cup` : quad ? `Q${quad}` : rival ? rival.trophy : KIND[g.kind]
+						children: g.cup ? `${g.cup} cup` : quad ? `Q${quad}` : rival ? rival.trophy : KIND$1[g.kind]
 					})
 				]
 			}),
@@ -31476,8 +32376,8 @@ function ScheduleView() {
 						className: "text-xs text-muted",
 						children: [
 							m.site,
-							" · Wk ",
-							m.week,
+							" · ",
+							weekDateLabel(state.season, m.week),
 							" · ",
 							games,
 							" games · min ",
@@ -31510,7 +32410,7 @@ function ScheduleView() {
 					"Week ",
 					week,
 					" · ",
-					site === "home" ? "home" : site === "away" ? "road" : "neutral",
+					site === "home" ? "Home" : site === "away" ? "Away" : "Neutral",
 					weekCount >= 3 ? " · this week is full" : ` · ${3 - weekCount} open`
 				]
 			}),
@@ -31539,6 +32439,8 @@ function ScheduleView() {
 						children: [
 							"Week ",
 							w,
+							" · ",
+							weekDateLabel(state.season, w),
 							" (",
 							gamesInWeek(state, w).length,
 							"/",
@@ -31707,7 +32609,12 @@ function ScheduleView() {
 						className: `cal-week ${current ? "is-now" : ""} ${picking ? "is-pick" : ""} ${games.length ? "" : "is-empty"}`,
 						children: [/* @__PURE__ */ jsxs("header", {
 							className: "cal-week-h",
-							children: [/* @__PURE__ */ jsxs("span", { children: ["Week ", w] }), /* @__PURE__ */ jsx("span", {
+							children: [/* @__PURE__ */ jsxs("span", { children: [
+								"Week ",
+								w,
+								" · ",
+								weekDateLabel(state.season, w)
+							] }), /* @__PURE__ */ jsx("span", {
 								className: "cal-week-n",
 								children: liveHere
 							})]
@@ -31743,7 +32650,12 @@ function ScheduleView() {
 					className: `cal-week ${state.week === w ? "is-now" : ""}`,
 					children: [/* @__PURE__ */ jsx("header", {
 						className: "cal-week-h",
-						children: /* @__PURE__ */ jsxs("span", { children: ["Week ", w] })
+						children: /* @__PURE__ */ jsxs("span", { children: [
+							"Week ",
+							w,
+							" · ",
+							weekDateLabel(state.season, w)
+						] })
 					}), (byWeek.get(w) ?? []).map((g) => /* @__PURE__ */ jsx(GameTile, {
 						g,
 						state,
@@ -31769,6 +32681,7 @@ var POS_CHIPS = [
 ];
 var STAGE = {
 	signed: "Signed",
+	verbal: "Verbal",
 	close: "Ready to sign",
 	leaning: "Leaning",
 	offered: "Offered",
@@ -31844,23 +32757,37 @@ function RecruitingView() {
 	return /* @__PURE__ */ jsxs("div", {
 		className: "flex flex-col gap-4",
 		children: [
-			/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("h1", {
-				className: "font-display text-3xl",
-				children: "Recruiting"
-			}), /* @__PURE__ */ jsxs("p", {
-				className: "mt-1 text-sm text-muted",
-				children: [
-					prog.taken,
-					"/",
-					prog.spots,
-					" spots filled · ",
-					prog.hours,
-					" recruiting hours this week",
-					portOn ? ` · ${portal.hours} portal hours` : "",
-					left <= 0 ? " · no scholarships left" : "",
-					state.cpuRecruit ? " · staff's working" : ""
-				]
-			})] }),
+			/* @__PURE__ */ jsxs("div", { children: [
+				/* @__PURE__ */ jsx("h1", {
+					className: "font-display text-3xl",
+					children: "Recruiting"
+				}),
+				/* @__PURE__ */ jsxs("p", {
+					className: "mt-1 text-sm text-muted",
+					children: [
+						state.recruitingHours,
+						" recruiting hours left this week",
+						portOn ? ` · ${portal.hours} portal hours` : "",
+						left <= 0 ? " · no scholarships left" : ` · ${left} scholarships left`,
+						state.cpuRecruit ? " · staff's working" : ""
+					]
+				}),
+				/* @__PURE__ */ jsxs("p", {
+					className: "mt-1 text-xs text-muted",
+					children: [
+						prog.taken,
+						"/",
+						prog.spots,
+						" spots filled.",
+						" ",
+						left,
+						" scholarship",
+						left === 1 ? "" : "s",
+						" left. Other schools are in on the same names. A week-one elite pledge is rare.",
+						prog.signed === 0 ? " Scout, offer, and visit before you ask." : ""
+					]
+				})
+			] }),
 			/* @__PURE__ */ jsx(ClassProgress, { prog }),
 			/* @__PURE__ */ jsxs("label", {
 				className: "flex min-h-14 cursor-pointer items-start gap-3 rounded-xl border border-border bg-elevated px-3 py-3",
@@ -31925,15 +32852,15 @@ function RecruitingView() {
 			}),
 			tab === "targets" && rows.length === 0 && /* @__PURE__ */ jsx("p", {
 				className: "rounded-xl border border-border bg-elevated px-4 py-5 text-sm text-muted",
-				children: "Scout, offer, or visit a kid. He'll show up here."
+				children: "Scout, offer, or visit a prospect. He'll show up here."
 			}),
 			tab === "espn" && /* @__PURE__ */ jsx("p", {
 				className: "rounded-xl border border-border bg-elevated px-4 py-3 text-sm text-muted",
-				children: "National board. Top 100 in the country. Signed kids stay on it."
+				children: "National board. Top 100. Commits stay on the list."
 			}),
 			tab === "outliers" && /* @__PURE__ */ jsxs("div", {
 				className: "rounded-xl border border-border bg-elevated px-4 py-3 text-sm text-muted",
-				children: [/* @__PURE__ */ jsx("p", { children: "Rare bodies. 6-8 point guards, stretch fives, rim prowlers." }), /* @__PURE__ */ jsx("ul", {
+				children: [/* @__PURE__ */ jsx("p", { children: "Unusual size. Tall point guards, shooting centers, rim protectors." }), /* @__PURE__ */ jsx("ul", {
 					className: "mt-2 flex flex-col gap-1 text-xs",
 					children: FreakKinds.map((k) => /* @__PURE__ */ jsxs("li", { children: [
 						/* @__PURE__ */ jsx("span", {
@@ -31947,15 +32874,15 @@ function RecruitingView() {
 			}),
 			tab === "juco" && rows.length === 0 && /* @__PURE__ */ jsx("p", {
 				className: "rounded-xl border border-border bg-elevated px-4 py-5 text-sm text-muted",
-				children: "JUCO class is gone. Ready minutes, two years left."
+				children: "No JUCO players left. They arrive ready to play, with two years left."
 			}),
 			tab === "outliers" && rows.length === 0 && /* @__PURE__ */ jsx("p", {
 				className: "rounded-xl border border-border bg-elevated px-4 py-5 text-sm text-muted",
-				children: "Nobody left in this group. A class usually has a handful — stretch fives, point-forwards, rim prowlers."
+				children: "Nobody left in this group. A class usually has a few: tall guards, shooting bigs, lockdown wings."
 			}),
 			tab === "intl" && rows.length === 0 && /* @__PURE__ */ jsx("p", {
 				className: "rounded-xl border border-border bg-elevated px-4 py-5 text-sm text-muted",
-				children: "No internationals left."
+				children: "No international prospects left."
 			}),
 			tab === "portal" && /* @__PURE__ */ jsx(PortalBoard, {
 				stateWindow: portal.window,
@@ -31987,11 +32914,11 @@ function RecruitingView() {
 							children: sign
 						}) : /* @__PURE__ */ jsx("p", {
 							className: "mt-2 text-muted",
-							children: "Signing day drama lands late. Soft commits can still flip."
+							children: settingsOf(state).flipsOn ? "Nobody is signed. A verbal can still move until signing day." : "Nobody is signed yet."
 						}),
 						/* @__PURE__ */ jsx("p", {
 							className: "mt-2 text-xs text-muted",
-							children: settingsOf(state).difficulty === "easy" || settingsOf(state).difficulty === "realistic" ? "Fog is light. Scout hours still confirm the rating." : "Fog is up. Scout hours reveal the real rating. A thin staff can miss."
+							children: settingsOf(state).difficulty === "easy" || settingsOf(state).difficulty === "realistic" ? "Ratings are close. Scouting locks them in." : "Ratings are hidden until you scout. A weak staff can miss."
 						})
 					]
 				});
@@ -32011,6 +32938,10 @@ function RecruitingView() {
 					const nilOn = settingsOf(state).nilOn && state.nilCap >= 10;
 					const arrow = heatMark(r, you, state);
 					const chance = signChance(r, state);
+					const asked = r.signAsk?.season === state.season && r.signAsk.week === state.week;
+					const gate = god ? null : signGate(offered, Boolean(asked));
+					const verbalWindow = settingsOf(state).flipsOn && state.phase !== "offseason" && state.week < 14;
+					const elsewhere = signedElse ? recruitStage(r, r.committedTo, state) === "verbal" ? "Verbal" : "Signed" : "";
 					const rank = boardRanks.get(r.id) ?? 0;
 					return /* @__PURE__ */ jsxs("li", {
 						className: "board-card",
@@ -32071,12 +33002,12 @@ function RecruitingView() {
 												fogTape(r),
 												r.scouted ? ` · wants ${topNeed(r.wants)}` : " · scout to see wants",
 												r.scouted && r.skills ? ` · shoot ${r.skills.shoot} / finish ${r.skills.finish} / def ${r.skills.defense} / IQ ${r.skills.iq}` : "",
-												signedElse ? ` · signed ${schoolElse?.name ?? "elsewhere"}` : ""
+												signedElse ? ` · ${elsewhere.toLowerCase()} ${schoolElse?.name ?? "elsewhere"}` : ""
 											]
 										}),
 										/* @__PURE__ */ jsxs("p", {
 											className: "mt-1 text-xs tracking-[0.12em] text-subtle uppercase",
-											children: [signedElse ? `Signed · ${schoolElse?.name ?? "elsewhere"}` : STAGE[stage], !signed && !signedElse ? ` · ${chance}% to sign` : ""]
+											children: [signedElse ? `${elsewhere} · ${schoolElse?.name ?? "elsewhere"}` : STAGE[stage], !signed && !signedElse ? gate ? ` · ${gate}` : ` · ${chance}% to ${verbalWindow ? "commit" : "sign"}` : ""]
 										})
 									]
 								}), /* @__PURE__ */ jsxs("span", {
@@ -32097,7 +33028,7 @@ function RecruitingView() {
 							}),
 							(() => {
 								const battle = rivalRows(r.interest, r.committedTo);
-								const word = commitWord(settingsOf(state).flipsOn, Boolean(r.committedTo));
+								const word = signed || signedElse ? "" : commitWord(settingsOf(state).flipsOn, Boolean(r.committedTo));
 								return /* @__PURE__ */ jsxs("div", {
 									className: "mt-2 text-xs text-muted",
 									children: [
@@ -32167,10 +33098,10 @@ function RecruitingView() {
 									}),
 									/* @__PURE__ */ jsx("button", {
 										type: "button",
-										disabled: !offered && !god,
+										disabled: !offered && !god || Boolean(gate),
 										className: "min-h-11 rounded-full bg-accent px-3 text-xs font-bold text-accent-fg disabled:opacity-40",
 										...bindTap(() => sign(r.id)),
-										children: "Sign"
+										children: gate ? "Not yet" : verbalWindow ? `Ask · ${chance}%` : `Sign · ${chance}%`
 									}),
 									god && /* @__PURE__ */ jsx("button", {
 										type: "button",
@@ -32202,7 +33133,7 @@ function PortalBoard({ stateWindow, hours, transfers, you, left, onScout, onOffe
 	});
 	if (stateWindow !== "winter" && stateWindow !== "spring") return /* @__PURE__ */ jsx("p", {
 		className: "rounded-xl border border-border bg-elevated px-4 py-5 text-sm text-muted",
-		children: "Portal is closed. Winter window is weeks 8–11. Spring opens when the year ends."
+		children: "Portal is closed. It opens in the winter window, weeks 8–11, and again in the spring after the year ends."
 	});
 	if (transfers.length === 0) return /* @__PURE__ */ jsxs("p", {
 		className: "rounded-xl border border-border bg-elevated px-4 py-5 text-sm text-muted",
@@ -32448,23 +33379,20 @@ function topNeed(w) {
 //#region src/components/game/inbox-view.tsx
 function InboxView() {
 	const { state, readMail, setView } = useGame();
+	const [openId, setOpenId] = useState(null);
 	if (!state) return null;
+	const mail = state.mail.slice(0, 12);
 	return /* @__PURE__ */ jsxs("div", {
-		className: "flex flex-col gap-4",
+		className: "flex flex-col gap-3",
 		children: [
-			/* @__PURE__ */ jsxs("div", {
+			/* @__PURE__ */ jsx("div", {
 				className: "flex items-center justify-between gap-3",
-				children: [/* @__PURE__ */ jsx("button", {
+				children: /* @__PURE__ */ jsx("button", {
 					type: "button",
 					className: "min-h-11 text-sm font-semibold text-accent",
 					onClick: () => setView("hub"),
 					children: "← Gym"
-				}), /* @__PURE__ */ jsx("button", {
-					type: "button",
-					className: "min-h-11 text-sm text-muted",
-					onClick: () => setView("schedule"),
-					children: "Schedule"
-				})]
+				})
 			}),
 			/* @__PURE__ */ jsx("h1", {
 				className: "font-display text-3xl",
@@ -32472,121 +33400,49 @@ function InboxView() {
 			}),
 			/* @__PURE__ */ jsx("p", {
 				className: "text-sm text-muted",
-				children: "The AD. Boosters. Fans. They write."
+				children: "Only the notes that matter. Tap one to read it."
 			}),
-			state.mail.length === 0 ? /* @__PURE__ */ jsx("p", {
+			mail.length === 0 ? /* @__PURE__ */ jsx("p", {
 				className: "rounded-xl border border-border bg-elevated px-4 py-6 text-sm text-muted",
-				children: "Quiet so far. They'll write when there's something to say."
+				children: "Quiet week. Mail shows up after a big game, not every tip."
 			}) : /* @__PURE__ */ jsx("ul", {
-				className: "flex flex-col gap-3",
-				children: state.mail.map((m) => /* @__PURE__ */ jsx("li", { children: /* @__PURE__ */ jsxs("button", {
-					type: "button",
-					onClick: () => readMail(m.id),
-					className: `w-full rounded-xl border p-4 text-left ${m.read ? "border-border bg-surface" : "border-accent/40 bg-elevated"}`,
-					children: [
-						/* @__PURE__ */ jsxs("p", {
-							className: "text-xs tracking-widest text-muted uppercase",
-							children: [
-								m.from,
-								" · wk ",
-								m.week
-							]
-						}),
-						/* @__PURE__ */ jsx("p", {
-							className: "mt-1 font-semibold",
-							children: m.subject
-						}),
-						/* @__PURE__ */ jsx("p", {
-							className: "mt-2 whitespace-pre-wrap text-sm leading-relaxed text-muted",
-							children: m.body
-						})
-					]
-				}) }, m.id))
+				className: "flex flex-col gap-2",
+				children: mail.map((m) => {
+					const open = openId === m.id;
+					const preview = m.body.replace(/\s+/g, " ").trim();
+					return /* @__PURE__ */ jsx("li", { children: /* @__PURE__ */ jsxs("button", {
+						type: "button",
+						onClick: () => {
+							setOpenId(open ? null : m.id);
+							if (!m.read) readMail(m.id);
+						},
+						className: `w-full rounded-xl border p-3 text-left ${m.read ? "border-border bg-surface" : "border-accent/40 bg-elevated"}`,
+						children: [
+							/* @__PURE__ */ jsxs("p", {
+								className: "text-xs tracking-widest text-muted uppercase",
+								children: [
+									m.from,
+									" · wk ",
+									m.week
+								]
+							}),
+							/* @__PURE__ */ jsx("p", {
+								className: "mt-1 font-semibold",
+								children: m.subject
+							}),
+							open ? /* @__PURE__ */ jsx("p", {
+								className: "mt-2 whitespace-pre-wrap text-sm leading-relaxed text-muted",
+								children: m.body
+							}) : /* @__PURE__ */ jsx("p", {
+								className: "mt-1 truncate text-sm text-muted",
+								children: preview
+							})
+						]
+					}) }, m.id);
+				})
 			})
 		]
 	});
-}
-//#endregion
-//#region src/components/game/presser-view.tsx
-function PresserView() {
-	const { state, answer, setView, skipPresser } = useGame();
-	if (!state?.pendingPresser) return /* @__PURE__ */ jsx(AppFrame, { children: /* @__PURE__ */ jsxs("div", {
-		className: "flex flex-col items-center justify-center gap-3 px-6 py-16",
-		children: [/* @__PURE__ */ jsx("p", {
-			className: "font-display text-3xl",
-			children: "Podium's clear"
-		}), /* @__PURE__ */ jsx("button", {
-			type: "button",
-			className: "min-h-12 rounded-lg bg-accent px-6 font-semibold text-accent-fg",
-			...bindTap(() => setView("hub")),
-			children: "Back to office"
-		})]
-	}) });
-	const p = state.pendingPresser;
-	const q = p.questions[p.asked];
-	const school = teamOf(state.playerTeamId);
-	if (!q) return /* @__PURE__ */ jsx(AppFrame, { children: /* @__PURE__ */ jsxs("div", {
-		className: "flex flex-col items-center justify-center gap-3 px-6 py-16",
-		children: [/* @__PURE__ */ jsx("p", {
-			className: "font-display text-3xl",
-			children: "Podium's clear"
-		}), /* @__PURE__ */ jsx("button", {
-			type: "button",
-			className: "min-h-12 rounded-lg bg-accent px-6 font-semibold text-accent-fg",
-			...bindTap(() => setView("hub")),
-			children: "Back to office"
-		})]
-	}) });
-	return /* @__PURE__ */ jsx(AppFrame, { children: /* @__PURE__ */ jsx("div", {
-		className: "px-4 py-8",
-		children: /* @__PURE__ */ jsxs("div", {
-			className: "mx-auto flex w-full max-w-lg flex-col",
-			children: [
-				/* @__PURE__ */ jsxs("p", {
-					className: "text-xs tracking-[0.18em] text-muted uppercase",
-					children: ["Postgame press conference · ", school.name]
-				}),
-				p.kicker && /* @__PURE__ */ jsx("p", {
-					className: "mt-2 text-sm text-muted",
-					children: p.kicker
-				}),
-				/* @__PURE__ */ jsxs("p", {
-					className: "mt-5 text-[11px] tracking-[0.16em] text-subtle uppercase",
-					children: [
-						q.from ?? "A reporter",
-						" · ",
-						p.asked + 1,
-						" of ",
-						p.questions.length
-					]
-				}),
-				/* @__PURE__ */ jsx("h1", {
-					className: "font-display mt-2 text-3xl leading-tight",
-					children: q.prompt
-				}),
-				/* @__PURE__ */ jsx("p", {
-					className: "mt-3 text-sm text-muted",
-					children: "On the record. They'll print whatever you say."
-				}),
-				/* @__PURE__ */ jsx("div", {
-					className: "mt-6 flex flex-col gap-2",
-					children: q.choices.map((c) => /* @__PURE__ */ jsx("button", {
-						type: "button",
-						"data-presser-choice": c.id,
-						...bindTap(() => answer(c.id)),
-						className: "min-h-14 rounded-xl border border-border bg-elevated px-4 py-3.5 text-left text-sm leading-snug",
-						children: c.label
-					}, c.id))
-				}),
-				/* @__PURE__ */ jsx("button", {
-					type: "button",
-					className: "mt-4 min-h-11 w-full text-sm text-muted",
-					...bindTap(skipPresser),
-					children: "Skip the podium"
-				})
-			]
-		})
-	}) });
 }
 //#endregion
 //#region src/components/game/roster-view.tsx
@@ -32670,7 +33526,7 @@ function RosterView() {
 					const on = open === p.id;
 					const isVoice = chem.voice?.id === p.id;
 					const out = isOut(p);
-					const usage = p.usage ?? Math.round(p.mpg * 2.15);
+					const usage = p.usage != null && p.usage > 0 ? p.usage : null;
 					const live = livePromises(state, p.id);
 					const trait = traitOf(p);
 					const starter = isStarter(state, p.id);
@@ -32716,7 +33572,7 @@ function RosterView() {
 											p.freakTag && p.freakTag !== trait ? ` · ${p.freakTag}` : "",
 											out ? " · out" : ` · ${p.mpg} min/g`,
 											p.stats && p.stats.g > 0 ? ` · ${(p.stats.pts / p.stats.g).toFixed(1)} ppg` : "",
-											` · ${usage} usage`,
+											usage != null ? ` · ${usage} usage` : "",
 											p.injury && p.injury.weeksLeft > 0 ? ` · ${p.injury.part}` : "",
 											fat > 60 ? " · tired" : ""
 										]
@@ -32917,7 +33773,7 @@ function RanksView({ start } = {}) {
 				children: tab === "places" ? "Toughest places" : "Ranks"
 			}), /* @__PURE__ */ jsx("p", {
 				className: "mt-1 text-sm text-muted",
-				children: tab === "places" ? "Historical home court, then whatever this dynasty actually does in those gyms." : tab === "sheet" ? "NET team sheet. Quadrants and opponent rank refresh after every game." : "Conference standings, NET, KenPom, the AP Poll, the bubble, and the gyms."
+				children: tab === "places" ? "Historical home court, then whatever this dynasty actually does in those gyms." : tab === "sheet" ? netReleased(state) ? "NET team sheet. Quadrants and opponent rank refresh after every game." : netHoldLine(state.season) : "Conference standings, NET, KenPom, the AP Poll, the bubble, and the gyms."
 			})] }),
 			/* @__PURE__ */ jsx("div", {
 				className: "chip-row",
@@ -33027,8 +33883,21 @@ function LeagueBoard({ q }) {
 }
 function NetBoard({ q, onSheet }) {
 	const { state } = useGame();
-	const rows = useMemo(() => state ? netRanks(state) : [], [state]);
+	const rows = useMemo(() => state && netReleased(state) ? netRanks(state) : [], [state]);
 	if (!state) return null;
+	if (!netReleased(state)) return /* @__PURE__ */ jsx("div", {
+		className: "rank-board rank-bo",
+		children: /* @__PURE__ */ jsxs("div", {
+			className: "bo-top",
+			children: [/* @__PURE__ */ jsx("p", {
+				className: "bo-brand",
+				children: "NET Rankings"
+			}), /* @__PURE__ */ jsx("p", {
+				className: "bo-sub",
+				children: netHoldLine(state.season)
+			})]
+		})
+	});
 	const you = state.playerTeamId;
 	const cut = netCutoff(rows);
 	const shown = rows.filter((r) => matchQ(r.id, q));
@@ -33039,17 +33908,9 @@ function NetBoard({ q, onSheet }) {
 			children: [/* @__PURE__ */ jsx("p", {
 				className: "bo-brand",
 				children: "NET Rankings"
-			}), /* @__PURE__ */ jsxs("p", {
+			}), /* @__PURE__ */ jsx("p", {
 				className: "bo-sub",
-				children: [
-					"NCAA Evaluation Tool · quadrants and tournament résumé · Week ",
-					state.week,
-					" · ",
-					state.results.length,
-					" games · all ",
-					rows.length,
-					" teams"
-				]
+				children: netBoardLine(state)
 			})]
 		}), /* @__PURE__ */ jsx("div", {
 			className: "rank-scroller",
@@ -33392,8 +34253,9 @@ function BubbleBoard({ q }) {
 	const you = state.playerTeamId;
 	const card = resumeOf(state);
 	const sos = remainingSos(state);
-	const net = netRanks(state);
-	const lists = bubbleLists(state, espnField(state), net);
+	const netLive = netReleased(state);
+	const net = netLive ? netRanks(state) : [];
+	const lists = bubbleLists(state, espnField(state), netLive ? net : kenpom(state));
 	const shown = net.filter((r) => matchQ(r.id, q)).slice(0, 80);
 	const pathLine = card.path === "auto" ? "Auto bid" : card.path === "at-large" ? `At-large · ${card.seed} seed` : card.path === "bubble" ? "On the bubble" : card.path === "nit" ? "NIT range" : "Out of the picture";
 	return /* @__PURE__ */ jsxs("div", {
@@ -33417,8 +34279,7 @@ function BubbleBoard({ q }) {
 					/* @__PURE__ */ jsxs("p", {
 						className: "mt-2 text-xs text-muted",
 						children: [
-							"NET ",
-							card.net,
+							netLive ? `NET ${card.net}` : "NET not out",
 							" · KenPom ",
 							card.kenpom,
 							card.ap && card.ap <= 25 ? ` · AP ${card.ap}` : "",
@@ -33426,19 +34287,9 @@ function BubbleBoard({ q }) {
 							card.sosRank
 						]
 					}),
-					/* @__PURE__ */ jsxs("p", {
+					/* @__PURE__ */ jsx("p", {
 						className: "mt-1 text-xs text-muted",
-						children: [
-							"Q1 ",
-							card.q1,
-							" · Q2 ",
-							card.q2,
-							" · Q3 ",
-							card.q3,
-							" · Q4 ",
-							card.q4,
-							sos.n ? ` · left ${sos.n} (Q1 ${sos.q1} · Q2 ${sos.q2})` : ""
-						]
+						children: netLive ? `Q1 ${card.q1} · Q2 ${card.q2} · Q3 ${card.q3} · Q4 ${card.q4}${sos.n ? ` · left ${sos.n} (Q1 ${sos.q1} · Q2 ${sos.q2})` : ""}` : netHoldLine(state.season)
 					})
 				]
 			}),
@@ -33469,9 +34320,9 @@ function BubbleBoard({ q }) {
 					children: [/* @__PURE__ */ jsx("p", {
 						className: "bo-brand",
 						children: "Bubble board"
-					}), /* @__PURE__ */ jsxs("p", {
+					}), /* @__PURE__ */ jsx("p", {
 						className: "bo-sub",
-						children: ["NET order · last four in live near the cutoff · Week ", state.week]
+						children: netLive ? `NET order · last four in live near the cutoff · Week ${state.week}` : netHoldLine(state.season)
 					})]
 				}), /* @__PURE__ */ jsx("div", {
 					className: "rank-scroller",
@@ -33482,7 +34333,7 @@ function BubbleBoard({ q }) {
 						/* @__PURE__ */ jsx("th", { children: "Q1" }),
 						/* @__PURE__ */ jsx("th", { children: "Q2" }),
 						/* @__PURE__ */ jsx("th", { children: "Q4" })
-					] }) }), /* @__PURE__ */ jsx("tbody", { children: shown.map((r) => /* @__PURE__ */ jsxs("tr", {
+					] }) }), /* @__PURE__ */ jsx("tbody", { children: netLive ? shown.map((r) => /* @__PURE__ */ jsxs("tr", {
 						className: r.id === you ? "you" : void 0,
 						children: [
 							/* @__PURE__ */ jsx("td", {
@@ -33523,7 +34374,10 @@ function BubbleBoard({ q }) {
 								]
 							})
 						]
-					}, r.id)) })] })
+					}, r.id)) : /* @__PURE__ */ jsx("tr", { children: /* @__PURE__ */ jsx("td", {
+						colSpan: 6,
+						children: "No NET board yet."
+					}) }) })] })
 				})]
 			})
 		]
@@ -33701,6 +34555,7 @@ function TeamSheetBoard({ q, sheetId, onPick }) {
 	if (!state || !sheet) return null;
 	const school = TEAM_BY_ID[sheet.id];
 	const t = state.teams[sheet.id];
+	const live = netReleased(state);
 	const moved = sheet.prev - sheet.net;
 	return /* @__PURE__ */ jsxs("div", {
 		className: "flex flex-col gap-3",
@@ -33751,9 +34606,9 @@ function TeamSheetBoard({ q, sheetId, onPick }) {
 								}),
 								/* @__PURE__ */ jsx("p", {
 									className: "font-display text-4xl tabular-nums",
-									children: sheet.net
+									children: live ? sheet.net : "—"
 								}),
-								moved !== 0 && /* @__PURE__ */ jsxs("p", {
+								live && moved !== 0 && /* @__PURE__ */ jsxs("p", {
 									className: `text-xs font-semibold ${moved > 0 ? "sheet-up" : "sheet-down"}`,
 									children: [
 										moved > 0 ? `▲ ${moved}` : `▼ ${Math.abs(moved)}`,
@@ -33781,11 +34636,11 @@ function TeamSheetBoard({ q, sheetId, onPick }) {
 					}),
 					/* @__PURE__ */ jsx("p", {
 						className: "sheet-note",
-						children: "Quadrants match the NET board. The number by each opponent is the rank those cuts use, and it moves after every result."
+						children: live ? `${netBoardLine(state)} Quadrants use that full sample, and the opponent rank moves after every result.` : netHoldLine(state.season)
 					})
 				]
 			}),
-			sheet.quads.map((quad) => /* @__PURE__ */ jsxs("section", {
+			live && sheet.quads.map((quad) => /* @__PURE__ */ jsxs("section", {
 				className: `sheet-quad sheet-q${quad.q}`,
 				children: [
 					/* @__PURE__ */ jsxs("header", { children: [/* @__PURE__ */ jsxs("h3", { children: [
@@ -33833,6 +34688,11 @@ function BracketView() {
 	const [tab, setTab] = useState("espn");
 	if (!state) return null;
 	const locked = Boolean(state.selection?.ncaa.length);
+	const you = state.playerTeamId;
+	const nextNcaa = state.schedule.find((g) => g.kind === "ncaa" && !g.resultId && (g.homeId === you || g.awayId === you));
+	const anyNcaa = state.schedule.find((g) => g.kind === "ncaa" && !g.resultId);
+	const round = nextNcaa ? ncaaRoundLabel(nextNcaa.id) : anyNcaa ? ncaaRoundLabel(anyNcaa.id) : "";
+	const lede = !locked ? "Projection. Not a locked bracket. This is the field if the tournament started today." : state.phase === "ncaa" ? `Locked bracket. ${round || "NCAA tournament"}.` : "Locked bracket. Official field after Selection Sunday.";
 	return /* @__PURE__ */ jsxs("div", {
 		className: "flex min-w-0 max-w-full flex-col gap-3 overflow-x-clip",
 		children: [
@@ -33841,7 +34701,7 @@ function BracketView() {
 				children: "Bracket"
 			}), /* @__PURE__ */ jsx("p", {
 				className: "mt-1 min-w-0 text-sm text-muted",
-				children: locked ? "Official field after Selection Sunday." : "If the NCAA Tournament started today. Bracketology leans résumé. Field of 68 leans NET and KenPom."
+				children: lede
 			})] }),
 			/* @__PURE__ */ jsx("div", {
 				className: "chip-row",
@@ -33895,9 +34755,9 @@ function EspnBoard() {
 						className: "espn-title",
 						children: "BRACKET"
 					}),
-					/* @__PURE__ */ jsxs("span", {
+					/* @__PURE__ */ jsx("span", {
 						className: "espn-by",
-						children: ["If the tournament started today · ", state.season]
+						children: state.selection?.ncaa.length ? state.phase === "ncaa" ? `Locked bracket · ${state.season}` : `Locked field · ${state.season}` : `Projection · ${state.season}`
 					})
 				]
 			}),
@@ -34007,13 +34867,9 @@ function CbsBoard() {
 						className: "cbs-title",
 						children: "NCAA Tournament Bracket"
 					}),
-					/* @__PURE__ */ jsxs("p", {
+					/* @__PURE__ */ jsx("p", {
 						className: "cbs-by",
-						children: [
-							"Projection · ",
-							state.season,
-							" field of 68"
-						]
+						children: state.selection?.ncaa.length ? `Locked field · ${state.season}` : `Projection · ${state.season} field of 68`
 					})
 				]
 			}),
@@ -34142,13 +34998,15 @@ function ArticleBody({ a, featured }) {
 		a.text,
 		a.headline
 	].filter((g) => Boolean(g));
+	const story = state ? presentNews(a, state) : a;
+	const shownGrafs = story.grafs?.length ? story.grafs : grafs;
 	return /* @__PURE__ */ jsxs("article", {
 		className: `wire-piece ${featured ? "is-feature" : ""}`,
 		children: [
 			/* @__PURE__ */ jsxs("p", {
 				className: "wire-kicker",
 				children: [
-					a.outlet || "Campus Wire",
+					outletLabel(a.outlet),
 					" · ",
 					a.kicker || "Notebook",
 					" · Week ",
@@ -34159,9 +35017,9 @@ function ArticleBody({ a, featured }) {
 				className: featured ? "wire-hed-lg" : "wire-hed",
 				children: a.headline || a.text || "No headline"
 			}),
-			a.dek ? /* @__PURE__ */ jsx("p", {
+			story.dek ? /* @__PURE__ */ jsx("p", {
 				className: "wire-dek",
-				children: a.dek
+				children: story.dek
 			}) : null,
 			/* @__PURE__ */ jsxs("p", {
 				className: "wire-by",
@@ -34169,7 +35027,7 @@ function ArticleBody({ a, featured }) {
 			}),
 			/* @__PURE__ */ jsx("div", {
 				className: "wire-grafs",
-				children: grafs.map((g, i) => /* @__PURE__ */ jsx("p", { children: g }, i))
+				children: shownGrafs.map((g, i) => /* @__PURE__ */ jsx("p", { children: g }, i))
 			}),
 			a.names && a.names.length > 0 && /* @__PURE__ */ jsx("div", {
 				className: "mt-3 flex flex-wrap gap-2",
@@ -34209,7 +35067,7 @@ function NewsView() {
 		children: [
 			/* @__PURE__ */ jsx("p", {
 				className: "wire-mast",
-				children: "Campus Wire"
+				children: "News"
 			}),
 			/* @__PURE__ */ jsx("h1", {
 				className: "font-display text-3xl",
@@ -34217,7 +35075,7 @@ function NewsView() {
 			}),
 			/* @__PURE__ */ jsx("p", {
 				className: "mt-2 text-sm text-muted",
-				children: "Quiet week. Sim a game and the stories will show up."
+				children: "No stories yet. Play or sim a game."
 			})
 		]
 	});
@@ -34229,7 +35087,7 @@ function NewsView() {
 		children: [
 			/* @__PURE__ */ jsxs("p", {
 				className: "wire-mast",
-				children: ["Campus Wire · ", state.season]
+				children: ["News · ", state.season]
 			}),
 			/* @__PURE__ */ jsx("h1", {
 				className: "font-display text-3xl",
@@ -34237,7 +35095,7 @@ function NewsView() {
 			}),
 			/* @__PURE__ */ jsx("p", {
 				className: "mt-1 text-sm text-muted",
-				children: "Game stories, notes, and whatever the national writers couldn't ignore."
+				children: "Recaps and notes from around the country."
 			}),
 			/* @__PURE__ */ jsx(ArticleBody, {
 				a: feature,
@@ -34276,7 +35134,7 @@ function NewsView() {
 //#region src/components/game/podcast-view.tsx
 function EpisodeBody({ ep, featured }) {
 	const { openRecap, openSearch, setView, state } = useGame();
-	const show = showOf(ep.showId);
+	const show = showOf(ep.showId, state ?? void 0);
 	return /* @__PURE__ */ jsxs("article", {
 		className: `pod-ep ${featured ? "is-feature" : ""}`,
 		children: [
@@ -34349,12 +35207,15 @@ function EpisodeBody({ ep, featured }) {
 }
 function PodcastsView() {
 	const { state } = useGame();
-	const [showId, setShowId] = useState("catican");
+	const kentucky = state?.playerTeamId === "kentucky";
+	const [showId, setShowId] = useState(kentucky ? "catican" : "lockedon");
 	const [openId, setOpenId] = useState(null);
 	if (!state) return null;
-	const show = showOf(showId);
+	const shows = showsFor(state);
+	const activeId = shows.some((s) => s.id === showId) ? showId : shows[0].id;
+	const show = showOf(activeId, state);
 	const home = teamOf(show.homeId);
-	const items = episodesOf(state, showId);
+	const items = catalogOf(state, activeId);
 	const feature = items[0];
 	const rest = items.slice(1);
 	const expanded = rest.find((a) => a.id === openId) ?? null;
@@ -34375,12 +35236,12 @@ function PodcastsView() {
 			}),
 			/* @__PURE__ */ jsx("p", {
 				className: "mt-1 text-sm text-muted",
-				children: "Four friends. New one every week."
+				children: show.id === "catican" ? "Four friends. New one every week." : show.tagline
 			}),
-			/* @__PURE__ */ jsx("div", {
+			shows.length > 1 && /* @__PURE__ */ jsx("div", {
 				className: "pod-shows",
-				children: POD_SHOWS.map((s) => {
-					const on = s.id === showId;
+				children: shows.map((s) => {
+					const on = s.id === activeId;
 					return /* @__PURE__ */ jsx("button", {
 						type: "button",
 						className: `pod-chip ${on ? "is-on" : ""}`,
@@ -34399,11 +35260,11 @@ function PodcastsView() {
 			/* @__PURE__ */ jsx("p", {
 				className: "pod-ticker",
 				"aria-hidden": true,
-				children: podcastTicker()
+				children: podcastTicker(state)
 			}),
 			!feature ? /* @__PURE__ */ jsx("p", {
 				className: "mt-2 text-sm text-muted",
-				children: "Nothing taped yet. Play a week."
+				children: "No episode yet. Play a week."
 			}) : /* @__PURE__ */ jsxs(Fragment$1, { children: [
 				/* @__PURE__ */ jsx(EpisodeBody, {
 					ep: feature,
@@ -34700,9 +35561,13 @@ function ArchivesView() {
 					children: "Prior seasons stay here after the calendar rolls. Champions, awards, standings, box scores, retired numbers."
 				})
 			] }),
-			!row && /* @__PURE__ */ jsx("p", {
+			!row && state.results.length > 0 && /* @__PURE__ */ jsx("p", {
 				className: "rounded-xl border border-border bg-elevated px-4 py-5 text-sm text-muted",
-				children: "Finish a season to fill this. Champions, awards, standings, and a box score land here and stay after you reload."
+				children: "This season’s boxes live on the gym / recap. Archives fill when the calendar rolls (champions, awards, standings, boxes)."
+			}),
+			!row && state.results.length === 0 && /* @__PURE__ */ jsx("p", {
+				className: "rounded-xl border border-border bg-elevated px-4 py-5 text-sm text-muted",
+				children: "No games yet. Finish a season and the champions, awards, standings, and box scores stay here."
 			}),
 			log.length > 0 && /* @__PURE__ */ jsx("div", {
 				className: "chip-row",
@@ -34828,7 +35693,7 @@ function ArchivesView() {
 				children: "Retired numbers"
 			}), legends.length === 0 ? /* @__PURE__ */ jsx("p", {
 				className: "mt-2 text-sm text-muted",
-				children: "A senior who mattered gets a number in the rafters when the season closes."
+				children: "A retired number is a national award, 1,800 career points, or an 86-overall senior who scored — not every senior."
 			}) : /* @__PURE__ */ jsx("ul", {
 				className: "mt-2 flex flex-col gap-2",
 				children: legends.map((g) => /* @__PURE__ */ jsxs("li", {
@@ -34865,14 +35730,17 @@ function YearCard({ row, champName }) {
 				className: "text-xs tracking-[0.18em] text-muted uppercase",
 				children: row.season
 			}),
-			/* @__PURE__ */ jsx("p", {
+			/* @__PURE__ */ jsxs("p", {
 				className: "font-display mt-1 text-3xl",
-				children: row.championId ? champName : `${row.wins}–${row.losses}`
+				children: [
+					row.wins,
+					"–",
+					row.losses
+				]
 			}),
 			/* @__PURE__ */ jsxs("p", {
 				className: "text-sm text-muted",
 				children: [
-					row.championId ? "National champion. " : "Selection Sunday. ",
 					"You went ",
 					row.wins,
 					"-",
@@ -34881,9 +35749,10 @@ function YearCard({ row, champName }) {
 					row.confW,
 					"-",
 					row.confL,
-					" in conference",
-					row.title ? " and cut the nets" : row.ncaaBid ? " with an NCAA bid" : "",
-					"."
+					" in conference.",
+					row.title ? " You won the national title." : row.championId ? ` ${champName} won the national title.` : " No national champion is recorded for this year.",
+					row.confTitle ? " Conference champions." : "",
+					!row.title && row.ncaaBid ? " NCAA bid." : ""
 				]
 			}),
 			row.summary && /* @__PURE__ */ jsx("p", {
@@ -35038,31 +35907,31 @@ function FeedbackToast() {
 var STEPS = [
 	{
 		title: "Gym",
-		body: "This is home. Play the next one yourself or sim it. Call the offense and defense if you want — or let it ride. Timeouts are yours. Four of them, plus one in overtime. Career starts lower. Pick a school for any program."
+		body: "This is home. Play the next game or sim it. Set your offense and defense, or let the staff call it. You get four timeouts, plus one in overtime. Career mode starts you at a smaller program. Pick a Team lets you take any school."
 	},
 	{
 		title: "Schedule",
-		body: "Fill the non-conference. Home, road, or a holiday classic. Thirty games on the year. Rivalry nights wear the trophy name. Hit Begin season when you're ready."
+		body: "Fill the non-conference. Home, away, or a holiday tournament. The season is 30 games. Rivalry games show the trophy name. Hit Begin Season when you're ready."
 	},
 	{
 		title: "Recruiting",
-		body: "Scout, offer, visit, sign. 48 and he's listening. 68 and he's close. Offers cost a scholarship. The national board is the top 100. Prospects is the deeper pool, and the list shows 60 of whoever is still available."
+		body: "Scout, offer, host a visit, then sign. 48 means he's listening. 68 means he's close. An offer uses a scholarship. The national board is the top 100. Prospects is the rest of the class still available."
 	},
 	{
 		title: "Roster",
-		body: "Minutes and usage are yours. Talk to guys. Don't promise what you won't keep. Redshirt before they play. Name a captain."
+		body: "You set minutes and usage. Talk to your players, and keep the promises you make. Redshirt someone before he plays. Name a captain."
 	},
 	{
 		title: "Program",
-		body: "Hire an OC, a DC, a recruiting coordinator. Upgrade the gym, the academic center, the locker, the training room. Practice is rest, film, scrimmage, or hard. Scout the next tip."
+		body: "Hire an offensive coordinator, a defensive coordinator, and a recruiting coordinator. Upgrade facilities. Set the weekly practice plan. Scout the next opponent."
 	},
 	{
-		title: "The noise",
-		body: "Inbox is the AD. News is the wire. Podcasts is The Catican. The Burner is the unfiltered board. Toughest places ranks the gyms. The record book keeps your job honest. The bubble board is your résumé."
+		title: "Around the program",
+		body: "Inbox is your AD, boosters, and fans. News covers the games. Podcasts is Locked On your school. Kentucky coaches also get The Catican. The Burner is the rumor board. Toughest Places ranks home courts. The record book and the bubble board track where you stand."
 	},
 	{
 		title: "March",
-		body: "Selection Sunday names the 68. Miss the dance and there's still the NIT. Win enough and they cut the nets."
+		body: "Selection Sunday sets the field of 68. Miss the NCAA Tournament and you can still play the NIT. Win it all and they cut the nets."
 	}
 ];
 function Tutorial() {
@@ -35095,7 +35964,7 @@ function Tutorial() {
 						className: "flex items-center justify-between",
 						children: [/* @__PURE__ */ jsx("p", {
 							className: "text-xs tracking-[0.18em] text-muted uppercase",
-							children: "How this job works"
+							children: "How to play"
 						}), /* @__PURE__ */ jsx("button", {
 							type: "button",
 							className: "min-h-11 text-sm text-muted",
@@ -35168,6 +36037,7 @@ function GameView() {
 	};
 	const heard = useRef("");
 	const [bench, setBench] = useState(false);
+	const [tightLog, setTightLog] = useState(false);
 	useEffect(() => {
 		if (!state || !live || !settingsOf(state).soundOn) return;
 		const ev = live.log.find((e) => e.kind && e.kind !== "period") ?? live.log[0];
@@ -35204,7 +36074,7 @@ function GameView() {
 	const bids = state.selection?.ncaa ?? [];
 	const youOff = liveYouOffense(state);
 	const last = live.log.find((e) => e.kind && e.kind !== "period") ?? live.log[0];
-	const ht = live.planned && live.half === 2 && !live.htAdj && !live.done;
+	const ht = live.half === 1 && live.clock <= 0 && !live.done;
 	const calls = offeredCalls(state);
 	if (!live.planned && !live.done) return /* @__PURE__ */ jsx(AppFrame, {
 		footer: /* @__PURE__ */ jsxs("div", {
@@ -35216,7 +36086,11 @@ function GameView() {
 					"data-tip-off": "1",
 					className: "min-h-12 w-full rounded-lg bg-accent font-semibold text-accent-fg",
 					...bindTap(lockPlan),
-					children: "Tip off"
+					children: "Start game"
+				}),
+				/* @__PURE__ */ jsx("p", {
+					className: "mt-2 text-center text-xs text-muted",
+					children: "Then tap a play for each possession."
 				}),
 				/* @__PURE__ */ jsx("button", {
 					type: "button",
@@ -35251,13 +36125,13 @@ function GameView() {
 				children: "Read recap"
 			})]
 		}) : /* @__PURE__ */ jsxs("div", {
-			className: "border-t border-border px-4 py-3",
+			className: "live-dock border-t border-border px-4 py-3",
 			style: { paddingBottom: "calc(0.75rem + var(--dock-pad))" },
 			children: [
-				/* @__PURE__ */ jsx(LiveTools, { live }),
 				live.foulAlert && /* @__PURE__ */ jsxs("p", {
-					className: "mt-2 flex items-center justify-between gap-2 text-sm",
+					className: "mb-2 flex items-center justify-between gap-2 text-sm",
 					children: [/* @__PURE__ */ jsxs("span", { children: [
+						"Foul trouble. ",
 						live.foulAlert.name,
 						" has ",
 						live.foulAlert.fouls,
@@ -35266,48 +36140,63 @@ function GameView() {
 						type: "button",
 						className: "min-h-11 shrink-0 rounded-lg bg-elevated px-3 text-sm font-semibold",
 						...bindTap(sitTrouble),
-						children: "Sit him"
+						children: "Substitute"
 					})]
 				}),
 				/* @__PURE__ */ jsx("p", {
-					className: "mt-2 text-[11px] tracking-[0.16em] text-subtle uppercase",
-					children: ht ? "Halftime — mix the plan" : youOff ? "Your ball — pick a call" : "Them — pick a defense"
+					className: "text-[11px] tracking-[0.16em] text-subtle uppercase",
+					children: ht ? "Halftime" : youOff ? "Your ball" : "Their ball"
+				}),
+				/* @__PURE__ */ jsx("p", {
+					className: "text-sm",
+					children: ht ? "Change the plan if you want, then tap a play to start the half." : youOff ? "Tap one play. That runs the next line of the play-by-play." : "Tap a defense. Their trip shows up in the play-by-play."
 				}),
 				/* @__PURE__ */ jsx("div", {
-					className: `mt-2 grid gap-2 ${ht ? "grid-cols-3" : "grid-cols-2"}`,
+					className: "mt-2 grid grid-cols-2 gap-2",
 					children: calls.map((c) => /* @__PURE__ */ jsx("button", {
 						type: "button",
 						...bindTap(() => runCall(c.side, c.id)),
-						className: "min-h-14 rounded-xl border border-border bg-elevated px-3 py-3 text-left text-sm font-semibold",
+						className: "min-h-14 rounded-xl border border-border bg-accent px-3 py-3 text-left text-sm font-semibold text-accent-fg",
 						children: c.label
 					}, String(c.id)))
 				}),
-				/* @__PURE__ */ jsxs("div", {
-					className: "mt-2 grid grid-cols-2 gap-2",
+				/* @__PURE__ */ jsx(EndgameBar, { state }),
+				/* @__PURE__ */ jsxs("details", {
+					className: "live-more mt-2",
 					children: [
-						/* @__PURE__ */ jsxs("button", {
-							type: "button",
-							className: "min-h-11 rounded-lg bg-elevated text-sm font-semibold",
-							...bindTap(takeTimeout),
-							children: ["Timeout · ", youHome ? live.timeoutsHome ?? 4 : live.timeoutsAway ?? 4]
+						/* @__PURE__ */ jsx("summary", { children: "Timeouts, sim, pace" }),
+						/* @__PURE__ */ jsxs("div", {
+							className: "mt-2 grid grid-cols-2 gap-2",
+							children: [
+								/* @__PURE__ */ jsxs("button", {
+									type: "button",
+									className: "min-h-11 rounded-lg bg-elevated text-sm font-semibold",
+									...bindTap(takeTimeout),
+									children: ["Timeout · ", youHome ? live.timeoutsHome ?? 4 : live.timeoutsAway ?? 4]
+								}),
+								/* @__PURE__ */ jsx("button", {
+									type: "button",
+									className: `min-h-11 rounded-lg text-sm font-semibold ${bench ? "bg-accent text-accent-fg" : "bg-elevated"}`,
+									...bindTap(() => setBench((v) => !v)),
+									children: "Bench"
+								}),
+								/* @__PURE__ */ jsx("button", {
+									type: "button",
+									className: "min-h-11 text-sm text-muted",
+									...bindTap(simRest),
+									children: "Sim rest"
+								}),
+								/* @__PURE__ */ jsx("button", {
+									type: "button",
+									className: "min-h-11 text-sm text-muted",
+									...bindTap(simToEnd),
+									children: "Sim to end"
+								})
+							]
 						}),
-						/* @__PURE__ */ jsx("button", {
-							type: "button",
-							className: `min-h-11 rounded-lg text-sm font-semibold ${bench ? "bg-accent text-accent-fg" : "bg-elevated"}`,
-							...bindTap(() => setBench((v) => !v)),
-							children: "Bench"
-						}),
-						/* @__PURE__ */ jsx("button", {
-							type: "button",
-							className: "min-h-11 text-sm text-muted",
-							...bindTap(simRest),
-							children: "Sim rest"
-						}),
-						/* @__PURE__ */ jsx("button", {
-							type: "button",
-							className: "min-h-11 text-sm text-muted",
-							...bindTap(simToEnd),
-							children: "Sim to end"
+						/* @__PURE__ */ jsx("div", {
+							className: "mt-2",
+							children: /* @__PURE__ */ jsx(LiveTools, { live })
 						})
 					]
 				})
@@ -35324,9 +36213,10 @@ function GameView() {
 						away,
 						youHome,
 						slot,
-						bids
+						bids,
+						wp: honestWinPct(live, youHome),
+						site: siteWord(slot, state.playerTeamId)
 					}),
-					!live.done && /* @__PURE__ */ jsx(EndgameBar, { state }),
 					!live.done && /* @__PURE__ */ jsx(FloorStrip, {
 						state,
 						live
@@ -35336,14 +36226,9 @@ function GameView() {
 						"aria-hidden": true,
 						children: /* @__PURE__ */ jsx("i", { style: { width: `${Math.round(runHeat(live.log) * 100)}%` } })
 					}),
-					!live.done && /* @__PURE__ */ jsxs("p", {
-						className: "mt-2 text-center text-xs tracking-[0.16em] text-muted uppercase",
-						children: [
-							winProb(live, youHome),
-							"% to win",
-							eraHasShotClock(state.eraDecade) ? " · 30-second clock" : " · no shot clock",
-							` · T/O ${live.timeoutsHome ?? 4}–${live.timeoutsAway ?? 4}`
-						]
+					!live.done && /* @__PURE__ */ jsx("p", {
+						className: "mt-2 text-center text-xs text-muted",
+						children: eraHasShotClock(state.eraDecade) ? "30-second clock" : "No shot clock"
 					}),
 					/* @__PURE__ */ jsx(Gamecast, {
 						live,
@@ -35355,13 +36240,29 @@ function GameView() {
 					last && /* @__PURE__ */ jsxs("div", {
 						className: "mt-3",
 						children: [
+							/* @__PURE__ */ jsxs("div", {
+								className: "flex items-center justify-between gap-2",
+								children: [/* @__PURE__ */ jsx("p", {
+									className: "text-[11px] tracking-[0.16em] text-subtle uppercase",
+									children: "Play-by-play"
+								}), /* @__PURE__ */ jsx("button", {
+									type: "button",
+									className: "min-h-11 px-2 text-xs font-semibold text-accent",
+									...bindTap(() => setTightLog((v) => !v)),
+									children: tightLog ? "Full" : "Tight"
+								})]
+							}),
+							!live.done && /* @__PURE__ */ jsx("p", {
+								className: "text-sm text-muted",
+								children: "This feed moves when you tap a play at the bottom."
+							}),
 							/* @__PURE__ */ jsxs("p", {
 								className: "text-sm leading-relaxed",
 								children: [/* @__PURE__ */ jsxs("span", {
 									className: "text-xs text-muted",
 									"aria-hidden": "true",
 									children: [last.t, " · "]
-								}), last.text]
+								}), cleanPlay(last.text)]
 							}),
 							last.impact && /* @__PURE__ */ jsx("p", {
 								className: `mt-2 text-sm font-semibold ${(last.pts ?? 0) > 0 ? "text-win" : "text-loss"}`,
@@ -35374,12 +36275,12 @@ function GameView() {
 						]
 					}),
 					/* @__PURE__ */ jsx("ul", {
-						className: "mt-6 space-y-2 text-xs text-muted",
-						children: live.log.filter((e) => e !== last).slice(0, 10).map((e, i) => /* @__PURE__ */ jsxs("li", { children: [/* @__PURE__ */ jsxs("span", {
+						className: `mt-4 space-y-2 text-xs text-muted ${tightLog ? "pbp-tight" : ""}`,
+						children: dedupedLog(live.log, last).slice(0, tightLog ? 4 : 10).map((e, i) => /* @__PURE__ */ jsxs("li", { children: [/* @__PURE__ */ jsxs("span", {
 							className: "text-subtle",
 							"aria-hidden": "true",
 							children: [e.t, " · "]
-						}), e.text] }, `${e.t}-${i}`))
+						}), cleanPlay(e.text)] }, `${e.t}-${i}`))
 					}),
 					/* @__PURE__ */ jsx(LiveBox, {
 						home: live.homeLines,
@@ -35398,7 +36299,7 @@ function GameView() {
 	});
 }
 function Pregame({ state, live }) {
-	const { setPlan } = useGame();
+	const { setPlan, lockPlan } = useGame();
 	const home = teamOf(live.homeId);
 	const away = teamOf(live.awayId);
 	const ht = state.teams[live.homeId];
@@ -35429,15 +36330,40 @@ function Pregame({ state, live }) {
 						NCAA_SHORT,
 						bids.find((b) => b.teamId === live.homeId)?.region,
 						ncaaRoundLabel(slot.id)
-					].filter(Boolean).join(" · ") : "Gameplan · mix and match"
+					].filter(Boolean).join(" · ") : "Before tip"
 				}),
 				/* @__PURE__ */ jsx("h1", {
 					className: "font-display mt-1 text-3xl",
-					children: slot?.kind === "ncaa" ? `${seedMark(bids, away.id)}${away.abbr} vs ${seedMark(bids, home.id)}${home.abbr}` : `${away.abbr} at ${home.abbr}`
+					children: slot?.kind === "ncaa" || siteWord(slot, state.playerTeamId) === "Neutral" ? `${seedMark(bids, away.id)}${away.abbr} vs ${seedMark(bids, home.id)}${home.abbr}` : `${away.abbr} at ${home.abbr}`
+				}),
+				/* @__PURE__ */ jsxs("div", {
+					className: "mt-4 rounded-xl border border-border bg-elevated p-3",
+					children: [
+						/* @__PURE__ */ jsx("p", {
+							className: "text-xs tracking-[0.16em] text-muted uppercase",
+							children: "How to play"
+						}),
+						/* @__PURE__ */ jsxs("ol", {
+							className: "mt-2 list-decimal space-y-1 pl-4 text-sm",
+							children: [
+								/* @__PURE__ */ jsx("li", { children: "Leave the plan below, or change it." }),
+								/* @__PURE__ */ jsx("li", { children: "Tap Start game." }),
+								/* @__PURE__ */ jsx("li", { children: "Every possession, tap a play. The play-by-play runs that trip." })
+							]
+						}),
+						/* @__PURE__ */ jsx("button", {
+							type: "button",
+							className: "mt-3 min-h-12 w-full rounded-lg bg-accent font-semibold text-accent-fg",
+							...bindTap(lockPlan),
+							children: "Start game"
+						})
+					]
 				}),
 				/* @__PURE__ */ jsxs("p", {
 					className: "mt-1 text-sm text-muted",
 					children: [
+						siteWord(slot, state.playerTeamId),
+						" · ",
 						ht ? `${ht.wins}-${ht.losses}` : "—",
 						" · ",
 						at ? `${at.wins}-${at.losses}` : "—",
@@ -35491,7 +36417,7 @@ function Pregame({ state, live }) {
 				}),
 				/* @__PURE__ */ jsx("p", {
 					className: "mt-4 text-xs text-muted",
-					children: youHome ? "You have the home floor." : "Road gym. The plan still tips first."
+					children: youHome ? "Home floor. Start game when the plan looks right." : "Road gym. Start game when the plan looks right."
 				}),
 				/* @__PURE__ */ jsx(PregameScout, {})
 			]
@@ -35521,7 +36447,7 @@ function PregameScout() {
 			type: "button",
 			className: "mt-2 min-h-11 w-full rounded-lg bg-bg text-sm font-semibold",
 			...bindTap(scoutOpp),
-			children: "Spend an hour · get the tape"
+			children: "Spend an hour to scout them"
 		})]
 	});
 }
@@ -35563,6 +36489,27 @@ function periodBits(half, clock) {
 		time: time ?? "0:00"
 	};
 }
+function cleanPlay(text) {
+	return (text ?? "").replace(/\bassists himself\b/gi, "scores").replace(/\s+/g, " ").trim();
+}
+function dedupedLog(log, last) {
+	const out = [];
+	let prev = cleanPlay(last?.text);
+	for (const e of log) {
+		if (e === last) continue;
+		const text = cleanPlay(e.text);
+		if (!text || text === prev) continue;
+		prev = text;
+		out.push(e);
+	}
+	return out;
+}
+function lateChip(id) {
+	if (id === "twofor") return "2-for-1";
+	if (id === "foul3") return "Foul up 3";
+	if (id === "letplay") return "Don't foul";
+	return "";
+}
 function seedMark(bids, teamId) {
 	const b = bids.find((x) => x.teamId === teamId);
 	return b ? `(${b.seed}) ` : "";
@@ -35582,100 +36529,158 @@ function tvRail(slot, bids) {
 	if (slot.kind === "conf-tourney") return "Conference tournament";
 	return null;
 }
-function GymBoard({ live, home, away, youHome, slot, bids }) {
+function GymBoard({ live, home, away, youHome, slot, bids, wp, site }) {
 	const { pretty, time } = periodBits(live.half, live.clock);
 	const hb = bids.find((b) => b.teamId === live.homeId);
 	const ab = bids.find((b) => b.teamId === live.awayId);
 	const ncaa = slot?.kind === "ncaa";
 	const rail = tvRail(slot, bids);
-	return /* @__PURE__ */ jsxs("div", { children: [
-		/* @__PURE__ */ jsxs("div", {
-			className: `gym-board${ncaa ? " is-ncaa" : ""}`,
-			role: "group",
-			"aria-label": live.done ? `Final. ${home.name} ${live.homeScore}, ${away.name} ${live.awayScore}` : void 0,
-			children: [
-				/* @__PURE__ */ jsxs("div", {
-					className: `gym-side ${youHome ? "is-you" : ""}`,
-					children: [
-						/* @__PURE__ */ jsx("p", {
-							className: "gym-tag",
-							children: ncaa && hb ? `${hb.seed}` : "Home"
-						}),
-						/* @__PURE__ */ jsx("p", {
-							className: "gym-abbr",
-							children: home.abbr
-						}),
-						live.done && /* @__PURE__ */ jsx("p", {
-							className: "gym-tag",
-							children: home.name
-						}),
-						/* @__PURE__ */ jsx("p", {
-							className: "gym-score",
-							children: live.homeScore
-						}),
-						live.poss === "home" && !live.done && /* @__PURE__ */ jsx("span", {
-							className: "gym-ball",
-							"aria-label": "Has the ball"
-						})
-					]
-				}),
-				/* @__PURE__ */ jsxs("div", {
-					className: "gym-mid",
-					children: [/* @__PURE__ */ jsx("p", {
-						className: "gym-period",
-						children: live.done ? "Final" : pretty
-					}), !live.done && /* @__PURE__ */ jsx("p", {
-						className: "gym-clock",
-						"aria-live": "polite",
-						"aria-atomic": "true",
-						children: time
-					})]
-				}),
-				/* @__PURE__ */ jsxs("div", {
-					className: `gym-side ${youHome ? "" : "is-you"}`,
-					children: [
-						/* @__PURE__ */ jsx("p", {
-							className: "gym-tag",
-							children: ncaa && ab ? `${ab.seed}` : "Away"
-						}),
-						/* @__PURE__ */ jsx("p", {
-							className: "gym-abbr",
-							children: away.abbr
-						}),
-						live.done && /* @__PURE__ */ jsx("p", {
-							className: "gym-tag",
-							children: away.name
-						}),
-						/* @__PURE__ */ jsx("p", {
-							className: "gym-score",
-							children: live.awayScore
-						}),
-						live.poss === "away" && !live.done && /* @__PURE__ */ jsx("span", {
-							className: "gym-ball",
-							"aria-label": "Has the ball"
-						})
-					]
-				})
-			]
-		}),
-		live.done && /* @__PURE__ */ jsxs("p", {
-			className: "gym-rail",
-			children: [
-				away.name,
-				" ",
-				live.awayScore,
-				", ",
-				home.name,
-				" ",
-				live.homeScore,
-				" · Final"
-			]
-		}),
-		rail && /* @__PURE__ */ jsx("p", {
-			className: "gym-rail",
-			children: rail
-		})
-	] });
+	const youBall = live.poss === "home" === youHome;
+	const plan = OFF_OPTS.find((o) => o.id === live.offCall)?.label ?? live.offCall;
+	const tactic = lateChip(live.lateChoice);
+	const homeFouls = (live.homeLines ?? []).reduce((s, r) => s + (r.pf ?? 0), 0);
+	const awayFouls = (live.awayLines ?? []).reduce((s, r) => s + (r.pf ?? 0), 0);
+	return /* @__PURE__ */ jsxs("div", {
+		className: "gym-sticky",
+		children: [
+			/* @__PURE__ */ jsxs("div", {
+				className: `gym-board${ncaa ? " is-ncaa" : ""}`,
+				role: "group",
+				"aria-label": live.done ? `Final. ${home.name} ${live.homeScore}, ${away.name} ${live.awayScore}` : void 0,
+				children: [
+					/* @__PURE__ */ jsxs("div", {
+						className: `gym-side ${youHome ? "is-you" : ""}`,
+						children: [
+							/* @__PURE__ */ jsx("p", {
+								className: "gym-tag",
+								children: ncaa && hb ? `${hb.seed}` : home.abbr
+							}),
+							/* @__PURE__ */ jsx("p", {
+								className: "gym-abbr",
+								children: home.abbr
+							}),
+							live.done && /* @__PURE__ */ jsx("p", {
+								className: "gym-tag",
+								children: home.name
+							}),
+							/* @__PURE__ */ jsx("p", {
+								className: "gym-score",
+								children: live.homeScore
+							}),
+							live.poss === "home" && !live.done && /* @__PURE__ */ jsx("span", {
+								className: "gym-ball",
+								"aria-label": "Has the ball"
+							})
+						]
+					}),
+					/* @__PURE__ */ jsxs("div", {
+						className: "gym-mid",
+						children: [/* @__PURE__ */ jsx("p", {
+							className: "gym-period",
+							children: live.done ? "Final" : pretty
+						}), !live.done && /* @__PURE__ */ jsx("p", {
+							className: "gym-clock",
+							"aria-live": "polite",
+							"aria-atomic": "true",
+							children: time
+						})]
+					}),
+					/* @__PURE__ */ jsxs("div", {
+						className: `gym-side ${youHome ? "" : "is-you"}`,
+						children: [
+							/* @__PURE__ */ jsx("p", {
+								className: "gym-tag",
+								children: ncaa && ab ? `${ab.seed}` : away.abbr
+							}),
+							/* @__PURE__ */ jsx("p", {
+								className: "gym-abbr",
+								children: away.abbr
+							}),
+							live.done && /* @__PURE__ */ jsx("p", {
+								className: "gym-tag",
+								children: away.name
+							}),
+							/* @__PURE__ */ jsx("p", {
+								className: "gym-score",
+								children: live.awayScore
+							}),
+							live.poss === "away" && !live.done && /* @__PURE__ */ jsx("span", {
+								className: "gym-ball",
+								"aria-label": "Has the ball"
+							})
+						]
+					})
+				]
+			}),
+			!live.done && /* @__PURE__ */ jsxs("p", {
+				className: "gym-meta",
+				children: [
+					/* @__PURE__ */ jsx("span", { children: site }),
+					/* @__PURE__ */ jsx("span", { children: youBall ? "Your ball" : "Their ball" }),
+					/* @__PURE__ */ jsxs("span", {
+						className: "gym-wp",
+						"aria-label": `Win probability ${wp} percent`,
+						children: [wp, "% win"]
+					}),
+					/* @__PURE__ */ jsxs("span", { children: [
+						"T/O ",
+						live.timeoutsHome ?? 4,
+						"–",
+						live.timeoutsAway ?? 4
+					] }),
+					homeFouls + awayFouls > 0 && /* @__PURE__ */ jsxs("span", { children: [
+						"Fouls ",
+						homeFouls,
+						"–",
+						awayFouls
+					] })
+				]
+			}),
+			!live.done && /* @__PURE__ */ jsxs("div", {
+				className: "bug-chips",
+				children: [
+					/* @__PURE__ */ jsxs("span", {
+						className: "bug-chip",
+						children: [
+							youBall ? "Ball" : "Defense",
+							" · ",
+							plan
+						]
+					}),
+					tactic && /* @__PURE__ */ jsx("span", {
+						className: "bug-chip is-hot",
+						children: tactic
+					}),
+					live.defCall === "foul" && !tactic && /* @__PURE__ */ jsx("span", {
+						className: "bug-chip is-hot",
+						children: "Foul"
+					})
+				]
+			}),
+			live.sandbox && /* @__PURE__ */ jsx("p", {
+				className: "gym-test",
+				children: "Test game — not counted."
+			}),
+			live.done && /* @__PURE__ */ jsxs("p", {
+				className: "gym-rail",
+				children: [
+					away.name,
+					" ",
+					live.awayScore,
+					", ",
+					home.name,
+					" ",
+					live.homeScore,
+					" · Final · ",
+					site
+				]
+			}),
+			rail && /* @__PURE__ */ jsx("p", {
+				className: "gym-rail",
+				children: rail
+			})
+		]
+	});
 }
 function runHeat(log) {
 	let pts = 0;
@@ -35898,18 +36903,18 @@ function EndgameBar({ state }) {
 	const items = endgameMenu(state);
 	if (!items.length) return null;
 	return /* @__PURE__ */ jsxs("div", {
-		className: "mt-3 rounded-xl border border-border bg-elevated p-3",
+		className: "endgame-bar mt-3 rounded-xl border border-border bg-elevated p-3",
 		role: "group",
 		"aria-label": "End of game",
 		children: [/* @__PURE__ */ jsx("p", {
 			className: "text-[11px] tracking-[0.16em] text-muted uppercase",
 			children: "Finish"
 		}), /* @__PURE__ */ jsx("div", {
-			className: "mt-2 grid grid-cols-2 gap-2",
+			className: "endgame-grid mt-2",
 			children: items.map((item) => /* @__PURE__ */ jsx("button", {
 				type: "button",
 				"data-late": item.id,
-				className: "min-h-14 rounded-lg bg-accent px-3 text-sm font-semibold text-accent-fg",
+				className: "min-h-11 w-full rounded-lg bg-accent px-3 text-sm font-semibold text-accent-fg",
 				...bindTap(() => {
 					if (item.id === "twofor") runLate("twofor");
 					else if (item.id === "letplay") runLate("letplay");
@@ -35922,6 +36927,12 @@ function EndgameBar({ state }) {
 		})]
 	});
 }
+function liveLegs(season, minutes, half) {
+	const fat = Math.max(season, minutes >= 28 ? 70 : half >= 2 && minutes >= 16 ? 50 : minutes >= 24 ? 45 : 0);
+	if (fat > 60) return "tired";
+	if (fat > 35) return "winded";
+	return "fresh";
+}
 function FloorStrip({ state, live }) {
 	const { subPlayer } = useGame();
 	const you = state.playerTeamId;
@@ -35930,7 +36941,21 @@ function FloorStrip({ state, live }) {
 	const lines = home ? live.homeLines : live.awayLines;
 	const pinned = home ? live.homeOn : live.awayOn;
 	const roster = state.players.filter((p) => p.teamId === you && !(p.injury && p.injury.weeksLeft > 0)).sort((a, b) => b.mpg - a.mpg);
-	const on = (pinned && pinned.length >= 5 ? pinned : roster.slice(0, 5).map((p) => p.id)).map((id) => roster.find((p) => p.id === id)).filter((p) => Boolean(p));
+	const seeded = pinned && pinned.length >= 5 ? pinned : roster.slice(0, 5).map((p) => p.id);
+	const onIds = [];
+	for (const id of seeded) {
+		if ((lines?.find((l) => l.id === id)?.pf ?? 0) >= 5) continue;
+		if (!onIds.includes(id)) onIds.push(id);
+	}
+	for (const p of roster) {
+		if (onIds.length >= 5) break;
+		if (onIds.includes(p.id)) continue;
+		if ((lines?.find((l) => l.id === p.id)?.pf ?? 0) >= 5) continue;
+		onIds.push(p.id);
+	}
+	const on = onIds.map((id) => roster.find((p) => p.id === id)).filter((p) => Boolean(p));
+	const usages = on.map((p) => p.usage ?? 0);
+	const showUse = usages.some((u) => u > 0) && new Set(usages).size > 1;
 	return /* @__PURE__ */ jsxs("div", {
 		className: "mt-3",
 		children: [/* @__PURE__ */ jsx("p", {
@@ -35940,7 +36965,8 @@ function FloorStrip({ state, live }) {
 			className: "live-strip mt-1",
 			children: on.map((p) => {
 				const fouls = lines?.find((l) => l.id === p.id)?.pf ?? 0;
-				const fat = fatigueOf(state, p.id);
+				const played = lines?.find((l) => l.id === p.id)?.min ?? 0;
+				const legs = liveLegs(fatigueOf(state, p.id), played, live.half);
 				const hot = live.half === 1 && fouls >= 2 || live.half >= 2 && fouls >= 4;
 				return /* @__PURE__ */ jsxs("button", {
 					type: "button",
@@ -35951,7 +36977,8 @@ function FloorStrip({ state, live }) {
 						" · ",
 						fouls,
 						"F · ",
-						fat > 60 ? "tired" : fat > 35 ? "winded" : "fresh"
+						legs,
+						showUse && (p.usage ?? 0) > 0 ? ` · ${p.usage}` : ""
 					]
 				}, p.id);
 			})
@@ -36013,7 +37040,7 @@ function BenchPad({ state, live }) {
 			className: "mt-2 flex flex-col gap-1",
 			children: roster.map((p) => {
 				const row = lines?.find((l) => l.id === p.id);
-				const fat = fatigueOf(state, p.id);
+				const legs = liveLegs(fatigueOf(state, p.id), row?.min ?? 0, live.half);
 				const fouls = row?.pf ?? 0;
 				const inGame = on.has(p.id);
 				return /* @__PURE__ */ jsx("li", { children: /* @__PURE__ */ jsxs("button", {
@@ -36039,7 +37066,7 @@ function BenchPad({ state, live }) {
 						}),
 						/* @__PURE__ */ jsx("span", {
 							className: "w-14 text-right text-xs text-muted",
-							children: fat > 60 ? "tired" : fat > 35 ? "winded" : "fresh"
+							children: legs
 						})
 					]
 				}) }, p.id);
@@ -36065,17 +37092,29 @@ function LiveBox({ home, away, homeName, awayName, final }) {
 	});
 }
 function MiniBox({ title, rows, final }) {
+	const [copied, setCopied] = useState(false);
 	if (!rows.length) return null;
 	const team = boxTotals(rows);
+	const share = [`${title}${final ? " final" : ""}`, ...[...rows, team].map((p) => `${p.name}  ${p.pts} pts  ${p.reb} reb  ${p.ast} ast`)].join("\n");
 	return /* @__PURE__ */ jsxs("div", {
 		className: "recap-box",
-		children: [/* @__PURE__ */ jsxs("p", {
-			className: "recap-box-h",
-			children: [
-				title,
-				" · ",
-				final ? "Final" : "live"
-			]
+		children: [/* @__PURE__ */ jsxs("div", {
+			className: "flex items-center justify-between gap-2",
+			children: [/* @__PURE__ */ jsxs("p", {
+				className: "recap-box-h",
+				children: [
+					title,
+					" · ",
+					final ? "Final" : "live"
+				]
+			}), /* @__PURE__ */ jsx("button", {
+				type: "button",
+				className: "min-h-11 shrink-0 px-2 text-xs font-semibold text-accent",
+				...bindTap(() => {
+					navigator.clipboard?.writeText(share).then(() => setCopied(true)).catch(() => setCopied(false));
+				}),
+				children: copied ? "Copied" : "Copy box"
+			})]
 		}), /* @__PURE__ */ jsxs("table", { children: [/* @__PURE__ */ jsx("thead", { children: /* @__PURE__ */ jsxs("tr", { children: [
 			/* @__PURE__ */ jsx("th", {
 				className: "recap-name",
@@ -36141,44 +37180,46 @@ function MiniBox({ title, rows, final }) {
 }
 //#endregion
 //#region src/components/game/selection-show.tsx
-var ORDER = [
-	"intro",
-	"ones",
-	"twos",
-	"threes",
-	"rest",
-	"you"
-];
+var SHOW_MS = 2400;
 function SelectionShow() {
 	const { state, finishSelectionShow } = useGame();
-	const [beat, setBeat] = useState("intro");
 	const field = state?.selection?.ncaa ?? [];
 	const youId = state?.playerTeamId ?? "";
-	const you = field.find((b) => b.teamId === youId);
-	const bySeed = useMemo(() => {
-		const m = /* @__PURE__ */ new Map();
-		for (const b of field) {
-			const list = m.get(b.seed) ?? [];
-			list.push(b);
-			m.set(b.seed, list);
+	const cards = useMemo(() => buildShow(field), [field]);
+	const [i, setI] = useState(0);
+	const [playing, setPlaying] = useState(false);
+	const quiet = state ? Boolean(settingsOf(state).reducedMotion) : false;
+	const card = cards[Math.min(i, cards.length - 1)] ?? cards[0];
+	const yours = Boolean(card && cardHasYou(card, youId));
+	useEffect(() => {
+		if (!playing || quiet) return;
+		if (!card || card.kind === "you" || yours) {
+			setPlaying(false);
+			return;
 		}
-		return m;
-	}, [field]);
-	if (!state) return null;
-	const i = ORDER.indexOf(beat);
+		const t = window.setTimeout(() => setI((n) => Math.min(n + 1, cards.length - 1)), SHOW_MS);
+		return () => window.clearTimeout(t);
+	}, [
+		playing,
+		quiet,
+		card,
+		yours,
+		cards.length
+	]);
+	if (!state || !card) return null;
 	function next() {
-		const n = ORDER[i + 1];
-		if (!n) {
+		if (i >= cards.length - 1) {
 			finishSelectionShow();
 			return;
 		}
-		setBeat(n);
+		setI(i + 1);
 	}
+	const progress = cards.length > 1 ? i / (cards.length - 1) : 1;
 	const nit = state.selection?.nit.includes(youId);
 	const crown = state.selection?.crown.includes(youId);
-	const school = TEAM_BY_ID[youId];
+	const you = field.find((b) => b.teamId === youId);
 	return /* @__PURE__ */ jsxs("div", {
-		className: "app-frame sel-show",
+		className: `app-frame sel-show ${quiet ? "is-quiet" : ""}`,
 		children: [
 			/* @__PURE__ */ jsx("div", { className: "sel-bar" }),
 			/* @__PURE__ */ jsxs("div", {
@@ -36188,58 +37229,32 @@ function SelectionShow() {
 						className: "sel-kicker",
 						children: ["Selection Sunday · ", state.season]
 					}),
-					beat === "intro" && /* @__PURE__ */ jsxs("div", {
+					/* @__PURE__ */ jsx("div", {
+						className: "sel-progress",
+						"aria-hidden": true,
+						children: /* @__PURE__ */ jsx("span", { style: { width: `${Math.round(progress * 100)}%` } })
+					}),
+					card.kind === "intro" && /* @__PURE__ */ jsxs("div", {
 						className: "sel-beat",
 						children: [/* @__PURE__ */ jsx("h1", {
 							className: "sel-title",
-							children: "The committee has set the field."
+							children: "The committee is walking the bracket out."
 						}), /* @__PURE__ */ jsx("p", {
 							className: "sel-copy",
-							children: "68 teams. Four 1-seeds. First Four in Dayton. Your name is in the envelope — or it isn’t."
+							children: "Dayton first, then one first-round game at a time. Four regions. Your name comes up when it comes up."
 						})]
-					}),
-					beat === "ones" && /* @__PURE__ */ jsx(SeedLine, {
-						n: 1,
-						rows: bySeed.get(1) ?? [],
-						youId,
-						rec: (id) => recOf(state, id)
-					}),
-					beat === "twos" && /* @__PURE__ */ jsx(SeedLine, {
-						n: 2,
-						rows: bySeed.get(2) ?? [],
-						youId,
-						rec: (id) => recOf(state, id)
-					}),
-					beat === "threes" && /* @__PURE__ */ jsx(SeedLine, {
-						n: 3,
-						rows: bySeed.get(3) ?? [],
-						youId,
-						rec: (id) => recOf(state, id)
-					}),
-					beat === "rest" && /* @__PURE__ */ jsxs("div", {
-						className: "sel-beat",
-						children: [
-							/* @__PURE__ */ jsx("h1", {
-								className: "sel-title",
-								children: "The rest of the field"
-							}),
-							/* @__PURE__ */ jsx("div", {
-								className: "sel-rest",
-								children: Array.from({ length: 13 }, (_, x) => x + 4).map((seed) => /* @__PURE__ */ jsxs("p", { children: [/* @__PURE__ */ jsx("span", {
-									className: "sel-seed-n",
-									children: seed
-								}), (bySeed.get(seed) ?? []).map((b) => /* @__PURE__ */ jsxs("span", {
-									className: b.teamId === youId ? "sel-you" : "",
-									children: [TEAM_BY_ID[b.teamId]?.abbr ?? b.teamId, b.playIn ? "*" : ""]
-								}, b.teamId))] }, seed))
-							}),
-							/* @__PURE__ */ jsx("p", {
-								className: "sel-copy",
-								children: "* First Four"
-							})
-						]
-					}),
-					beat === "you" && /* @__PURE__ */ jsxs("div", {
+					}, "intro"),
+					card.kind === "ff" && /* @__PURE__ */ jsx(FirstFour, {
+						card,
+						state,
+						youId
+					}, `${card.region}-${card.seed}`),
+					card.kind === "r64" && /* @__PURE__ */ jsx(RoundGame, {
+						card,
+						state,
+						youId
+					}, `${card.region}-${card.top.seed}`),
+					card.kind === "you" && /* @__PURE__ */ jsxs("div", {
 						className: "sel-beat sel-envelope",
 						children: [
 							/* @__PURE__ */ jsx("p", {
@@ -36253,60 +37268,367 @@ function SelectionShow() {
 							/* @__PURE__ */ jsxs("p", {
 								className: "sel-copy",
 								children: [
-									school?.name,
+									TEAM_BY_ID[youId]?.name,
 									" ",
 									recOf(state, youId),
 									you ? ` · ${you.path === "auto" ? "auto bid" : "at-large"}${you.playIn ? " · First Four" : ""}` : ""
 								]
 							})
 						]
-					})
+					}, "you")
 				]
 			}),
 			/* @__PURE__ */ jsxs("div", {
 				className: "sel-actions",
-				children: [/* @__PURE__ */ jsx("button", {
-					type: "button",
-					className: "sel-btn",
-					...bindTap(next),
-					children: beat === "intro" ? "Open the envelope" : beat === "you" ? "See the bracket" : "Next"
-				}), beat !== "you" && /* @__PURE__ */ jsx("button", {
-					type: "button",
-					className: "sel-skip",
-					...bindTap(finishSelectionShow),
-					children: "Skip to the bracket"
-				})]
+				children: [
+					/* @__PURE__ */ jsx("button", {
+						type: "button",
+						className: "sel-btn",
+						...bindTap(next),
+						children: card.kind === "intro" ? "Open the first envelope" : card.kind === "you" ? "See the bracket" : yours ? "That's us. Next game" : "Next game"
+					}),
+					card.kind !== "you" && !quiet && /* @__PURE__ */ jsx("button", {
+						type: "button",
+						className: "sel-skip",
+						...bindTap(() => setPlaying((p) => !p)),
+						children: playing ? "Pause the show" : "Play the show"
+					}),
+					card.kind !== "you" && /* @__PURE__ */ jsx("button", {
+						type: "button",
+						className: "sel-skip",
+						...bindTap(finishSelectionShow),
+						children: "Skip to the bracket"
+					})
+				]
 			})
 		]
 	});
 }
-function SeedLine({ n, rows, youId, rec }) {
-	const byRegion = (r) => rows.filter((b) => b.region === r);
+function FirstFour({ card, state, youId }) {
+	const you = card.teams.some((b) => b.teamId === youId);
 	return /* @__PURE__ */ jsxs("div", {
 		className: "sel-beat",
-		children: [/* @__PURE__ */ jsxs("h1", {
-			className: "sel-title",
-			children: [
-				"The ",
-				n,
-				"-seeds"
-			]
-		}), /* @__PURE__ */ jsx("ul", {
-			className: "sel-quad",
-			children: NCAA_REGIONS.map((region) => {
-				const bids = byRegion(region);
-				return /* @__PURE__ */ jsxs("li", {
-					className: bids.some((b) => b.teamId === youId) ? "sel-you-card" : "",
-					children: [/* @__PURE__ */ jsx("p", {
-						className: "sel-reg",
-						children: region
-					}), bids.map((b) => /* @__PURE__ */ jsxs("p", {
-						className: "sel-team",
-						children: [TEAM_BY_ID[b.teamId]?.name, /* @__PURE__ */ jsx("span", { children: rec(b.teamId) })]
-					}, b.teamId))]
-				}, region);
+		children: [
+			/* @__PURE__ */ jsx("p", {
+				className: "sel-kicker",
+				children: "First Four · Dayton"
+			}),
+			/* @__PURE__ */ jsxs("h1", {
+				className: "sel-title",
+				children: [
+					card.region,
+					" · ",
+					card.seed,
+					" seed"
+				]
+			}),
+			/* @__PURE__ */ jsx(Matchup, {
+				top: {
+					seed: card.seed,
+					bids: [card.teams[0]]
+				},
+				bottom: {
+					seed: card.seed,
+					bids: [card.teams[1]]
+				},
+				state,
+				youId
+			}),
+			/* @__PURE__ */ jsxs("p", {
+				className: "sel-copy sel-note",
+				children: [
+					"Winner is the ",
+					card.seed,
+					" seed in the ",
+					card.region,
+					". Plays the ",
+					card.plays,
+					".",
+					you ? " You're in that game." : ""
+				]
 			})
+		]
+	});
+}
+function RoundGame({ card, state, youId }) {
+	const you = sideHasYou(card.top, youId) || sideHasYou(card.bottom, youId);
+	return /* @__PURE__ */ jsxs("div", {
+		className: "sel-beat",
+		children: [
+			/* @__PURE__ */ jsxs("p", {
+				className: "sel-kicker",
+				children: [
+					card.region,
+					" · Game ",
+					card.game,
+					" of ",
+					card.of
+				]
+			}),
+			/* @__PURE__ */ jsxs("h1", {
+				className: "sel-title",
+				children: [
+					card.top.seed,
+					" vs ",
+					card.bottom.seed
+				]
+			}),
+			/* @__PURE__ */ jsx(Matchup, {
+				top: card.top,
+				bottom: card.bottom,
+				state,
+				youId
+			}),
+			you && /* @__PURE__ */ jsx("p", {
+				className: "sel-you-flag",
+				children: "That's your game."
+			})
+		]
+	});
+}
+function Matchup({ top, bottom, state, youId }) {
+	return /* @__PURE__ */ jsxs("div", {
+		className: "sel-match",
+		children: [
+			/* @__PURE__ */ jsx(SideRow, {
+				side: top,
+				state,
+				youId
+			}),
+			/* @__PURE__ */ jsx("p", {
+				className: "sel-vs",
+				children: "VS"
+			}),
+			/* @__PURE__ */ jsx(SideRow, {
+				side: bottom,
+				state,
+				youId
+			})
+		]
+	});
+}
+function SideRow({ side, state, youId }) {
+	const you = sideHasYou(side, youId);
+	const playIn = side.bids.length > 1;
+	return /* @__PURE__ */ jsxs("div", {
+		className: you ? "sel-row sel-row-you" : "sel-row",
+		children: [/* @__PURE__ */ jsx("span", {
+			className: "sel-num",
+			children: side.seed
+		}), /* @__PURE__ */ jsxs("div", {
+			className: "sel-side",
+			children: [side.bids.map((b) => {
+				const school = TEAM_BY_ID[b.teamId];
+				const conf = state.teams[b.teamId]?.conference;
+				return /* @__PURE__ */ jsxs("p", { children: [/* @__PURE__ */ jsx("b", { children: school?.name ?? b.teamId }), /* @__PURE__ */ jsxs("span", { children: [
+					recOf(state, b.teamId),
+					conf ? ` · ${confName(conf)}` : "",
+					b.path === "auto" ? " · Auto" : " · At-large"
+				] })] }, b.teamId);
+			}), playIn && /* @__PURE__ */ jsx("span", {
+				className: "sel-ff",
+				children: "First Four winner"
+			})]
 		})]
+	});
+}
+function sideHasYou(side, youId) {
+	return side.bids.some((b) => b.teamId === youId);
+}
+function cardHasYou(card, youId) {
+	if (card.kind === "ff") return card.teams.some((b) => b.teamId === youId);
+	if (card.kind === "r64") return sideHasYou(card.top, youId) || sideHasYou(card.bottom, youId);
+	return false;
+}
+function playsSeed(seed) {
+	const row = PAIR_64.find(([hi, lo]) => hi === seed || lo === seed);
+	if (!row) return seed;
+	return row[0] === seed ? row[1] : row[0];
+}
+function buildShow(field) {
+	const cards = [{ kind: "intro" }];
+	const groups = /* @__PURE__ */ new Map();
+	for (const b of field) {
+		if (!b.playIn) continue;
+		const key = `${b.region}-${b.seed}`;
+		const list = groups.get(key) ?? [];
+		list.push(b);
+		groups.set(key, list);
+	}
+	const ff = [...groups.entries()].sort((a, b) => {
+		const [ar, as] = a[0].split("-");
+		const [br, bs] = b[0].split("-");
+		return NCAA_REGIONS.indexOf(ar) - NCAA_REGIONS.indexOf(br) || Number(as) - Number(bs);
+	});
+	for (const [key, teams] of ff) {
+		if (teams.length < 2) continue;
+		const [region, seedText] = key.split("-");
+		const seed = Number(seedText);
+		cards.push({
+			kind: "ff",
+			region,
+			seed,
+			teams: teams.slice(0, 2),
+			plays: playsSeed(seed)
+		});
+	}
+	for (const region of NCAA_REGIONS) {
+		let game = 0;
+		for (const [hi, lo] of PAIR_64) {
+			const top = field.filter((b) => b.region === region && b.seed === hi);
+			const bottom = field.filter((b) => b.region === region && b.seed === lo);
+			if (!top.length || !bottom.length) continue;
+			game += 1;
+			cards.push({
+				kind: "r64",
+				region,
+				game,
+				of: PAIR_64.length,
+				top: {
+					seed: hi,
+					bids: top
+				},
+				bottom: {
+					seed: lo,
+					bids: bottom
+				}
+			});
+		}
+	}
+	cards.push({ kind: "you" });
+	return cards;
+}
+//#endregion
+//#region src/components/game/carousel-view.tsx
+var KIND = {
+	fired: "Fired",
+	nba: "NBA",
+	jumped: "Better job",
+	promoted: "Assistant promoted"
+};
+function CarouselView() {
+	const { state, advanceCarousel, declineCarouselOffer, takeJob } = useGame();
+	if (!state?.carousel) return null;
+	const session = state.carousel;
+	const beat = session.beats[Math.min(session.index, session.beats.length - 1)];
+	if (!beat || session.done) return null;
+	const n = session.beats.length;
+	const progress = n > 1 ? session.index / (n - 1) : 1;
+	const choosing = Boolean(beat.yours && (beat.decision === "fire" || beat.decision === "offer"));
+	const here = TEAM_BY_ID[state.playerTeamId];
+	const jobs = (state.contractReview?.jobs ?? []).filter((j) => j.teamId !== state.playerTeamId && TEAM_BY_ID[j.teamId]);
+	const moves = (state.coachMoves ?? []).filter((m) => m.season === state.season);
+	const left = state.snake?.season === state.season;
+	return /* @__PURE__ */ jsxs("div", {
+		className: "app-frame sel-show",
+		children: [
+			/* @__PURE__ */ jsx("div", { className: "sel-bar" }),
+			/* @__PURE__ */ jsxs("div", {
+				className: "app-scroll sel-inner",
+				children: [
+					/* @__PURE__ */ jsxs("p", {
+						className: "sel-kicker",
+						children: ["Coaching carousel · ", state.season]
+					}),
+					/* @__PURE__ */ jsx("div", {
+						className: "sel-progress",
+						"aria-hidden": true,
+						children: /* @__PURE__ */ jsx("span", { style: { width: `${Math.round(progress * 100)}%` } })
+					}),
+					beat.recap ? /* @__PURE__ */ jsxs(Fragment$1, { children: [
+						/* @__PURE__ */ jsx("p", {
+							className: "sel-kicker",
+							children: "Recap"
+						}),
+						/* @__PURE__ */ jsx("h1", {
+							className: "sel-title",
+							children: left ? `You took ${state.snake?.to}` : `You stayed at ${here?.name ?? "your school"}`
+						}),
+						/* @__PURE__ */ jsx("p", {
+							className: "sel-copy",
+							children: moves.length ? `${moves.length} chair${moves.length === 1 ? "" : "s"} changed.` : "No other chair changed."
+						}),
+						/* @__PURE__ */ jsx("ul", {
+							className: "mt-4 flex flex-col gap-3",
+							children: moves.map((m) => /* @__PURE__ */ jsxs("li", { children: [/* @__PURE__ */ jsx("p", {
+								className: "font-semibold",
+								children: m.school
+							}), /* @__PURE__ */ jsx("p", {
+								className: "text-sm text-muted",
+								children: m.note
+							})] }, `${m.teamId}-${m.inName}`))
+						})
+					] }) : /* @__PURE__ */ jsxs(Fragment$1, { children: [
+						/* @__PURE__ */ jsxs("p", {
+							className: "sel-kicker",
+							children: [
+								session.index + 1,
+								" of ",
+								n,
+								beat.quiet ? "" : ` · ${KIND[beat.kind] ?? "Move"}`
+							]
+						}),
+						/* @__PURE__ */ jsx("h1", {
+							className: "sel-title",
+							children: choosing ? "Your call" : beat.school
+						}),
+						/* @__PURE__ */ jsx("p", {
+							className: "sel-copy",
+							children: beat.note
+						}),
+						!beat.quiet && !choosing && /* @__PURE__ */ jsxs("p", {
+							className: "sel-copy",
+							children: [
+								beat.outName,
+								" out",
+								beat.inName && beat.inName !== beat.outName ? `. ${beat.inName} in.` : ".",
+								beat.record ? ` ${beat.record}.` : ""
+							]
+						}),
+						choosing && /* @__PURE__ */ jsxs("div", {
+							className: "mt-4 flex flex-col gap-2",
+							children: [jobs.map((j) => {
+								const t = TEAM_BY_ID[j.teamId];
+								if (!t) return null;
+								return /* @__PURE__ */ jsxs("button", {
+									type: "button",
+									className: "sel-btn",
+									...bindTap(() => takeJob(j.teamId)),
+									children: [t.name, /* @__PURE__ */ jsxs("span", {
+										className: "mt-1 block text-xs font-normal",
+										children: [
+											t.mascot,
+											" · rating ",
+											t.prestige,
+											" · ",
+											j.contract.years,
+											" years"
+										]
+									})]
+								}, j.teamId);
+							}), !jobs.length && /* @__PURE__ */ jsx("p", {
+								className: "sel-copy",
+								children: "No chairs called. You can stay."
+							})]
+						})
+					] })
+				]
+			}),
+			/* @__PURE__ */ jsxs("div", {
+				className: "sel-actions",
+				children: [choosing && /* @__PURE__ */ jsxs("button", {
+					type: "button",
+					className: "sel-btn",
+					...bindTap(declineCarouselOffer),
+					children: ["Stay at ", here?.name ?? "your school"]
+				}), !choosing && /* @__PURE__ */ jsx("button", {
+					type: "button",
+					className: "sel-btn",
+					...bindTap(advanceCarousel),
+					children: beat.recap ? "Back to the gym" : "Next opening"
+				})]
+			})
+		]
 	});
 }
 //#endregion
@@ -36950,7 +38272,7 @@ function HofView() {
 //#endregion
 //#region src/components/game/contract-view.tsx
 function ContractView() {
-	const { state, setView, signDeal, takeJob, walkDeal, retire } = useGame();
+	const { state, setView, signDeal, takeJob, walkDeal, retire, declineCarouselOffer } = useGame();
 	const [q, setQ] = useState("");
 	if (!state) return null;
 	const school = TEAM_BY_ID[state.playerTeamId];
@@ -37011,12 +38333,28 @@ function ContractView() {
 					})] }, r.kind))
 				})]
 			}),
+			state.phase === "offseason" && (state.coachMoves ?? []).some((m) => m.season === state.season) && /* @__PURE__ */ jsxs("div", {
+				className: "rounded-xl border border-border bg-elevated p-4",
+				children: [/* @__PURE__ */ jsx("p", {
+					className: "text-xs tracking-[0.18em] text-muted uppercase",
+					children: "Carousel"
+				}), /* @__PURE__ */ jsx("ul", {
+					className: "mt-3 flex flex-col gap-3",
+					children: (state.coachMoves ?? []).filter((m) => m.season === state.season).slice(0, 8).map((m) => /* @__PURE__ */ jsxs("li", { children: [/* @__PURE__ */ jsx("p", {
+						className: "text-sm font-semibold",
+						children: m.school
+					}), /* @__PURE__ */ jsx("p", {
+						className: "text-sm text-muted",
+						children: m.note
+					})] }, `${m.teamId}-${m.inName}`))
+				})]
+			}),
 			state.reportCard && /* @__PURE__ */ jsxs("div", {
 				className: "rounded-xl border border-border bg-elevated p-4",
 				children: [
 					/* @__PURE__ */ jsxs("p", {
 						className: "text-xs tracking-[0.18em] text-muted uppercase",
-						children: ["Season report card · ", state.reportCard.overall]
+						children: ["Season review · ", state.reportCard.overall]
 					}),
 					/* @__PURE__ */ jsx("p", {
 						className: "mt-2 text-sm leading-relaxed",
@@ -37068,33 +38406,42 @@ function ContractView() {
 			}),
 			off && review.decision === "fire" && /* @__PURE__ */ jsxs("div", {
 				className: "flex flex-col gap-3",
-				children: [/* @__PURE__ */ jsx("p", {
-					className: "text-sm text-muted",
-					children: "Three jobs are open. Tap one."
-				}), review.jobs.map((j) => {
-					const t = TEAM_BY_ID[j.teamId];
-					if (!t) return null;
-					return /* @__PURE__ */ jsxs("button", {
+				children: [
+					/* @__PURE__ */ jsx("p", {
+						className: "text-sm text-muted",
+						children: "These jobs are open. Take one, or stay."
+					}),
+					review.jobs.map((j) => {
+						const t = TEAM_BY_ID[j.teamId];
+						if (!t) return null;
+						return /* @__PURE__ */ jsxs("button", {
+							type: "button",
+							className: "rounded-xl border border-border bg-elevated p-4 text-left",
+							...bindTap(() => takeJob(j.teamId)),
+							children: [/* @__PURE__ */ jsx("p", {
+								className: "font-display text-2xl",
+								children: t.name
+							}), /* @__PURE__ */ jsxs("p", {
+								className: "mt-1 text-sm text-muted",
+								children: [
+									t.mascot,
+									" · rating ",
+									t.prestige,
+									" · ",
+									j.contract.years,
+									" years · ",
+									j.contract.clauses.map((x) => x.label).join(" · ")
+								]
+							})]
+						}, j.teamId);
+					}),
+					/* @__PURE__ */ jsxs("button", {
 						type: "button",
-						className: "rounded-xl border border-border bg-elevated p-4 text-left",
-						...bindTap(() => takeJob(j.teamId)),
-						children: [/* @__PURE__ */ jsx("p", {
-							className: "font-display text-2xl",
-							children: t.name
-						}), /* @__PURE__ */ jsxs("p", {
-							className: "mt-1 text-sm text-muted",
-							children: [
-								t.mascot,
-								" · rating ",
-								t.prestige,
-								" · ",
-								j.contract.years,
-								" years · ",
-								j.contract.clauses.map((x) => x.label).join(" · ")
-							]
-						})]
-					}, j.teamId);
-				})]
+						className: "min-h-12 rounded-lg bg-elevated font-semibold",
+						...bindTap(declineCarouselOffer),
+						children: ["Stay at ", school.name]
+					})
+				]
 			}),
 			review?.resolved && /* @__PURE__ */ jsx("p", {
 				className: "text-sm text-muted",
@@ -37241,7 +38588,7 @@ function ComplianceView() {
 						/* @__PURE__ */ jsxs("li", { children: [/* @__PURE__ */ jsx("span", {
 							className: "font-semibold text-fg",
 							children: "APR 930."
-						}), " Fall under that line and you cannot play in the NCAA Tournament. Playing kids who can't stay eligible drags the rate down."] }),
+						}), " Drop under that and you can't play in the NCAA Tournament. Playing guys who can't stay eligible pulls the number down."] }),
 						/* @__PURE__ */ jsxs("li", { children: [
 							/* @__PURE__ */ jsx("span", {
 								className: "font-semibold text-fg",
@@ -37415,18 +38762,30 @@ function totals(rows) {
 function Box({ title, color, rows }) {
 	const shown = playedLines(rows);
 	const team = totals(shown);
+	const [copied, setCopied] = useState(false);
+	const share = [`${title} final`, ...[...shown, team].map((p) => `${p.name}  ${p.pts} pts  ${p.reb} reb  ${p.ast} ast  ${madeLine(p.fgm, p.fga)} FG`)].join("\n");
 	return /* @__PURE__ */ jsxs("div", {
 		className: "recap-box",
-		children: [/* @__PURE__ */ jsxs("p", {
-			className: "recap-box-h",
-			children: [
-				/* @__PURE__ */ jsx("span", {
-					className: "recap-dot",
-					style: { background: color }
+		children: [/* @__PURE__ */ jsxs("div", {
+			className: "flex items-center justify-between gap-2",
+			children: [/* @__PURE__ */ jsxs("p", {
+				className: "recap-box-h",
+				children: [
+					/* @__PURE__ */ jsx("span", {
+						className: "recap-dot",
+						style: { background: color }
+					}),
+					title,
+					" · Final"
+				]
+			}), /* @__PURE__ */ jsx("button", {
+				type: "button",
+				className: "min-h-11 shrink-0 px-2 text-xs font-semibold text-accent",
+				...bindTap(() => {
+					navigator.clipboard?.writeText(share).then(() => setCopied(true)).catch(() => setCopied(false));
 				}),
-				title,
-				" · Final"
-			]
+				children: copied ? "Copied" : "Copy box"
+			})]
 		}), /* @__PURE__ */ jsxs("table", { children: [/* @__PURE__ */ jsx("thead", { children: /* @__PURE__ */ jsxs("tr", { children: [
 			/* @__PURE__ */ jsx("th", {
 				className: "recap-name",
@@ -37563,9 +38922,13 @@ function RecapView() {
 	const you = state?.playerTeamId;
 	const youWin = Boolean(state && result && (result.homeId === you ? result.homeScore : result.awayScore) > (result.homeId === you ? result.awayScore : result.homeScore));
 	const slot = state && result ? state.schedule.find((g) => g.id === result.slotId) : void 0;
-	const banner = Boolean(youWin && (slot?.kind === "ncaa" || slot?.kind === "conf-tourney"));
-	const ncaaLeft = Boolean(state && you && state.schedule.some((g) => g.kind === "ncaa" && !g.resultId && (g.homeId === you || g.awayId === you)));
-	const national = Boolean(youWin && slot?.kind === "ncaa" && !ncaaLeft);
+	const ncaaCall = slot?.kind === "ncaa" ? ncaaOutcome(slot.id, youWin) : null;
+	const alive = state && slot?.kind === "conf-tourney" ? confAliveBefore(state, slot.id) : null;
+	const confCall = alive != null ? confOutcome(alive, youWin) : null;
+	const call = ncaaCall ?? confCall;
+	const banner = call?.banner === "national" || call?.banner === "conference";
+	const national = call?.banner === "national";
+	const resultLabel = call?.label ?? (youWin ? "Win" : "Loss");
 	useEffect(() => {
 		if (!banner) return;
 		try {
@@ -37609,8 +38972,9 @@ function RecapView() {
 				children: slot?.kind === "ncaa" ? [
 					NCAA_SHORT,
 					state.selection?.ncaa.find((b) => b.teamId === result.homeId)?.region,
-					ncaaRoundLabel(slot.id)
-				].filter(Boolean).join(" · ") : `${recap.played ? "Played" : "Simulated"} · Week ${result.week} · ${result.minutes ?? 40} min`
+					ncaaRoundLabel(slot.id),
+					siteWord(slot, you ?? "")
+				].filter(Boolean).join(" · ") : `${recap.played ? "Played" : "Simulated"} · Week ${result.week} · ${siteWord(slot, you ?? "")} · ${result.minutes ?? 40} min`
 			}),
 			/* @__PURE__ */ jsx("h1", {
 				className: "recap-hed",
@@ -37627,7 +38991,7 @@ function RecapView() {
 			}),
 			/* @__PURE__ */ jsx("p", {
 				className: `recap-wl ${youWin ? "text-win" : "text-loss"}`,
-				children: national ? "National champions" : banner && slot?.kind === "conf-tourney" ? "Conference champions" : youWin ? "Win" : "Loss"
+				children: resultLabel
 			}),
 			/* @__PURE__ */ jsx(RecapStrip, {
 				state,
@@ -37733,14 +39097,21 @@ function TitleBurst({ national }) {
 	return /* @__PURE__ */ jsxs("div", {
 		className: "title-burst",
 		"aria-hidden": true,
-		children: [bits.map((i) => /* @__PURE__ */ jsx("i", { style: {
-			left: `${i * 37 % 100}%`,
-			animationDelay: `${i % 8 * .08}s`,
-			background: i % 3 === 0 ? "var(--color-ap-gold)" : i % 3 === 1 ? "var(--color-win)" : "var(--color-accent)"
-		} }, i)), /* @__PURE__ */ jsx("p", {
-			className: "title-burst-line",
-			children: national ? "Cut the nets." : "Conference champs."
-		})]
+		children: [
+			bits.map((i) => /* @__PURE__ */ jsx("i", { style: {
+				left: `${i * 37 % 100}%`,
+				animationDelay: `${i % 8 * .08}s`,
+				background: i % 3 === 0 ? "var(--color-ap-gold)" : i % 3 === 1 ? "var(--color-win)" : "var(--color-accent)"
+			} }, i)),
+			/* @__PURE__ */ jsx("p", {
+				className: "title-burst-line",
+				children: national ? "National champions" : "Conference champions"
+			}),
+			/* @__PURE__ */ jsx("p", {
+				className: "title-burst-sub",
+				children: national ? "Cut the nets." : "Won the conference final."
+			})
+		]
 	});
 }
 //#endregion
@@ -37792,7 +39163,7 @@ function AnalyticsView() {
 		children: [
 			/* @__PURE__ */ jsx("p", {
 				className: "tape-kicker",
-				children: "The tape"
+				children: "Stats"
 			}),
 			/* @__PURE__ */ jsx("h1", {
 				className: "font-display text-3xl",
@@ -38060,7 +39431,7 @@ function AnalyticsView() {
 				className: "mt-2 space-y-1 text-sm",
 				children: searchTape(state, q).length === 0 ? /* @__PURE__ */ jsx("li", {
 					className: "text-muted",
-					children: "Nothing in your tape."
+					children: "Nothing in the log."
 				}) : searchTape(state, q).map((row) => /* @__PURE__ */ jsx("li", { children: /* @__PURE__ */ jsx("button", {
 					type: "button",
 					className: "min-h-11 text-left",
@@ -38381,7 +39752,7 @@ function MarketView() {
 				type: "button",
 				className: "mkt-link",
 				...bindTap(() => setView("analytics")),
-				children: "Open the tape"
+				children: "Open the stats"
 			})
 		]
 	});
@@ -38743,7 +40114,7 @@ function AwardsView() {
 				}),
 				/* @__PURE__ */ jsx("p", {
 					className: "mt-1 text-sm text-muted",
-					children: year.length ? `${state.season} lists are in.` : "Live races now. Hardware drops when the year closes."
+					children: year.length ? `${state.season} lists are in. They use points, boards, assists, and wins — not a random name.` : "Watch list only until the year closes. Nobody has won it yet."
 				})
 			] }),
 			state.watch && state.watch.length > 0 && /* @__PURE__ */ jsxs("div", {
@@ -38773,24 +40144,35 @@ function AwardsView() {
 			}),
 			race.length > 0 && !poy && /* @__PURE__ */ jsxs("div", {
 				className: "rounded-xl border border-border bg-elevated p-4",
-				children: [/* @__PURE__ */ jsx("p", {
-					className: "text-xs tracking-[0.18em] text-muted uppercase",
-					children: "National Player of the Year race"
-				}), /* @__PURE__ */ jsx("ul", {
-					className: "mt-2 space-y-1.5 text-sm",
-					children: race.map((r, i) => /* @__PURE__ */ jsxs("li", {
-						className: `flex justify-between gap-2 ${r.yours ? "font-semibold" : ""}`,
-						children: [/* @__PURE__ */ jsxs("span", { children: [
-							i + 1,
-							". ",
-							r.name,
-							r.yours ? " · you" : ""
-						] }), /* @__PURE__ */ jsx("span", {
-							className: "text-xs text-muted",
-							children: TEAM_BY_ID[r.teamId]?.abbr ?? ""
-						})]
-					}, `${r.name}-${r.teamId}`))
-				})]
+				children: [
+					/* @__PURE__ */ jsx("p", {
+						className: "text-xs tracking-[0.18em] text-muted uppercase",
+						children: "National watch list"
+					}),
+					/* @__PURE__ */ jsx("p", {
+						className: "mt-1 text-xs text-muted",
+						children: "Projection from points, rebounds, and assists. Not a winner."
+					}),
+					/* @__PURE__ */ jsx("ul", {
+						className: "mt-2 space-y-1.5 text-sm",
+						children: race.map((r, i) => /* @__PURE__ */ jsxs("li", {
+							className: `flex justify-between gap-2 ${r.yours ? "font-semibold" : ""}`,
+							children: [/* @__PURE__ */ jsxs("span", { children: [
+								i + 1,
+								". ",
+								r.name,
+								r.yours ? " · you" : ""
+							] }), /* @__PURE__ */ jsxs("span", {
+								className: "text-xs text-muted tabular-nums",
+								children: [
+									r.ppg.toFixed(1),
+									" PPG · ",
+									TEAM_BY_ID[r.teamId]?.abbr ?? ""
+								]
+							})]
+						}, `${r.name}-${r.teamId}`))
+					})
+				]
 			}),
 			potw[0] && /* @__PURE__ */ jsxs("div", {
 				className: "rounded-xl border border-border bg-elevated p-4",
@@ -38837,9 +40219,9 @@ function AwardsView() {
 						className: "font-display mt-1 text-2xl",
 						children: poy.name
 					}),
-					/* @__PURE__ */ jsx("p", {
+					/* @__PURE__ */ jsxs("p", {
 						className: "text-xs text-muted",
-						children: poy.yours ? "Yours." : poy.pos
+						children: [poy.yours ? "Yours." : poy.pos, " · season award, not a projection"]
 					})
 				]
 			}),
@@ -38909,12 +40291,12 @@ function StoryView() {
 		className: "flex flex-col items-center justify-center gap-3 px-6 py-16",
 		children: [/* @__PURE__ */ jsx("p", {
 			className: "font-display text-3xl",
-			children: "Quiet night"
+			children: "Nothing going on"
 		}), /* @__PURE__ */ jsx("button", {
 			type: "button",
 			className: "min-h-12 rounded-lg bg-accent px-6 font-semibold text-accent-fg",
 			...bindTap(() => setView("hub")),
-			children: "Back to office"
+			children: "Back to the gym"
 		})]
 	}) });
 	const ev = state.pendingStory;
@@ -38990,9 +40372,13 @@ function SettingsView() {
 				}),
 				/* @__PURE__ */ jsx("p", {
 					className: "mt-1 text-sm text-muted",
-					children: "Difficulty, NIL, decommits, team color, sound, type size. God Mode if you want it."
+					children: "Display, accessibility, the league, and your save."
 				})
 			] }),
+			/* @__PURE__ */ jsx("p", {
+				className: "text-xs tracking-[0.18em] text-muted uppercase",
+				children: "League"
+			}),
 			/* @__PURE__ */ jsx(DevAudit, {}),
 			/* @__PURE__ */ jsxs("div", {
 				className: "rounded-xl border border-border bg-elevated p-4",
@@ -39027,6 +40413,10 @@ function SettingsView() {
 				hint: "Pledges can walk. Visits can steal them back.",
 				onToggle: (v) => patchLeague({ flipsOn: v })
 			}),
+			/* @__PURE__ */ jsx("p", {
+				className: "text-xs tracking-[0.18em] text-muted uppercase",
+				children: "Display"
+			}),
 			/* @__PURE__ */ jsx(Toggle, {
 				on: s.teamColor,
 				title: "Team color",
@@ -39038,6 +40428,10 @@ function SettingsView() {
 				title: "Gym sound",
 				hint: "Crowd, net, buzzer. First tap on the page unlocks it.",
 				onToggle: (v) => patchLeague({ soundOn: v })
+			}),
+			/* @__PURE__ */ jsx("p", {
+				className: "text-xs tracking-[0.18em] text-muted uppercase",
+				children: "Accessibility"
 			}),
 			/* @__PURE__ */ jsx(Toggle, {
 				on: Boolean(s.reducedMotion),
@@ -39072,17 +40466,31 @@ function SettingsView() {
 				hint: "You win the next game you sim. One time.",
 				onToggle: (v) => patchLeague({ forceWin: v })
 			}),
-			s.godMode && /* @__PURE__ */ jsxs(Fragment$1, { children: [/* @__PURE__ */ jsx("button", {
-				type: "button",
-				className: "min-h-12 rounded-lg bg-elevated px-3 text-sm font-semibold",
-				...bindTap(forceEndgame),
-				children: "Force endgame: up 3, 0:08, opponent ball"
-			}), /* @__PURE__ */ jsx("button", {
-				type: "button",
-				className: "min-h-12 rounded-lg bg-elevated px-3 text-sm font-semibold",
-				...bindTap(forceTwoFor),
-				children: "Force 2-for-1: your ball, 0:36, ahead"
-			})] }),
+			s.godMode && /* @__PURE__ */ jsxs("div", {
+				className: "sandbox-warn rounded-xl border border-loss/50 bg-elevated p-4",
+				children: [
+					/* @__PURE__ */ jsx("p", {
+						className: "text-xs tracking-[0.18em] text-loss uppercase",
+						children: "Dev / sandbox"
+					}),
+					/* @__PURE__ */ jsx("p", {
+						className: "mt-1 text-sm",
+						children: "These jumps do not write a Career win, an archive, or a box. Leave the game and the record stays put."
+					}),
+					/* @__PURE__ */ jsx("button", {
+						type: "button",
+						className: "mt-3 min-h-12 w-full rounded-lg bg-bg px-3 text-sm font-semibold",
+						...bindTap(forceEndgame),
+						children: "Force endgame: up 3, 0:08, opponent ball"
+					}),
+					/* @__PURE__ */ jsx("button", {
+						type: "button",
+						className: "mt-2 min-h-12 w-full rounded-lg bg-bg px-3 text-sm font-semibold",
+						...bindTap(forceTwoFor),
+						children: "Force 2-for-1: your ball, 0:36, ahead"
+					})
+				]
+			}),
 			s.godMode && /* @__PURE__ */ jsxs("div", {
 				className: "rounded-xl border border-border bg-elevated p-4",
 				children: [
@@ -39144,6 +40552,10 @@ function SettingsView() {
 					})
 				]
 			}),
+			/* @__PURE__ */ jsx("p", {
+				className: "text-xs tracking-[0.18em] text-muted uppercase",
+				children: "Data"
+			}),
 			/* @__PURE__ */ jsx(Commissioner, {
 				state,
 				patchLeague,
@@ -39189,19 +40601,21 @@ function SettingsView() {
 						className: "mt-1 text-sm text-muted",
 						children: [
 							"Championship build ",
-							30,
+							31,
 							". Install it from the browser menu. It resumes the last save on this device, including offline."
 						]
 					}),
-					/* @__PURE__ */ jsx("a", {
-						href: "/ARCHITECTURE.md",
-						className: "mt-2 inline-flex min-h-11 items-center text-sm font-semibold text-accent",
-						children: "Architecture"
-					}),
-					/* @__PURE__ */ jsx("a", {
-						href: "/privacy.html",
-						className: "mt-1 inline-flex min-h-11 items-center text-sm font-semibold text-accent",
-						children: "Privacy"
+					/* @__PURE__ */ jsxs("div", {
+						className: "mt-3 flex flex-col gap-3",
+						children: [/* @__PURE__ */ jsx("a", {
+							href: "/ARCHITECTURE.md",
+							className: "flex min-h-11 items-center rounded-lg bg-bg px-3 text-sm font-semibold text-accent",
+							children: "Architecture"
+						}), /* @__PURE__ */ jsx("a", {
+							href: "/privacy.html",
+							className: "flex min-h-11 items-center rounded-lg bg-bg px-3 text-sm font-semibold text-accent",
+							children: "Privacy"
+						})]
 					})
 				]
 			})
@@ -39225,18 +40639,18 @@ function DevAudit() {
 	const [busy, setBusy] = useState(false);
 	if (!dev) return null;
 	return /* @__PURE__ */ jsxs("div", {
-		className: "rounded-xl border border-border bg-elevated p-4",
+		className: "sandbox-warn rounded-xl border border-loss/50 bg-elevated p-4",
 		"data-sim-test": "1",
 		children: [
 			/* @__PURE__ */ jsx("p", {
-				className: "text-xs tracking-[0.18em] text-muted uppercase",
-				children: "Sim test"
+				className: "text-xs tracking-[0.18em] text-loss uppercase",
+				children: "Dev / sandbox"
 			}),
 			/* @__PURE__ */ jsx("p", {
-				className: "mt-1 text-sm text-muted",
-				children: "100 games on the live engine and 100 on quick-sim. Averages, spread, and how often the game is close."
+				className: "mt-1 text-sm",
+				children: "Sim test and the endgame jumps do not change Career wins, Archives, or awards. They are not part of the season."
 			}),
-			/* @__PURE__ */ jsx("p", {
+			typeof window !== "undefined" && new URLSearchParams(window.location.search).get("dev") === "1" && /* @__PURE__ */ jsx("p", {
 				className: "mt-1 text-xs text-muted",
 				children: "Live buttons: liveControls.ts. Possessions: plays.ts onePoss. Quick-sim: sim.ts simContest."
 			}),
@@ -39248,7 +40662,7 @@ function DevAudit() {
 					setBusy(true);
 					setText("Simulating 100 games on each engine…");
 					setTimeout(async () => {
-						const { runAudit, auditGaps } = await import("./audit-BoAhRYx-.js");
+						const { runAudit, auditGaps } = await import("./audit-CKKYhGYX.js");
 						const out = runAudit(100);
 						const show = (label, block) => {
 							const row = (k) => {
@@ -39353,7 +40767,7 @@ function Commissioner({ state, patchLeague, exportLeague, importLeague }) {
 				}),
 				/* @__PURE__ */ jsx("p", {
 					className: "mt-2 text-xs text-muted",
-					children: "Open lets more kids walk and raises your odds. Tight does the opposite. NIL still follows the era switch above."
+					children: "Open: more players enter and your odds go up. Tight: fewer leave. NIL follows the era you picked."
 				})
 			]
 		}),
@@ -39366,7 +40780,7 @@ function Commissioner({ state, patchLeague, exportLeague, importLeague }) {
 				}),
 				/* @__PURE__ */ jsx("p", {
 					className: "mt-1 text-sm text-muted",
-					children: "A side table. It does not move the real conferences. Historical realignment still follows the era."
+					children: "A separate standings table. It does not change the real conferences. Realignment still follows the era."
 				}),
 				/* @__PURE__ */ jsx("input", {
 					className: "mt-3 h-12 w-full rounded-lg border border-border bg-bg px-3",
@@ -39441,7 +40855,7 @@ function Commissioner({ state, patchLeague, exportLeague, importLeague }) {
 				}),
 				/* @__PURE__ */ jsx("p", {
 					className: "mt-1 text-sm text-muted",
-					children: "God Mode edits ratings on a player page and can force a win or move a program. Roster CSV lives on the tape. This is the full save."
+					children: "God Mode edits ratings on a player page and can force a win or move a program. Roster CSV is on the stats page. This is the full save."
 				}),
 				/* @__PURE__ */ jsxs("div", {
 					className: "mt-3 flex flex-wrap gap-2",
@@ -40086,7 +41500,7 @@ function ProgramView() {
 				children: "Program"
 			}), /* @__PURE__ */ jsx("p", {
 				className: "mt-1 text-sm text-muted",
-				children: "Staff, the buildings, practice, the starting five. This is the job behind the job."
+				children: "Staff, facilities, practice, and your starting five."
 			})] }),
 			/* @__PURE__ */ jsxs("div", {
 				className: "rounded-xl border border-border bg-elevated p-4",
@@ -40382,6 +41796,7 @@ function TeamView() {
 	const gym = gymOf(state, id);
 	const recent = useMemo(() => state.results.filter((r) => r.homeId === id || r.awayId === id).slice(-5).reverse(), [state.results, id]);
 	const left = state.schedule.filter((g) => !g.resultId && !g.declined && (g.homeId === id || g.awayId === id)).sort((a, b) => a.week - b.week).slice(0, 6);
+	const netLive = netReleased(state);
 	if (!school || !t) return /* @__PURE__ */ jsxs("div", {
 		className: "flex flex-col gap-3",
 		children: [/* @__PURE__ */ jsx("h1", {
@@ -40432,7 +41847,7 @@ function TeamView() {
 				children: [
 					/* @__PURE__ */ jsx(Stat$1, {
 						k: "NET",
-						v: net ? String(net.rank) : "—"
+						v: net && netLive ? String(net.rank) : "—"
 					}),
 					/* @__PURE__ */ jsx(Stat$1, {
 						k: "KenPom",
@@ -40443,6 +41858,10 @@ function TeamView() {
 						v: ap && ap.rank <= 25 ? String(ap.rank) : "—"
 					})
 				]
+			}),
+			!netLive && /* @__PURE__ */ jsx("p", {
+				className: "text-xs text-muted",
+				children: netHoldLine(state.season)
 			}),
 			/* @__PURE__ */ jsx("button", {
 				type: "button",
@@ -40570,14 +41989,13 @@ function TeamView() {
 				children: left.map((g) => {
 					const opp = g.homeId === id ? g.awayId : g.homeId;
 					const sch = TEAM_BY_ID[opp];
-					const q = gameQuad(state, g, id);
+					const q = netLive ? gameQuad(state, g, id) : null;
 					return /* @__PURE__ */ jsx("li", { children: /* @__PURE__ */ jsxs("button", {
 						type: "button",
 						className: "min-h-11 text-left font-semibold",
 						...bindTap(() => openTeam(opp)),
 						children: [
-							"Wk ",
-							g.week,
+							weekDateLabel(state.season, g.week),
 							" ",
 							g.homeId === id ? "vs" : "@",
 							" ",
@@ -40631,7 +42049,7 @@ function PlayerView() {
 	const g = p.stats?.g ?? 0;
 	const cg = p.career?.g ?? 0;
 	const awards = playerAwardsOf(p, state);
-	const usage = p.usage ?? Math.round(p.mpg * 2.15);
+	const usage = p.usage != null && p.usage > 0 ? String(p.usage) : "—";
 	return /* @__PURE__ */ jsxs("div", {
 		className: "flex flex-col gap-4",
 		children: [
@@ -40960,8 +42378,8 @@ function GameAppInner() {
 	if (view === "title" || view === "create" || view === "select" || view === "eras" || !state) return /* @__PURE__ */ jsx(TitleFlow, {});
 	if (view === "tutorial") return /* @__PURE__ */ jsx(Tutorial, {});
 	if (view === "selection") return /* @__PURE__ */ jsxs(Fragment$1, { children: [/* @__PURE__ */ jsx(SelectionShow, {}), /* @__PURE__ */ jsx(FeedbackToast, {})] });
+	if (view === "carousel") return /* @__PURE__ */ jsxs(Fragment$1, { children: [/* @__PURE__ */ jsx(CarouselView, {}), /* @__PURE__ */ jsx(FeedbackToast, {})] });
 	if (view === "game") return /* @__PURE__ */ jsxs(Fragment$1, { children: [/* @__PURE__ */ jsx(GameView, {}), /* @__PURE__ */ jsx(FeedbackToast, {})] });
-	if (view === "presser") return /* @__PURE__ */ jsx(PresserView, {});
 	if (view === "story") return /* @__PURE__ */ jsxs(Fragment$1, { children: [/* @__PURE__ */ jsx(StoryView, {}), /* @__PURE__ */ jsx(FeedbackToast, {})] });
 	return /* @__PURE__ */ jsxs(Shell, { children: [
 		view === "hub" && /* @__PURE__ */ jsx(Hub, {}),

@@ -17,4 +17,26 @@ html = html.replaceAll('src="/./assets/', 'src="./assets/');
 writeFileSync(index, html);
 const privacySrc = join(process.cwd(), "public/privacy.html");
 if (existsSync(privacySrc)) copyFileSync(privacySrc, join(client, "privacy.html"));
+writeFileSync(
+  join(client, ".htaccess"),
+  `DirectoryIndex index.html
+Options -MultiViews
+AddType application/javascript .js
+AddType text/css .css
+AddType image/svg+xml .svg
+<IfModule mod_mime.c>
+  AddType font/woff2 .woff2
+  AddType font/woff .woff
+</IfModule>
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  # Serve this folder. Do not forward the domain to grok.me.
+  RewriteRule ^index\\.html$ - [L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /index.html [L]
+</IfModule>
+`,
+);
 console.log("native www index.html ready");

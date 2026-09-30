@@ -1,133 +1,103 @@
-Copy-paste this into Grok for Dribble (Championship build 30 / https://theprogramncaa2.grok.me). UI/presentation only — do not retune sim math, recruiting odds, or endgame logic.
+From now on, handle all changes using the following process:
 
----
+1. Treat GitHub as the authoritative source of truth. The chat, preview, deployment, and your memory are not substitutes for source control.
 
-**DRIBBLE — DRASTIC UI / PRESENTATION OVERHAUL (LOCKED)**
+2. Before changing anything:
 
-You are editing the live Dribble college basketball dynasty sim. **Do not change gameplay systems** (possession engine, shot/foul math, endgame AI, recruiting algorithms, schedule generation, salary/NIL rules). This pass is **UI honesty, layout, hierarchy, and trust**. Ship one coherent visual/presentation upgrade.
+   - Confirm the current branch and commit hash.
+   - Check for uncommitted changes.
+   - Never overwrite, discard, or mix existing changes into new work.
+   - Ensure the current working version has been committed and pushed.
+   - For anything beyond a trivial text correction, create a clearly named branch.
+   - Never work directly against the deployed production version.
 
-### Non-negotiables
-1. **Never lie in chrome.** Titles, win%, awards, retired numbers, W–L, streaks, and archive labels must match real game state.
-2. **No silent state pollution.** Settings / test / tutorial games must never write into Career Archives, records, or awards.
-3. **Preserve all working coaching tools** (2-for-1, Foul up 3, Don’t foul, Hold for last, Mix the Plan, timeouts, substitutions). Improve how they’re shown; don’t remove them.
-4. **Mobile + desktop.** Primary layouts must work at phone width; no clipped endgame buttons, no overlapping links.
-5. **One visual language.** Dark sports-broadcast feel (scorebug, clear hierarchy, high contrast). Kill leftover gray-on-gray and colliding controls.
+3. Inspect before editing. Explain:
 
----
+   - The current behavior
+   - The likely cause of the problem
+   - The exact files and functions involved
+   - The intended correction
+   - Possible effects on other systems
+   - Possible effects on existing saved games
+   - How the change will be tested
 
-### Workstream A — Stop the UI from lying (P0)
+4. Make the smallest change that completely solves the requested problem.
 
-**A1. Championship / round labels**
-- Only show **NATIONAL CHAMPIONS / Cut the nets** after winning the **national title game**.
-- Conference tournament: “Conference Champions” only after winning the **conference final**. A semi win = “advanced to final,” never champs.
-- Bracket / postgame headers must key off **round id + result**, not “any win in March.”
+   - Do not refactor unrelated code.
+   - Do not rename unrelated functions or fields.
+   - Do not replace entire files when a focused edit will work.
+   - Do not change balance, styling, dependencies, configuration, or unrelated behavior unless explicitly requested.
+   - Do not quietly fix additional issues. Report them separately.
+   - Preserve existing working features.
 
-**A2. Live win%**
-- Win probability must move with score, time, possession, and foul context.
-- Ban absurd readings (e.g. ~30% while down 30+ late). Clamp + recalibrate display so it never contradicts the scoreboard.
+5. Protect saved games and player data.
 
-**A3. Awards**
-- National / conference POY and major awards must use season stats + role (PPG, impact, games), not random or near-zero scorers.
-- If data is incomplete mid-season, show **projections / “watch list”** — never fake winners.
+   - Do not remove, rename, or change the meaning of persisted fields without explicitly identifying the change.
+   - If the save format must change, create a backward-compatible migration.
+   - Test loading a save created before the change.
+   - Never assume reverting source code will reverse changes already made to saved data.
 
-**A4. Retired numbers**
-- Do **not** retire every senior by default.
-- Retire only on explicit criteria (All-American / conference POY / program legend threshold) or a coach confirm. Show why.
+6. Keep each change isolated.
 
-**A5. Record book & Archives**
-- W–L, home/away/neutral, streaks must match played games.
-- Neutral-site games labeled correctly.
-- Settings “endgame test” / Sim test games: **sandbox only** — zero writes to Career record, Archives, or box history.
+   - One branch should address one clearly defined problem or feature.
+   - Do not bundle unrelated improvements together.
+   - Keep commits small and logically complete.
+   - Do not include generated files, temporary files, credentials, local configuration, or unrelated edits.
 
----
+7. Validate the change before calling it complete.
 
-### Workstream B — Live game presentation (P0/P1)
+   - Run the relevant focused tests.
+   - Run the complete test suite, including all tests under `src/game`.
+   - Run typechecking.
+   - Run a production build.
+   - Directly test the affected behavior.
+   - For simulation behavior, use fixed seeds and repeatable tests where possible.
+   - Test both a new game and an existing save when applicable.
+   - Report exactly which checks ran, which passed, which failed, and which could not be run.
+   - Never say something is fixed if the required validation was skipped.
 
-**B1. Scorebug & phase chrome**
-- Clear score, clock, period, foul bonus, possession arrow.
-- Kill stuck banners (e.g. “HALFTIME — MIX THE PLAN” after half is over). Phase label must match engine phase.
+8. Before committing or deploying, show me:
 
-**B2. Endgame controls**
-- 2-for-1 / Foul up 3 / Don’t foul / Hold for last always visible and tappable on mobile (no clip under safe area).
-- Active tactic shown as a **chip on the scorebug**, not only buried in a menu.
+   - Every changed file
+   - A concise explanation of each change
+   - Any save-format or migration changes
+   - Any dependency or configuration changes
+   - Any game-balance changes
+   - Any remaining risks or unverified behavior
+   - The final diff for review
 
-**B3. Play-by-play**
-- No duplicate lines; no self-assists; foul voice matches actual foul type.
-- Optional compact PBP density toggle (Full / Tight).
+9. Do not weaken tests to make a change pass. Do not delete failing tests unless the behavior they test has been explicitly and intentionally removed.
 
-**B4. Bench / fatigue / usage**
-- Stop showing every player as “fresh” with identical usage if the engine has real fatigue/usage — surface real values.
-- If engine lacks them, hide fake meters rather than show decoys.
+10. Wait for approval before deployment. Approval of the requested change does not automatically authorize unrelated changes or deployment.
 
-**B5. Box score postgame**
-- Team totals must equal sum of player lines (already fixed — keep asserting).
-- One-tap “copy box” / share-friendly layout.
+11. After approval:
 
----
+   - Commit only the reviewed changes.
+   - Use a descriptive commit message.
+   - Push the branch to GitHub.
+   - Merge through the normal reviewed process.
+   - Deploy only the exact reviewed commit.
+   - Record and report the deployed commit hash.
+   - Create a release tag for stable versions.
 
-### Workstream C — Hub & navigation polish (P1)
+12. After deployment, perform a smoke test that verifies:
 
-**C1. Information hierarchy**
-- Home / Office: next game, record, urgency tasks first; deep tools secondary.
-- Consistent section headers, card spacing, and primary CTA per screen.
+   - The application loads
+   - Existing saves load
+   - A new game can be started
+   - Navigation works
+   - The changed feature works
+   - A normal game can be played or simulated
+   - The deployed version matches the approved commit
 
-**C2. Typography & contrast**
-- WCAG-ish contrast on dark theme; no muted gray body on near-black.
-- Distinct styles for score / name / meta / helper text.
+13. If deployment verification fails:
 
-**C3. Links & collisions**
-- Architecture / Privacy / legal footer links must not overlap or steal taps from main CTAs.
-- Fix any “if tournament started today” bracket copy that implies a live bracket when it’s a projection — label **Projection**.
+   - Stop making additional production changes.
+   - Report the failure clearly.
+   - Roll back to the last verified working commit or release.
+   - Confirm that rollback succeeded.
+   - Diagnose the failure on a separate branch before attempting another deployment.
 
-**C4. Empty / loading / error states**
-- Archives empty → clear “No games yet” not broken tables.
-- Failed loads → retry, not silent blank.
+14. Never rely on this conversation to remember the previous working state, implementation decisions, deployment history, or rollback procedure. Preserve those in Git history and project documentation.
 
-**C5. Settings**
-- Group: Display / Accessibility / Sim tests / Data.
-- Sim tests clearly marked **DEV / SANDBOX** with big warning they don’t affect Career.
-
----
-
-### Workstream D — Recruiting & progress UX (P1)
-
-**D1. Board clarity**
-- Interest, visits, scholarship slots, and week timing readable at a glance.
-- Soften “elite signed week 1” *presentation* if that’s still happening: show scarcity signals (competition, need fit) even if odds code is untouched this pass. (Odds changes = separate prompt.)
-
-**D2. Season calendar**
-- Current week highlighted; past games archive-linked; upcoming scouting one tap away.
-
-**D3. Feedback**
-- Toasts that matter (commit, injury, bid) and dismiss cleanly; no sticky contradiction toasts.
-
----
-
-### Visual target (implement, don’t just describe)
-- Dark broadcast UI: deep navy/charcoal, one accent (court wood / championship gold sparingly).
-- Scorebug-inspired live view; card-based hub.
-- Touch targets ≥ 44px; thumb-zone endgame row.
-- Reduce clutter: one primary action per panel; secondary behind overflow.
-
----
-
-### Acceptance tests (must pass before you call it done)
-1. Win R1 of NCAA tourney → **not** National Champions.
-2. Lose conference final after winning semi → **not** Conference Champions.
-3. Down 25+ with under 2:00 → win% clearly favors opponent.
-4. Settings endgame test ×3 → Career W–L and Archives unchanged.
-5. Phone-width live game: all endgame buttons usable; no stuck HALFTIME banner after half.
-6. Awards screen: no sub-5 PPG national POY with full season played.
-7. Seniors: not mass-retired; retirement has a reason or confirm.
-8. Architecture/Privacy don’t overlap primary buttons.
-9. Box totals still reconcile; no monster lines.
-10. Visual pass: same type scale / spacing / accent across Home, Live, Box, Archives, Recruiting.
-
-### Deliverable
-Ship the updated single-page (or existing bundle) with What’s New note: **“Presentation overhaul — honest titles, win%, awards; live UI & hub polish; sandbox tests isolated.”** List exact files/functions touched for A1–A5 so a reviewer can verify.
-
-**Do this now. Prefer correct labels over pretty lies.**
-
----
-
-After it ships, send me the new link and I’ll retest toward a clean 9.0 on presentation as well as systems.
+Follow this process for every future change unless I explicitly override a specific step.

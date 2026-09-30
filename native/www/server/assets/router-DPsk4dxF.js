@@ -23,6 +23,11 @@ var NCAA_SHORT = "NCAA";
 var FIRST_FOUR = "First Four";
 var SELECTION_SUNDAY = "Selection Sunday";
 var CONFERENCE_TOURNEY = "Conference tournament";
+var DESK = "The News";
+function outletLabel(name) {
+	if (!name || name === "Campus Wire" || name === "The wire" || name === "the wire") return DESK;
+	return name;
+}
 function gameKindLabel(kind) {
 	switch (kind) {
 		case "conference": return "Conference";
@@ -59,6 +64,83 @@ function phaseLabel(phase, week) {
 		case "offseason": return "Offseason";
 		default: return phase;
 	}
+}
+/** Round copy for a finished NCAA game. A title banner only after the championship game. */
+function ncaaOutcome(slotId, youWin) {
+	if (slotId.startsWith("ncaa-title-")) return youWin ? {
+		banner: "national",
+		label: "National champions"
+	} : {
+		banner: null,
+		label: "National runner-up"
+	};
+	if (!youWin) return {
+		banner: null,
+		label: "Loss"
+	};
+	if (slotId.startsWith("ncaa-ff-")) return {
+		banner: null,
+		label: "Advance to the first round"
+	};
+	if (slotId.startsWith("ncaa-64-")) return {
+		banner: null,
+		label: "Advance to the Round of 32"
+	};
+	if (slotId.startsWith("ncaa-32-")) return {
+		banner: null,
+		label: "Advance to the Sweet 16"
+	};
+	if (slotId.startsWith("ncaa-16-")) return {
+		banner: null,
+		label: "Advance to the Elite Eight"
+	};
+	if (slotId.startsWith("ncaa-8-")) return {
+		banner: null,
+		label: "Advance to the Final Four"
+	};
+	if (slotId.startsWith("ncaa-f4-")) return {
+		banner: null,
+		label: "Advance to the national championship game"
+	};
+	return {
+		banner: null,
+		label: "Advance"
+	};
+}
+/**
+* Conference tournament copy from how many teams were still alive before this game.
+* Two alive means this game was the final. A semi is not a title.
+*/
+function confOutcome(beforeAlive, youWin) {
+	if (beforeAlive <= 2) return youWin ? {
+		banner: "conference",
+		label: "Conference champions"
+	} : {
+		banner: null,
+		label: "Conference finalist"
+	};
+	if (!youWin) return {
+		banner: null,
+		label: "Loss"
+	};
+	if (beforeAlive <= 4) return {
+		banner: null,
+		label: "Advance to the conference final"
+	};
+	if (beforeAlive <= 8) return {
+		banner: null,
+		label: "Advance to the semifinals"
+	};
+	return {
+		banner: null,
+		label: "Advance"
+	};
+}
+/** Home / Away / Neutral. Tournament and MTE games are neutral even if a team is listed first. */
+function siteWord(slot, you) {
+	if (!slot) return "Neutral";
+	if (slot.site === "neutral" || slot.kind === "mte" || slot.kind === "ncaa" || slot.kind === "nit" || slot.kind === "crown" || slot.kind === "conf-tourney") return "Neutral";
+	return slot.homeId === you ? "Home" : "Away";
 }
 function ncaaRoundLabel(slotId) {
 	if (slotId.startsWith("ncaa-ff-")) return FIRST_FOUR;
@@ -352,7 +434,7 @@ function PreviewHostBridge() {
 }
 //#endregion
 //#region src/styles.css?url
-var styles_default = "./assets/styles-CmhDdkdU.css";
+var styles_default = "./assets/styles-DL0tLjLc.css";
 //#endregion
 //#region src/game/menu-boot.ts
 var TITLE_BOOT_CLASS = "title-booting";
@@ -444,7 +526,7 @@ var Route$1 = createRootRoute({
 			{ title: APP_NAME },
 			{
 				name: "theme-color",
-				content: "#0b0b0c"
+				content: "#160c28"
 			},
 			{
 				name: "mobile-web-app-capable",
@@ -461,9 +543,25 @@ var Route$1 = createRootRoute({
 			{
 				name: "description",
 				content: "College basketball dynasty sim. 365 teams, recruiting, schedules, the NCAA Tournament, NIT, and CBI."
+			},
+			{
+				property: "og:url",
+				content: "https://playdribble.app/"
+			},
+			{
+				property: "og:title",
+				content: APP_NAME
+			},
+			{
+				property: "og:image",
+				content: "https://playdribble.app/og.jpg"
 			}
 		],
 		links: [
+			{
+				rel: "canonical",
+				href: "https://playdribble.app/"
+			},
 			{
 				rel: "icon",
 				type: "image/svg+xml",
@@ -496,7 +594,7 @@ var Route$1 = createRootRoute({
 });
 //#endregion
 //#region src/routes/index.tsx
-var $$splitComponentImporter = () => import("./routes-D3dkP7Er.js").then((n) => n.t);
+var $$splitComponentImporter = () => import("./routes-C3LqTYO7.js").then((n) => n.t);
 var GO = /* @__PURE__ */ new Set([
 	"career",
 	"dynasty",
@@ -530,4 +628,4 @@ function getRouter() {
 	});
 }
 //#endregion
-export { onMenuArmed as a, FIRST_FOUR as c, SELECTION_SUNDAY as d, gameKindLabel as f, __exportAll as g, getRouter, phaseLabel as h, isMenuArmed as i, NCAA as l, ncaaRoundLabel as m, Route as n, peekQueuedGo as o, gameKindShort as p, armMenu as r, queueMenuGo as s, router_exports as t, NCAA_SHORT as u };
+export { ncaaRoundLabel as _, onMenuArmed as a, siteWord as b, DESK as c, NCAA_SHORT as d, SELECTION_SUNDAY as f, ncaaOutcome as g, getRouter, gameKindShort as h, isMenuArmed as i, FIRST_FOUR as l, gameKindLabel as m, Route as n, peekQueuedGo as o, confOutcome as p, armMenu as r, queueMenuGo as s, router_exports as t, NCAA as u, outletLabel as v, __exportAll as x, phaseLabel as y };

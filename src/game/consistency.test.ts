@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { lockSchedule, newDynasty, signGate, recruitStage } from "./engine.ts";
 import { hydrateState, setPlayerMpg } from "./develop.ts";
-import { activeFive, intentionalFoulText } from "./plays.ts";
+import { activeFive, intentionalFoulText, isFoulTrouble } from "./plays.ts";
 import type { Player, Recruit } from "./types.ts";
 
 test("a blank alma mater stays blank", () => {
@@ -25,10 +25,10 @@ test("minutes and usage are separate controls", () => {
   assert.equal(after.usage, p.usage);
 });
 
-test("sign eligibility uses the interest floor, not the displayed chance", () => {
-  assert.equal(signGate(40, 70, true), "He's at 40. You need 70 interest on this difficulty.");
-  assert.equal(signGate(70, 70, true), null);
-  assert.match(signGate(80, 70, false) ?? "", /scholarship/);
+test("asking to commit uses the shown chance, not a hidden interest floor", () => {
+  assert.equal(signGate(false, false), "Put a scholarship on the table first.");
+  assert.equal(signGate(true, true), "Already asked this week.");
+  assert.equal(signGate(true, false), null);
 });
 
 test("a commit is verbal or signed, never both", () => {
@@ -46,6 +46,17 @@ test("the projection is not labeled as the contract", () => {
   const locked = lockSchedule(born);
   assert.match(locked.expectations?.note ?? "", /Projection, not the contract/);
   assert.doesNotMatch(locked.expectations?.note ?? "", /That's the job/);
+});
+
+test("foul trouble is not an ordinary foul", () => {
+  assert.equal(isFoulTrouble(1, 18 * 60, 1, true), false);
+  assert.equal(isFoulTrouble(1, 18 * 60, 2, true), true);
+  assert.equal(isFoulTrouble(1, 8 * 60, 2, true), false);
+  assert.equal(isFoulTrouble(1, 8 * 60, 3, false), true);
+  assert.equal(isFoulTrouble(2, 10 * 60, 3, true), false);
+  assert.equal(isFoulTrouble(2, 10 * 60, 4, false), true);
+  assert.equal(isFoulTrouble(3, 60, 4, false), true);
+  assert.equal(isFoulTrouble(2, 60, 5, true), false);
 });
 
 test("five fouls takes a player off the floor", () => {

@@ -99,7 +99,7 @@ export function leanMathLine(r: Recruit, state: GameState, heat: number): string
   if (p.visit) bits.push(`visit ${p.visit > 0 ? `+${p.visit}` : p.visit}`);
   if (p.rival) bits.push(`rival battle ${p.rivalName} −${p.rival}`);
   if (p.pressure) bits.push(`${r.pos} class pressure −${p.pressure}`);
-  return `${bits.join(". ")}. ${p.chance}% chance to sign.`;
+  return `${bits.join(". ")}. Asking this week is a ${p.chance}% roll.`;
 }
 
 export function pipelineMemoryLine(state: GameState): string {

@@ -242,23 +242,74 @@ export function campCopy(state: GameState): NewsArticle {
   });
 }
 
-export function lockCopy(state: GameState, filled: number): NewsArticle {
+function slateCounts(state: GameState) {
+  const id = state.playerTeamId;
+  const games = state.schedule.filter(
+    (g) => !g.declined && (g.kind === "conference" || g.kind === "noncon" || g.kind === "mte") && (g.homeId === id || g.awayId === id),
+  );
+  const league = games.filter((g) => g.kind === "conference").length;
+  return { total: games.length, noncon: games.length - league, league };
+}
+
+function nGames(n: number, label: string) {
+  return `${n} ${label} game${n === 1 ? "" : "s"}`;
+}
+
+export function scheduleStory(state: GameState) {
+  const name = school(state.playerTeamId)?.name ?? "The program";
+  const { total, noncon, league } = slateCounts(state);
+  if (total <= 0) {
+    return {
+      dek: "The schedule is set.",
+      grafs: [`${name} locked the ${state.season} schedule.`, "The opener is next."],
+      text: `${name} set the schedule.`,
+    };
+  }
+  return {
+    dek: `${total} games: ${nGames(noncon, "non-conference")} and ${nGames(league, "conference")}.`,
+    grafs: [
+      `${name} locked the ${state.season} schedule at ${total} games — ${nGames(noncon, "non-conference")} and ${nGames(league, "conference")}. Conference play is in January and February.`,
+      "The opener is next.",
+    ],
+    text: `${name} set the ${total}-game schedule.`,
+  };
+}
+
+export function lockCopy(state: GameState): NewsArticle {
   const t = school(state.playerTeamId);
+  const story = scheduleStory(state);
   return asArticle({
     week: 1,
     season: state.season,
     tone: "even",
     kicker: "Schedule",
     headline: `${t?.name ?? "The program"} sets ${state.season} schedule`,
-    dek: filled > 0 ? `${filled} non-conference game${filled === 1 ? "" : "s"} filled in to make 30.` : "The schedule is set.",
+    dek: story.dek,
     byline: "staff",
     outlet: DESK,
-    grafs: [
-      `${t?.name ?? "The program"} locked the ${state.season} schedule.${filled > 0 ? ` Staff added ${filled} game${filled === 1 ? "" : "s"} to get to 30.` : ""} Conference games are in January and February.`,
-      `First game is next.`,
-    ],
-    text: `${t?.name ?? "The program"} set the schedule.`,
+    grafs: story.grafs,
+    text: story.text,
   });
+}
+
+/** Old lock notes counted the whole national board. Rewrite those on screen. */
+export function presentNews(article: NewsArticle, state: GameState): NewsArticle {
+  const blob = `${article.dek ?? ""} ${(article.grafs ?? []).join(" ")}`;
+  if (!/filled in to make \d+|added \d+ games? to get to/.test(blob)) return article;
+  const year = article.headline.match(/\b(20\d{2})\b/)?.[1];
+  if (year && Number(year) !== state.season) {
+    const name = school(state.playerTeamId)?.name ?? "The program";
+    return {
+      ...article,
+      dek: "The 30-game slate was locked.",
+      grafs: [
+        `${name} locked the ${year} schedule at 30 games. Conference play was in January and February.`,
+        "The opener followed.",
+      ],
+      text: `${name} set the schedule.`,
+    };
+  }
+  return { ...article, ...scheduleStory(state) };
 }
 
 export function hydrateNews(raw: GameState["news"] | { week: number; text: string; tone: Tone }[] | undefined): NewsArticle[] {

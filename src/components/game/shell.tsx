@@ -127,8 +127,8 @@ export function Shell({ children }: { children: React.ReactNode }) {
               </span>
             )}
           </button>
-          <button type="button" className="min-h-11 shrink-0 px-2 text-xs whitespace-nowrap text-muted" aria-label="Main menu" {...bindTap(leaveToTitle)}>
-            Main menu
+          <button type="button" className="chrome-menu min-h-11 shrink-0 px-2 text-xs whitespace-nowrap text-muted" aria-label="Main menu" {...bindTap(leaveToTitle)}>
+            Menu
           </button>
         </div>
       </header>

@@ -69,8 +69,9 @@ export function GameView() {
         footer={
           <div className="border-t border-border px-4 py-3" style={{ paddingBottom: "calc(0.75rem + var(--dock-pad))" }}>
             <button type="button" data-tip-off="1" className="min-h-12 w-full rounded-lg bg-accent font-semibold text-accent-fg" {...bindTap(lockPlan)}>
-              Tip off
+              Start game
             </button>
+            <p className="mt-2 text-center text-xs text-muted">Then tap a play for each possession.</p>
             <button type="button" className="mt-2 min-h-11 w-full text-sm text-muted" {...bindTap(simRest)}>
               Sim rest of game
             </button>
@@ -97,18 +98,23 @@ export function GameView() {
           </div>
         ) : (
           <div className="live-dock border-t border-border px-4 py-3" style={{ paddingBottom: "calc(0.75rem + var(--dock-pad))" }}>
-            <LiveTools live={live} />
-            <EndgameBar state={state} />
             {live.foulAlert && (
-              <p className="mt-2 flex items-center justify-between gap-2 text-sm">
-                <span>{live.foulAlert.name} has {live.foulAlert.fouls} fouls.</span>
+              <p className="mb-2 flex items-center justify-between gap-2 text-sm">
+                <span>Foul trouble. {live.foulAlert.name} has {live.foulAlert.fouls} fouls.</span>
                 <button type="button" className="min-h-11 shrink-0 rounded-lg bg-elevated px-3 text-sm font-semibold" {...bindTap(sitTrouble)}>
-                  Sit him
+                  Substitute
                 </button>
               </p>
             )}
-            <p className="mt-2 text-[11px] tracking-[0.16em] text-subtle uppercase">
-              {ht ? "Halftime — mix the plan" : youOff ? "Your ball — pick a call" : "Their ball — pick a defense"}
+            <p className="text-[11px] tracking-[0.16em] text-subtle uppercase">
+              {ht ? "Halftime" : youOff ? "Your ball" : "Their ball"}
+            </p>
+            <p className="text-sm">
+              {ht
+                ? "Change the plan if you want, then tap a play to start the half."
+                : youOff
+                  ? "Tap one play. That runs the next line of the play-by-play."
+                  : "Tap a defense. Their trip shows up in the play-by-play."}
             </p>
             <div className="mt-2 grid grid-cols-2 gap-2">
               {calls.map((c) => (
@@ -116,26 +122,33 @@ export function GameView() {
                   key={String(c.id)}
                   type="button"
                   {...bindTap(() => runCall(c.side, c.id))}
-                  className="min-h-14 rounded-xl border border-border bg-elevated px-3 py-3 text-left text-sm font-semibold"
+                  className="min-h-14 rounded-xl border border-border bg-accent px-3 py-3 text-left text-sm font-semibold text-accent-fg"
                 >
                   {c.label}
                 </button>
               ))}
             </div>
-            <div className="mt-2 grid grid-cols-2 gap-2">
-              <button type="button" className="min-h-11 rounded-lg bg-elevated text-sm font-semibold" {...bindTap(takeTimeout)}>
-                Timeout · {youHome ? live.timeoutsHome ?? 4 : live.timeoutsAway ?? 4}
-              </button>
-              <button type="button" className={`min-h-11 rounded-lg text-sm font-semibold ${bench ? "bg-accent text-accent-fg" : "bg-elevated"}`} {...bindTap(() => setBench((v) => !v))}>
-                Bench
-              </button>
-              <button type="button" className="min-h-11 text-sm text-muted" {...bindTap(simRest)}>
-                Sim rest
-              </button>
-              <button type="button" className="min-h-11 text-sm text-muted" {...bindTap(simToEnd)}>
-                Sim to end
-              </button>
-            </div>
+            <EndgameBar state={state} />
+            <details className="live-more mt-2">
+              <summary>Timeouts, sim, pace</summary>
+              <div className="mt-2 grid grid-cols-2 gap-2">
+                <button type="button" className="min-h-11 rounded-lg bg-elevated text-sm font-semibold" {...bindTap(takeTimeout)}>
+                  Timeout · {youHome ? live.timeoutsHome ?? 4 : live.timeoutsAway ?? 4}
+                </button>
+                <button type="button" className={`min-h-11 rounded-lg text-sm font-semibold ${bench ? "bg-accent text-accent-fg" : "bg-elevated"}`} {...bindTap(() => setBench((v) => !v))}>
+                  Bench
+                </button>
+                <button type="button" className="min-h-11 text-sm text-muted" {...bindTap(simRest)}>
+                  Sim rest
+                </button>
+                <button type="button" className="min-h-11 text-sm text-muted" {...bindTap(simToEnd)}>
+                  Sim to end
+                </button>
+              </div>
+              <div className="mt-2">
+                <LiveTools live={live} />
+              </div>
+            </details>
           </div>
         )
       }
@@ -171,6 +184,9 @@ export function GameView() {
                 {tightLog ? "Full" : "Tight"}
               </button>
             </div>
+            {!live.done && (
+              <p className="text-sm text-muted">This feed moves when you tap a play at the bottom.</p>
+            )}
             <p className="text-sm leading-relaxed">
               <span className="text-xs text-muted" aria-hidden="true">{last.t} · </span>
               {cleanPlay(last.text)}
@@ -201,7 +217,7 @@ export function GameView() {
 }
 
 function Pregame({ state, live }: { state: GameState; live: LiveGame }) {
-  const { setPlan } = useGame();
+  const { setPlan, lockPlan } = useGame();
   const home = teamOf(live.homeId);
   const away = teamOf(live.awayId);
   const ht = state.teams[live.homeId];
@@ -230,13 +246,24 @@ function Pregame({ state, live }: { state: GameState; live: LiveGame }) {
         <p className="text-xs tracking-[0.18em] text-muted uppercase">
           {slot?.kind === "ncaa"
             ? [NCAA_SHORT, bids.find((b) => b.teamId === live.homeId)?.region, ncaaRoundLabel(slot.id)].filter(Boolean).join(" · ")
-            : "Gameplan · mix and match"}
+            : "Before tip"}
         </p>
         <h1 className="font-display mt-1 text-3xl">
           {slot?.kind === "ncaa" || siteWord(slot, state.playerTeamId) === "Neutral"
             ? `${seedMark(bids, away.id)}${away.abbr} vs ${seedMark(bids, home.id)}${home.abbr}`
             : `${away.abbr} at ${home.abbr}`}
         </h1>
+        <div className="mt-4 rounded-xl border border-border bg-elevated p-3">
+          <p className="text-xs tracking-[0.16em] text-muted uppercase">How to play</p>
+          <ol className="mt-2 list-decimal space-y-1 pl-4 text-sm">
+            <li>Leave the plan below, or change it.</li>
+            <li>Tap Start game.</li>
+            <li>Every possession, tap a play. The play-by-play runs that trip.</li>
+          </ol>
+          <button type="button" className="mt-3 min-h-12 w-full rounded-lg bg-accent font-semibold text-accent-fg" {...bindTap(lockPlan)}>
+            Start game
+          </button>
+        </div>
         <p className="mt-1 text-sm text-muted">
           {siteWord(slot, state.playerTeamId)} · {ht ? `${ht.wins}-${ht.losses}` : "—"} · {at ? `${at.wins}-${at.losses}` : "—"}
           {line ? ` · ${spreadText(line.homeSpread, home.abbr, away.abbr)} · O/U ${line.total} · ${youHome ? mlLabel(line.mlHome) : mlLabel(line.mlAway)}` : ""}
@@ -281,7 +308,7 @@ function Pregame({ state, live }: { state: GameState; live: LiveGame }) {
           ))}
         </div>
         <p className="mt-4 text-xs text-muted">
-          {youHome ? "You have the home floor." : "Road gym. The plan still tips first."}
+          {youHome ? "Home floor. Start game when the plan looks right." : "Road gym. Start game when the plan looks right."}
         </p>
         <PregameScout />
       </div>
@@ -676,6 +703,14 @@ function EndgameBar({ state }: { state: GameState }) {
   );
 }
 
+function liveLegs(season: number, minutes: number, half: number): "fresh" | "winded" | "tired" {
+  const fromMinutes = minutes >= 28 ? 70 : half >= 2 && minutes >= 16 ? 50 : minutes >= 24 ? 45 : 0;
+  const fat = Math.max(season, fromMinutes);
+  if (fat > 60) return "tired";
+  if (fat > 35) return "winded";
+  return "fresh";
+}
+
 function FloorStrip({ state, live }: { state: GameState; live: LiveGame }) {
   const { subPlayer } = useGame();
   const you = state.playerTeamId;
@@ -697,7 +732,6 @@ function FloorStrip({ state, live }: { state: GameState; live: LiveGame }) {
     onIds.push(p.id);
   }
   const on = onIds.map((id) => roster.find((p) => p.id === id)).filter((p): p is NonNullable<typeof p> => Boolean(p));
-  const showFat = on.some((p) => fatigueOf(state, p.id) > 0);
   const usages = on.map((p) => p.usage ?? 0);
   const showUse = usages.some((u) => u > 0) && new Set(usages).size > 1;
   return (
@@ -706,12 +740,12 @@ function FloorStrip({ state, live }: { state: GameState; live: LiveGame }) {
       <div className="live-strip mt-1">
         {on.map((p) => {
           const fouls = lines?.find((l) => l.id === p.id)?.pf ?? 0;
-          const fat = fatigueOf(state, p.id);
+          const played = lines?.find((l) => l.id === p.id)?.min ?? 0;
+          const legs = liveLegs(fatigueOf(state, p.id), played, live.half);
           const hot = (live.half === 1 && fouls >= 2) || (live.half >= 2 && fouls >= 4);
-          const legs = fat > 60 ? "tired" : fat > 35 ? "winded" : "fresh";
           return (
             <button key={p.id} type="button" className={hot ? "is-on" : ""} {...bindTap(() => subPlayer(p.id))}>
-              {p.last} · {fouls}F{showFat ? ` · ${legs}` : ""}{showUse && (p.usage ?? 0) > 0 ? ` · ${p.usage}` : ""}
+              {p.last} · {fouls}F · {legs}{showUse && (p.usage ?? 0) > 0 ? ` · ${p.usage}` : ""}
             </button>
           );
         })}
@@ -755,7 +789,6 @@ function BenchPad({ state, live }: { state: GameState; live: LiveGame }) {
     .filter((p) => p.teamId === you && !(p.injury && p.injury.weeksLeft > 0))
     .sort((a, b) => b.mpg - a.mpg);
   const on = new Set((pinned && pinned.length >= 5 ? pinned : roster.slice(0, 5).map((p) => p.id)));
-  const showFat = roster.some((p) => fatigueOf(state, p.id) > 0);
   return (
     <div className="mt-4 rounded-xl border border-border bg-elevated p-3">
       <p className="text-[11px] tracking-[0.16em] text-muted uppercase">Your five · tap to sub</p>
@@ -763,6 +796,8 @@ function BenchPad({ state, live }: { state: GameState; live: LiveGame }) {
         {roster.map((p) => {
           const row = lines?.find((l) => l.id === p.id);
           const fat = fatigueOf(state, p.id);
+          const played = row?.min ?? 0;
+          const legs = liveLegs(fat, played, live.half);
           const fouls = row?.pf ?? 0;
           const inGame = on.has(p.id);
           return (
@@ -771,7 +806,7 @@ function BenchPad({ state, live }: { state: GameState; live: LiveGame }) {
                 <span className={`w-10 text-[11px] font-semibold uppercase ${inGame ? "text-win" : "text-subtle"}`}>{inGame ? "In" : "Out"}</span>
                 <span className="min-w-0 flex-1 truncate">{p.first} {p.last}</span>
                 <span className="tabular-nums text-xs text-muted">{fouls} fouls</span>
-                {showFat ? <span className="w-14 text-right text-xs text-muted">{fat > 60 ? "tired" : fat > 35 ? "winded" : "fresh"}</span> : null}
+                <span className="w-14 text-right text-xs text-muted">{legs}</span>
               </button>
             </li>
           );

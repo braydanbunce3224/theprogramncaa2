@@ -837,7 +837,6 @@ export function lockSchedule(state: GameState): GameState {
   const youNext = schedule
     .filter((g) => !g.declined && (g.homeId === state.playerTeamId || g.awayId === state.playerTeamId))
     .sort((a, b) => a.week - b.week)[0];
-  const filled = schedule.length - state.schedule.length;
   const next: GameState = {
     ...state,
     phase: "regular",
@@ -850,7 +849,7 @@ export function lockSchedule(state: GameState): GameState {
   };
   return tickProgramWeek(tickPodcasts({
     ...next,
-    news: [lockCopy(next, filled), ...next.news].slice(0, 60),
+    news: [lockCopy(next), ...next.news].slice(0, 60),
   }, mulberry32(state.seed ^ 0x10cc)));
 }
 
@@ -1415,7 +1414,7 @@ export function signChance(r: Recruit, state: GameState): number {
 export function dropTarget(state: GameState, id: string): { state: GameState; feedback: Feedback } {
   const r = state.recruits.find((x) => x.id === id);
   if (!r) return { state, feedback: { title: "Gone", detail: "", parts: [] } };
-  if (r.committedTo === state.playerTeamId) return { state, feedback: { title: "He's ink", detail: "You already signed him.", parts: [] } };
+  if (r.committedTo === state.playerTeamId) return { state, feedback: { title: "Already committed", detail: `${r.first} ${r.last} is already in the class.`, parts: [] } };
   const you = state.playerTeamId;
   const recruits = state.recruits.map((x) => {
     if (x.id !== id) return x;
@@ -1607,9 +1606,9 @@ export function visitRecruit(state: GameState, id: string): { state: GameState; 
   };
 }
 
-export function signGate(heat: number, floor: number, offered: boolean): string | null {
+export function signGate(offered: boolean, asked: boolean): string | null {
   if (!offered) return "Put a scholarship on the table first.";
-  if (heat < floor) return `He's at ${heat}. You need ${floor} interest on this difficulty.`;
+  if (asked) return "Already asked this week.";
   return null;
 }
 
@@ -1624,18 +1623,44 @@ export function signRecruit(state: GameState, id: string): { state: GameState; f
   if (settingsOf(state).godMode) {
     const forced = forceCommit(state, id);
     return forced.ok
-      ? { state: forced.state, feedback: { title: `${r.first} committed`, detail: "God Mode. The pledge is ink.", parts: [{ label: "Commit", delta: 1 }] } }
+      ? { state: forced.state, feedback: { title: `${r.first} committed`, detail: "God Mode. The pledge is in.", parts: [{ label: "Commit", delta: 1 }] } }
       : { state, feedback: { title: "No", detail: "", parts: [] } };
   }
-  const heat = interestIn(r, state.playerTeamId, state);
-  const floor = signFloor(state);
-  const blocked = signGate(heat, floor, true);
-  if (blocked) {
-    return { state, feedback: { title: "Not yet", detail: blocked, parts: [] } };
+  const asked = r.signAsk?.season === state.season && r.signAsk.week === state.week;
+  if (asked && r.signAsk && !r.signAsk.hit) {
+    return { state, feedback: { title: "Already asked", detail: `${r.first} said no this week. Ask again next week.`, parts: [] } };
   }
-  const recruits = state.recruits.map((x) => (x.id === id ? { ...x, committedTo: state.playerTeamId, offers: x.offers.includes(state.playerTeamId) ? x.offers : [...x.offers, state.playerTeamId] } : x));
-  const next = absorbBoard(state, markCommit({ ...state, recruits }, r, `${r.stars}★ ${r.pos}. The class just got louder.`));
-  return { state: next, feedback: { title: `${r.first} ${r.last} committed`, detail: next.flash?.detail ?? "Ink.", parts: [{ label: "Commit", delta: 1 }] } };
+  const blocked = signGate(true, Boolean(asked));
+  if (blocked) return { state, feedback: { title: "Not yet", detail: blocked, parts: [] } };
+  const chance = signChance(r, state);
+  const roll = mulberry32(state.seed ^ hashString(id) ^ ((state.season * 53 + state.week) * 997) ^ 0x51a9)();
+  const hit = roll * 100 < chance;
+  const verbal = settingsOf(state).flipsOn && state.phase !== "offseason" && state.week < 14;
+  const recruits = state.recruits.map((x) =>
+    x.id === id
+      ? {
+          ...x,
+          signAsk: { season: state.season, week: state.week, hit },
+          committedTo: hit ? state.playerTeamId : x.committedTo,
+          offers: x.offers.includes(state.playerTeamId) ? x.offers : [...x.offers, state.playerTeamId],
+        }
+      : x,
+  );
+  if (!hit) {
+    return {
+      state: { ...state, recruits },
+      feedback: { title: `${r.first} said no`, detail: `${chance}% this week. Same odds if you ask again before the week turns.`, parts: [] },
+    };
+  }
+  const next = absorbBoard(state, markCommit({ ...state, recruits }, r, verbal ? "Verbal. He can still flip until signing day." : `${r.stars}★ ${r.pos}. Signed.`));
+  return {
+    state: next,
+    feedback: {
+      title: verbal ? `${r.first} ${r.last} committed` : `${r.first} ${r.last} signed`,
+      detail: verbal ? "Verbal. He can still flip until signing day." : "Signed.",
+      parts: [{ label: "Commit", delta: 1 }],
+    },
+  };
 }
 
 function rosterPosNeed(state: GameState): Record<string, number> {

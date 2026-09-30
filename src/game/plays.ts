@@ -737,6 +737,15 @@ export function sitFoul(state) {
 	if (!id) return state;
 	return toggleLiveSub(state, id);
 }
+/** First half: 3 fouls, or 2 early for a starter. Later: 4. Five fouls is a disqualification, not a prompt. */
+export function isFoulTrouble(half, clock, fouls, starter = false) {
+	if (fouls >= 5 || fouls < 2) return false;
+	if (half <= 1) {
+		if (fouls >= 3) return true;
+		return Boolean(starter) && fouls >= 2 && clock >= 15 * 60;
+	}
+	return fouls >= 4;
+}
 export function liveYouOffense(state) {
 	const live = state.liveGame;
 	if (!live) return true;
@@ -1235,7 +1244,16 @@ function onePoss(state) {
 		credit(row, { pf: 1 });
 		const pf = row.pf ?? 0;
 		if (defId !== state.playerTeamId) return;
-		foulAlert = pf >= 5 ? null : { id: row.id, name: row.name, fouls: pf };
+		if (pf >= 5) {
+			foulAlert = foulAlert?.id === row.id ? null : foulAlert;
+			return;
+		}
+		const starter = (state.players.find((p) => p.id === row.id)?.mpg ?? 0) >= 22;
+		foulAlert = isFoulTrouble(live.half, live.clock, pf, starter)
+			? { id: row.id, name: row.name, fouls: pf }
+			: foulAlert?.id === row.id
+				? null
+				: foulAlert;
 	};
 	if (kind === "ft" || and1 || defPlay === "foul") touchFoul(d);
 	else if (rng() < (defPlay === "press" || defPlay === "trap" ? .12 : .07)) touchFoul(defPool[Math.floor(rng() * defPool.length)] ?? d);
@@ -1344,6 +1362,12 @@ function onePoss(state) {
 			parked2Half = half;
 			if (events[0] && events[0].kind !== "period") events[0] = { ...events[0], t: clockLabel(half, Math.max(0, clock)) };
 		}
+	}
+	if (foulAlert) {
+		const youHome = live.homeId === state.playerTeamId;
+		const on = youHome ? homeOn : awayOn;
+		const starter = (state.players.find((p) => p.id === foulAlert.id)?.mpg ?? 0) >= 22;
+		if (!on?.includes(foulAlert.id) || !isFoulTrouble(half, Math.max(0, clock), foulAlert.fouls, starter)) foulAlert = null;
 	}
 	return {
 		...state,

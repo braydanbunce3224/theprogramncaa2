@@ -114,6 +114,8 @@
     color: var(--color-fg);
     font-family: var(--font-sans);
     line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
     overscroll-behavior: none;
     touch-action: manipulation;
     max-width: 100%;
@@ -140,8 +142,8 @@
   overflow: hidden;
   background-color: var(--color-bg);
   background-image:
-    linear-gradient(rgba(255, 225, 74, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 225, 74, 0.05) 1px, transparent 1px);
+    linear-gradient(rgba(255, 225, 74, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 225, 74, 0.025) 1px, transparent 1px);
   background-size: 8px 8px;
   color: var(--color-fg);
   padding-left: env(safe-area-inset-left, 0px);
@@ -170,13 +172,13 @@
 .dock {
   flex: 0 0 auto;
   z-index: 60;
-  border-top: 4px solid var(--color-lane);
+  border-top: 2px solid var(--color-lane);
   padding-bottom: var(--dock-pad);
   padding-left: max(4px, env(safe-area-inset-left, 0px));
   padding-right: max(4px, env(safe-area-inset-right, 0px));
   background: #100818;
   position: relative;
-  box-shadow: inset 0 4px 0 #07040e;
+  box-shadow: none;
 }
 html.is-framed {
   --frame-extra-bottom: 52px;
@@ -215,8 +217,8 @@ html.is-framed .app-frame {
   backdrop-filter: none;
   background: #100818;
   padding-top: env(safe-area-inset-top, 0px);
-  border-bottom: 4px solid var(--color-lane);
-  box-shadow: inset 0 -4px 0 #07040e;
+  border-bottom: 2px solid var(--color-lane);
+  box-shadow: none;
 }
 .brand-mark {
   font-family: var(--font-hud);
@@ -227,6 +229,9 @@ html.is-framed .app-frame {
   font-weight: 400;
   flex: 0 0 auto;
   line-height: 1.4;
+}
+@media (max-width: 420px) {
+  .brand-mark { display: none; }
 }
 .app-frame.is-team .chrome-header {
   background: color-mix(in srgb, var(--team-tint, #0b0b0c) 28%, var(--color-wood));
@@ -979,6 +984,7 @@ to {
   overflow-x: hidden;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  container-type: inline-size;
 }
 html.is-framed .title-screen {
   min-height: 100%;
@@ -996,26 +1002,73 @@ html.is-framed .title-screen {
   pointer-events: none;
   user-select: none;
 }
+.title-logo {
+  position: absolute;
+  z-index: 2;
+  top: max(0.85rem, env(safe-area-inset-top, 0px));
+  left: 1rem;
+  right: 1rem;
+  margin: 0;
+  text-align: center;
+  font-family: var(--font-hud);
+  font-weight: 400;
+  font-size: min(2.75rem, calc((100cqi - 2rem) / 8));
+  line-height: 1.35;
+  letter-spacing: 0;
+  color: #ffe14a;
+  text-shadow: 0 2px 0 #07040e;
+  pointer-events: none;
+  white-space: nowrap;
+}
+.title-board {
+  position: absolute;
+  z-index: 2;
+  left: 0.75rem;
+  right: 0.75rem;
+  top: 4.7rem;
+  bottom: 15.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.45rem;
+  background: rgba(255, 252, 245, 0.96);
+  border: 1px solid rgba(7, 4, 14, 0.18);
+  border-radius: 16px;
+  box-shadow: 0 12px 28px rgba(7, 4, 14, 0.28);
+  pointer-events: none;
+  overflow: hidden;
+}
+.title-play {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center top;
+}
+.title-ball {
+  position: absolute;
+  z-index: 2;
+  left: 0.4rem;
+  bottom: 0.35rem;
+  width: min(34vw, 7.5rem);
+  height: auto;
+  margin: 0;
+  pointer-events: none;
+  user-select: none;
+  filter: drop-shadow(0 8px 10px rgba(7, 4, 14, 0.35));
+}
 .title-screen::after {
   content: "";
   position: absolute;
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  background:
-    repeating-linear-gradient(
-      to bottom,
-      transparent 0 3px,
-      rgba(0, 0, 0, 0.16) 3px 4px
-    ),
-    linear-gradient(
-      to bottom,
-      color-mix(in srgb, var(--color-navy) 28%, transparent) 0%,
-      transparent 22%,
-      color-mix(in srgb, var(--color-navy) 8%, transparent) 48%,
-      color-mix(in srgb, var(--color-navy) 72%, transparent) 78%,
-      var(--color-navy) 100%
-    );
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    transparent 52%,
+    rgba(16, 8, 24, 0.2) 70%,
+    rgba(16, 8, 24, 0.55) 100%
+  );
 }
 .title-menu {
   position: relative;
@@ -1119,7 +1172,7 @@ html.title-booting .title-btn.is-queued,
   align-items: center;
   justify-content: center;
   border: 0;
-  border-radius: 0.45rem;
+  border-radius: 12px;
   padding: 0.75rem 1.25rem;
   font-family: var(--font-display);
   font-size: 1rem;
@@ -1138,25 +1191,17 @@ html.title-booting .title-btn.is-queued,
 }
 .title-btn:active,
 .title-btn.is-pressed {
-  transform: translate(3px, 3px);
+  transform: translateY(1px);
 }
 .title-btn-primary {
   background: #ffe14a;
   color: #1a1024;
-  border: 3px solid #1a1024;
-  box-shadow:
-    4px 4px 0 #07040e,
-    inset -4px -4px 0 #a87412,
-    inset 4px 4px 0 #fff3a0;
+  box-shadow: 0 8px 16px rgba(7, 4, 14, 0.28);
 }
 .title-btn-ghost {
   background: #3a2268;
   color: #fff4c8;
-  border: 3px solid #07040e;
-  box-shadow:
-    4px 4px 0 #07040e,
-    inset -4px -4px 0 #14081c,
-    inset 4px 4px 0 #7a52b8;
+  box-shadow: 0 8px 16px rgba(7, 4, 14, 0.22);
 }
 
 .cal-grid {
@@ -1377,7 +1422,7 @@ html.title-booting .title-btn.is-queued,
 }
 .desk-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 0.55rem;
 }
 .desk-section {
@@ -1600,7 +1645,7 @@ html.title-booting .title-btn.is-queued,
 
 @media (min-width: 640px) {
   .cal-grid { grid-template-columns: 1fr 1fr; }
-  .desk-grid { grid-template-columns: 1fr 1fr 1fr; }
+  .desk-grid { grid-template-columns: 1fr 1fr; }
 }
 @media (min-width: 768px) {
   .title-fade {
@@ -2601,11 +2646,20 @@ html.title-booting .title-btn.is-queued,
 }
 .live-dock {
   flex: 0 1 auto;
-  max-height: 48dvh;
+  max-height: 42dvh;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   background: color-mix(in srgb, var(--color-bg) 92%, #000);
 }
+.live-more > summary {
+  min-height: 2.75rem;
+  cursor: pointer;
+  list-style: none;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-muted);
+}
+.live-more > summary::-webkit-details-marker { display: none; }
 .endgame-bar {
   position: relative;
   z-index: 2;
@@ -3214,29 +3268,26 @@ html.title-booting .title-btn.is-queued,
   }
 }
 
-/* 32-bit cartridge chrome. Hard edges, offset shadows, no blur. */
+/* Softer chrome. Short shadows, slight radius, no stripe over the art. */
 .app-frame h1,
 .app-frame h2,
 .app-frame .font-display {
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
 }
 .app-frame button[class*="bg-"],
 .app-frame button[class*="rounded-"],
 .app-frame select,
 .app-frame input[class*="rounded"],
 .app-frame input[class*="border"] {
-  border-radius: 0;
-  border: 3px solid #07040e;
-  box-shadow:
-    3px 3px 0 #07040e,
-    inset -3px -3px 0 rgba(0, 0, 0, 0.35),
-    inset 3px 3px 0 rgba(255, 244, 200, 0.18);
+  border-radius: 10px;
+  border: 1px solid rgba(7, 4, 14, 0.55);
+  box-shadow: 0 6px 14px rgba(7, 4, 14, 0.22);
 }
 .app-frame [class*="rounded-xl"],
 .app-frame [class*="rounded-lg"],
 .app-frame [class*="rounded-2xl"],
 .app-frame [class*="rounded-md"] {
-  border-radius: 0;
+  border-radius: 12px;
 }
 .app-frame .chrome-header button,
 .app-frame .dock button,
@@ -3253,8 +3304,8 @@ html.title-booting .title-btn.is-queued,
 .app-frame button[class*="bg-"]:active:not(:disabled),
 .app-frame button[class*="rounded-"]:active:not(:disabled),
 .app-frame .title-btn:active {
-  transform: translate(3px, 3px);
-  box-shadow: 1px 1px 0 #07040e;
+  transform: translateY(1px);
+  box-shadow: 0 3px 8px rgba(7, 4, 14, 0.2);
 }
 .app-frame .rank-board,
 .app-frame .cal-week,
@@ -3264,9 +3315,9 @@ html.title-booting .title-btn.is-queued,
 .app-frame .school-card,
 .app-frame .more-sheet-card,
 .app-frame .flash-card {
-  border-radius: 0;
-  border: 3px solid #07040e;
-  box-shadow: 4px 4px 0 #07040e;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 225, 74, 0.16);
+  box-shadow: 0 8px 20px rgba(7, 4, 14, 0.22);
 }
 .app-frame .rank-bo .you,
 .app-frame .rank-ap .you {
@@ -3276,7 +3327,7 @@ html.title-booting .title-btn.is-queued,
 .app-frame .rank-kp,
 .app-frame .rank-ap,
 .app-frame .rank-places {
-  border-radius: 0;
+  border-radius: 14px;
 }
 .app-frame .interest-bar,
 .app-frame .interest-bar > span,
@@ -3284,7 +3335,7 @@ html.title-booting .title-btn.is-queued,
 .app-frame .momentum > i,
 .app-frame .title-boot-track,
 .app-frame .title-boot-fill {
-  border-radius: 0;
+  border-radius: 99px;
   box-shadow: none;
 }
 .burner {
@@ -3304,16 +3355,7 @@ html.title-booting .title-btn.is-queued,
   font-family: var(--font-sans);
 }
 .app-frame::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 80;
-  pointer-events: none;
-  background: repeating-linear-gradient(
-    to bottom,
-    transparent 0 3px,
-    rgba(0, 0, 0, 0.13) 3px 4px
-  );
+  content: none;
 }
 @media (prefers-reduced-motion: reduce) {
   .app-frame button[class*="bg-"]:active:not(:disabled),

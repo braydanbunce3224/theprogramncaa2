@@ -7,7 +7,7 @@ import { PressButton } from "@/components/ui/press-button";
 import { packTitle } from "@/game/names";
 import { DIFFICULTY_OPTS } from "@/game/engine";
 import type { ConferenceId, View } from "@/game/types";
-import titlePoster from "@/assets/dribble-title.jpg";
+import titlePoster from "@/assets/landing-poster.jpg";
 import { AppFrame } from "@/components/game/app-frame";
 import { bindTap } from "@/lib/tap";
 import { applyMenuGo } from "@/game/menu-go";
@@ -141,8 +141,8 @@ function TitleScreen() {
   return (
     <div className={`title-screen${armed ? "" : " is-booting"}`}>
       <img src={titlePoster} alt="" className="title-poster" draggable={false} />
+      <h1 className="sr-only">Dribble</h1>
       <nav className="title-menu" aria-label="Main menu" aria-busy={!armed}>
-        <h1 className="sr-only">Dribble</h1>
         <div className="title-boot" aria-hidden={armed}>
           <p className="title-boot-kicker" aria-live={armed ? "off" : "polite"}>
             {bootLine}
@@ -374,10 +374,11 @@ function TeamSelect() {
   const career = selectMode === "career";
   const [q, setQ] = useState("");
   const [conf, setConf] = useState<string>("ALL");
+  const boardCount = TEAMS.length;
   const pool = useMemo(() => {
     void namesStamp;
     return career ? TEAMS.filter(careerEligible) : TEAMS.slice();
-  }, [career, namesStamp]);
+  }, [career, namesStamp, boardCount]);
   const year = selectMode === "eras" && eraDecade != null ? eraDecade : 2026;
   const list = useMemo(() => {
     const base = conf === "ALL" ? pool : pool.filter((t) => conferenceInYear(t.id, year) === conf);
@@ -431,7 +432,7 @@ function TeamSelect() {
               ? `Career starts lower. Pick a school for any program. ${pool.length} jobs, rating ${CAREER_MAX_PRESTIGE} and under.`
               : eraDecade
                 ? eraMeta(eraDecade)?.blurb ?? "Tap a school, then take the job."
-                : `Every Division I school is here. ${pool.length} programs. Tap one, then take the job.`}
+                : `Every Division I school is here. ${boardCount} programs. Tap one, then take the job.`}
             {alma ? ` Alma mater: ${alma.name}.` : ""}
           </p>
           <NamesEntry from="select" />
@@ -478,7 +479,7 @@ function TeamSelect() {
           )}
           {list.length <= shown.length && list.length > 0 && (
             <p className="mt-3 pb-8 text-sm text-muted">
-              {list.length} of {pool.length} schools.
+              {list.length} of {career ? pool.length : boardCount} schools.
             </p>
           )}
         </div>

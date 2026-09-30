@@ -4,5 +4,5 @@
   "description": "College basketball dynasty sim. 365 teams, live calls, staff, the portal, March, and the gyms that got mean.",
   "type": "x:game",
   "card": "custom",
-  "imageVersion": "4"
+  "imageVersion": 6
 }

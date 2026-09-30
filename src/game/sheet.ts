@@ -67,7 +67,7 @@ export function signingBlurb(state: GameState): string | null {
   }
   const rank = 1 + [...bySchool.values()].filter((n) => n > stars).length;
   const flip = Boolean(state.settings?.flipsOn);
-  const lock = !flip ? "These commits are signed." : "Signing day. Verbals from earlier in the year are ink now.";
+  const lock = !flip ? "These commits are signed." : "Signing day. Earlier verbals are signed now.";
   return `Signing class: ${yours.length} commits, ${stars} stars. Ranked ${rank}${rival ? `. ${rival} has ${rivalStars} stars` : ""}. ${lock}`;
 }
 

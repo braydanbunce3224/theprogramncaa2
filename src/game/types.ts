@@ -473,6 +473,8 @@ export interface Recruit {
   flipped?: boolean;
   dropped?: boolean;
   heatWas?: number;
+  /** One commitment ask per week. A miss stays a miss if the save is reopened. */
+  signAsk?: { season: number; week: number; hit: boolean };
 }
 
 export interface TeamRuntime {

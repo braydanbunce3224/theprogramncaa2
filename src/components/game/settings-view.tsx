@@ -238,7 +238,9 @@ function DevAudit() {
     <div className="sandbox-warn rounded-xl border border-loss/50 bg-elevated p-4" data-sim-test="1">
       <p className="text-xs tracking-[0.18em] text-loss uppercase">Dev / sandbox</p>
       <p className="mt-1 text-sm">Sim test and the endgame jumps do not change Career wins, Archives, or awards. They are not part of the season.</p>
-      <p className="mt-1 text-xs text-muted">Live buttons: liveControls.ts. Possessions: plays.ts onePoss. Quick-sim: sim.ts simContest.</p>
+      {typeof window !== "undefined" && new URLSearchParams(window.location.search).get("dev") === "1" && (
+        <p className="mt-1 text-xs text-muted">Live buttons: liveControls.ts. Possessions: plays.ts onePoss. Quick-sim: sim.ts simContest.</p>
+      )}
       <button
         type="button"
         className="mt-2 min-h-11 rounded-lg bg-bg px-3 text-sm font-semibold"

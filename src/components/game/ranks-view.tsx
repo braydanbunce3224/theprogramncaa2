@@ -141,7 +141,6 @@ function NetBoard({ q, onSheet }: { q: string; onSheet: (id: string) => void }) 
           <p className="bo-brand">NET Rankings</p>
           <p className="bo-sub">{netHoldLine(state.season)}</p>
         </div>
-        <p className="p-4 text-sm text-muted">No rankings yet. Games already played stay in the sample. The first board is built from all of them.</p>
       </div>
     );
   }

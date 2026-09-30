@@ -31,7 +31,6 @@ export function netReleased(state: { season: number; week: number; phase: string
   return state.week >= netReleaseWeek(state.season);
 }
 
-export function netHoldLine(season: number): string {
-  const w = netReleaseWeek(season);
-  return `NET rankings drop the first week of December, the week of ${weekDateLabel(season, w)}. Every game before then is saved for that first board.`;
+export function netHoldLine(_season: number): string {
+  return "The NET doesn't release until the first week of December.";
 }

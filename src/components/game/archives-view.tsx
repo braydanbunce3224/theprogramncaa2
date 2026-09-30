@@ -39,7 +39,12 @@ export function ArchivesView() {
           Prior seasons stay here after the calendar rolls. Champions, awards, standings, box scores, retired numbers.
         </p>
       </div>
-      {!row && (
+      {!row && state.results.length > 0 && (
+        <p className="rounded-xl border border-border bg-elevated px-4 py-5 text-sm text-muted">
+          This season’s boxes live on the gym / recap. Archives fill when the calendar rolls (champions, awards, standings, boxes).
+        </p>
+      )}
+      {!row && state.results.length === 0 && (
         <p className="rounded-xl border border-border bg-elevated px-4 py-5 text-sm text-muted">
           No games yet. Finish a season and the champions, awards, standings, and box scores stay here.
         </p>

@@ -14,24 +14,36 @@ function starFirst(state: GameState) {
 }
 
 export function afterGameMail(state: GameState, ctx: GameCtx): Mail[] {
+  if (!worthALetter(ctx)) return state.mail;
   const rng = mulberry32(state.seed ^ hashString(ctx.slotId) ^ 0xbad);
-  const out: Mail[] = [];
-  if (rng() < 0.42) out.push(adNote(state, ctx, rng));
-  if (rng() < 0.34) out.push(fanNote(state, ctx, rng));
-  if (rng() < 0.3) out.push(boosterNote(state, ctx, rng));
-  return [...out, ...state.mail].slice(0, 40);
+  const note =
+    ctx.kind === "ncaa" || ctx.margin >= 18 || Math.abs(ctx.streak) >= 4
+      ? adNote(state, ctx, rng)
+      : ctx.home
+        ? fanNote(state, ctx, rng)
+        : boosterNote(state, ctx, rng);
+  return [note, ...state.mail].slice(0, 16);
+}
+
+function worthALetter(ctx: GameCtx) {
+  if (ctx.kind === "ncaa" || ctx.kind === "nit" || ctx.kind === "crown" || ctx.kind === "conf-tourney") return true;
+  if (ctx.margin >= 18) return true;
+  if (Math.abs(ctx.streak) >= 4) return true;
+  if (ctx.won && ctx.oppPrestige - ctx.youPrestige >= 14) return true;
+  if (!ctx.won && ctx.youPrestige - ctx.oppPrestige >= 14) return true;
+  return false;
 }
 
 export function weeklyStakeholderMail(state: GameState, week: number): Mail[] {
+  if (week < 4 || week % 4 !== 0) return state.mail;
+  if (state.mail.some((m) => m.week === week)) return state.mail;
   const rng = mulberry32(state.seed ^ (week * 4243));
-  if (week < 2) return state.mail;
-  if (rng() > 0.55) return state.mail;
   const t = state.teams[state.playerTeamId]!;
   const pct = t.wins + t.losses ? t.wins / (t.wins + t.losses) : 0.5;
   const who = pick(rng, ["ad", "fan", "booster"] as const);
   const extra =
     who === "ad" ? adWeekly(state, pct, week, rng) : who === "fan" ? fanWeekly(state, pct, week, rng) : boosterWeekly(state, pct, week, rng);
-  return [extra, ...state.mail].slice(0, 40);
+  return [extra, ...state.mail].slice(0, 16);
 }
 
 function adNote(state: GameState, ctx: GameCtx, rng: Rng): Mail {

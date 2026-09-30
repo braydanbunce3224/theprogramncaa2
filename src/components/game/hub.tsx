@@ -54,6 +54,7 @@ export function Hub() {
           {state.phase === "regular" ? ` · ${weekDateLabel(state.season, state.week)}` : ""} · {state.season}
         </p>
         <h1 className="scoreboard-name">{school.name}</h1>
+        <p className="scoreboard-next">What’s new: Polish — school count, Archives copy, Settings cleanup, live fatigue labels.</p>
         <div className="scoreboard-leds">
           <div className="led">
             <span>Job</span>
@@ -128,11 +129,14 @@ export function Hub() {
           <>
             {tipThisWeek ? (
               <>
-                <button type="button" className="min-h-12 rounded-lg bg-accent font-semibold text-accent-fg" {...bindTap(playGame)} disabled={seasonRun?.active}>
+                <button type="button" className="span-2 min-h-12 rounded-lg bg-accent font-semibold text-accent-fg" {...bindTap(playGame)} disabled={seasonRun?.active}>
                   Play tonight
                 </button>
-                <button type="button" className="min-h-12 rounded-lg bg-elevated font-semibold" {...bindTap(simGame)} disabled={seasonRun?.active}>
-                  Sim game
+                <p className="span-2 text-sm text-muted">
+                  Live play-by-play. Tap Start game, then tap a play every time you have the ball. Sim skips all of that.
+                </p>
+                <button type="button" className="span-2 min-h-12 rounded-lg bg-elevated font-semibold" {...bindTap(simGame)} disabled={seasonRun?.active}>
+                  Sim this game
                 </button>
               </>
             ) : (
@@ -608,11 +612,22 @@ function CardStrip() {
     );
   }
   if (!exp) return null;
+  const need = state.contract?.clauses.find((c) => c.kind === "wins")?.target;
+  const gap = need == null ? null : need - exp.wins;
   return (
     <div className="desk-tile">
-      <p className="desk-kicker">Projection</p>
-      <p className="desk-head">{exp.wins} wins{exp.ncaa ? " · bid in range" : ""}</p>
-      <p className="desk-note">{exp.note}</p>
+      <p className="desk-kicker">Expectations</p>
+      <p className="desk-head">{exp.wins} projected{need != null ? ` · ${need} required` : ""}</p>
+      <p className="desk-note">
+        {need == null
+          ? exp.note
+          : gap > 0
+            ? `Roster projection: ${exp.wins} wins. Contract requirement: ${need}. That's ${gap} above this roster.`
+            : gap < 0
+              ? `Roster projection: ${exp.wins} wins. Contract requirement: ${need}. This roster is ${-gap} ahead of the job.`
+              : `Roster projection: ${exp.wins} wins. That matches the contract.`}
+        {exp.ncaa ? " A bid is in range." : ""}
+      </p>
     </div>
   );
 }

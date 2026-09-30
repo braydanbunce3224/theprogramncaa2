@@ -2,21 +2,24 @@ import { useState } from "react";
 import { useGame } from "@/game/store";
 import { bindTap } from "@/lib/tap";
 import { outletLabel } from "@/game/brand";
+import { presentNews } from "@/game/wire";
 import type { NewsArticle } from "@/game/types";
 
 function ArticleBody({ a, featured }: { a: NewsArticle; featured?: boolean }) {
   const { openRecap, openSearch, setView, state } = useGame();
   const grafs = a.grafs?.length ? a.grafs : [a.dek, a.text, a.headline].filter((g): g is string => Boolean(g));
+  const story = state ? presentNews(a, state) : a;
+  const shownGrafs = story.grafs?.length ? story.grafs : grafs;
   return (
     <article className={`wire-piece ${featured ? "is-feature" : ""}`}>
       <p className="wire-kicker">
         {outletLabel(a.outlet)} · {a.kicker || "Notebook"} · Week {a.week}
       </p>
       <h2 className={featured ? "wire-hed-lg" : "wire-hed"}>{a.headline || a.text || "No headline"}</h2>
-      {a.dek ? <p className="wire-dek">{a.dek}</p> : null}
+      {story.dek ? <p className="wire-dek">{story.dek}</p> : null}
       <p className="wire-by">By {a.byline || "staff"}</p>
       <div className="wire-grafs">
-        {grafs.map((g, i) => (
+        {shownGrafs.map((g, i) => (
           <p key={i}>{g}</p>
         ))}
       </div>

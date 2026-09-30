@@ -20,7 +20,7 @@
     "native:ios": "npm run native:sync && npx cap copy ios",
     "native:android": "npm run native:sync && npx cap copy android",
     "check:auth": "node scripts/check-auth-invariant.mjs",
-    "test": "node --test 'scripts/**/*.test.mjs' && node --experimental-strip-types --test src/lib/app-data/app-data.test.ts src/lib/auth/gate-identity.test.ts src/lib/auth/sign-in-gate.test.ts",
+    "test": "node --import ./scripts/ts-register.mjs --experimental-strip-types --test 'scripts/**/*.test.mjs' src/lib/app-data/app-data.test.ts src/lib/auth/gate-identity.test.ts src/lib/auth/sign-in-gate.test.ts 'src/game/*.test.ts'",
     "lint": "eslint .",
     "format": "prettier --write ."
   },
