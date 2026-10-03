@@ -6,6 +6,8 @@ import { pipelineMemoryLine } from "./recruit-depth";
 import { recentErrors } from "./diag";
 
 export const CHANGELOG = [
+  "Beta hotfix — About page (no source leak), Selection/bracket record sync, shot-chart/box match, roster layout, favicon.",
+  "QA: Selection/bracket truth, no phantom Test U, hide dev tools, roster minutes, fatigue labels, copy cleanup.",
   "Box scores spread the shots. One player cannot take the whole team's offense.",
   "2-for-1 shows when you have the ball, ahead or tied, with 31–40 seconds left. God Mode can force that look.",
   "Practice (film, scrimmage, hard) bumps one player this week. The roster shows the +1.",
@@ -220,8 +222,6 @@ export function seasonReport(state: GameState): string {
     "",
     `Portal wins: ${portal.length}${portal.length ? ` (${portal.map((p) => `${p.first} ${p.last}`).slice(0, 4).join(", ")})` : ""}`,
     awards.length ? `Awards: ${awards.slice(0, 6).map((a) => `${a.name} ${a.kind}`).join("; ")}` : "Awards: none posted yet",
-    "",
-    "100% free D-I coaching sim — no IAP required.",
   ];
   return lines.join("\n");
 }

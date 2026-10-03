@@ -62,7 +62,7 @@ function EpisodeBody({ ep, featured }: { ep: PodcastEpisode; featured?: boolean 
 }
 
 export function PodcastsView() {
-  const { state } = useGame();
+  const { state, setView } = useGame();
   const kentucky = state?.playerTeamId === "kentucky";
   const [showId, setShowId] = useState<PodcastShowId>(kentucky ? "catican" : "lockedon");
   const [openId, setOpenId] = useState<string | null>(null);
@@ -83,6 +83,11 @@ export function PodcastsView() {
       <p className="mt-1 text-sm text-muted">
         {show.id === "catican" ? "Four friends. New one every week." : show.tagline}
       </p>
+      {kentucky && (
+        <button type="button" className="mt-3 min-h-11 self-start rounded-lg bg-elevated px-3 text-sm font-semibold" {...bindTap(() => setView("merch"))}>
+          Shop The Catican
+        </button>
+      )}
 
       {shows.length > 1 && (
       <div className="pod-shows">

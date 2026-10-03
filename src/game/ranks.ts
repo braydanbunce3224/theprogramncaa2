@@ -540,10 +540,11 @@ export function resumeOf(state: GameState, teamId = state.playerTeamId): ResumeC
   const field = espnField(state);
   const bid = field.find((b) => b.teamId === teamId);
   const bubble = bubbleLists(state, field, net);
+  const locked = Boolean(state.selection?.revealed && (state.selection.ncaa?.length ?? 0) > 0);
   let path: ResumeCard["path"] = "out";
   if (bid?.path === "auto") path = "auto";
   else if (bid?.path === "at-large") path = "at-large";
-  else if (bubble.firstFourOut.includes(teamId) || bubble.nextFourOut.includes(teamId)) path = "bubble";
+  else if (!locked && (bubble.firstFourOut.includes(teamId) || bubble.nextFourOut.includes(teamId))) path = "bubble";
   else if ((state.selection?.nit ?? []).includes(teamId)) path = "nit";
   const q1w = n?.q1w ?? 0;
   const q1l = n?.q1l ?? 0;
@@ -573,6 +574,21 @@ export function resumeOf(state: GameState, teamId = state.playerTeamId): ResumeC
     need,
     quadNext,
   };
+}
+
+/** One line for Gym, Selection Day, and the résumé once the field is locked. */
+export function marchCall(state: GameState, teamId = state.playerTeamId): string {
+  const sel = state.selection;
+  const bid = sel?.ncaa?.find((b) => b.teamId === teamId);
+  if (bid) return `${bid.seed} seed · ${bid.region}${bid.playIn ? " · Play-in" : ""}`;
+  if (sel?.nit?.includes(teamId)) return "NIT";
+  if (sel?.crown?.includes(teamId)) return "CBI";
+  if (sel?.revealed && (sel.ncaa?.length ?? 0) > 0) return "Outside the field";
+  const card = resumeOf(state, teamId);
+  if (card.path === "auto" || card.path === "at-large") return card.seed ? `In as a ${card.seed}` : "In the field";
+  if (card.path === "bubble") return "On the bubble";
+  if (card.path === "nit") return "NIT";
+  return "Outside the field";
 }
 
 export function remainingSos(state: GameState, teamId = state.playerTeamId) {

@@ -95,7 +95,7 @@ export function RecruitingView() {
           {prog.taken}/{prog.spots} spots filled.
           {" "}
           {left} scholarship{left === 1 ? "" : "s"} left.
-          Other schools are in on the same names. A week-one elite pledge is rare.
+          Other schools are in on the same names. An elite player rarely commits in week one.
           {prog.signed === 0 ? " Scout, offer, and visit before you ask." : ""}
         </p>
       </div>

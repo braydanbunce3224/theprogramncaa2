@@ -21,7 +21,7 @@ export function AwardsView() {
         ← Gym
       </button>
       <div>
-        <p className="text-xs tracking-[0.18em] text-muted uppercase">Hardware</p>
+        <p className="text-xs tracking-[0.18em] text-muted uppercase">Awards</p>
         <h1 className="font-display mt-1 text-3xl">Awards</h1>
         <p className="mt-1 text-sm text-muted">
           {year.length ? `${state.season} lists are in. They use points, boards, assists, and wins — not a random name.` : "Watch list only until the year closes. Nobody has won it yet."}
@@ -110,7 +110,7 @@ export function AwardsView() {
         </div>
       )}
       <div className="rounded-xl border border-border bg-elevated p-4">
-        <p className="text-xs tracking-[0.18em] text-muted uppercase">Your hardware</p>
+        <p className="text-xs tracking-[0.18em] text-muted uppercase">Your awards</p>
         {yours.length === 0 && <p className="mt-2 text-sm text-muted">None yet. Win, and the lists find you.</p>}
         <ul className="mt-2 space-y-1.5 text-sm">
           {yours.slice(0, 24).map((a) => (

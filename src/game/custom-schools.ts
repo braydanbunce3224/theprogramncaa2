@@ -64,7 +64,18 @@ export function listCustomSchools(): TeamSeed[] {
 }
 
 export function loadCustomSchools() {
-  for (const row of readList()) mount(row);
+  const list = readList();
+  const keep = list.filter((t) => !phantomTest(t));
+  if (keep.length !== list.length) {
+    for (const row of list) {
+      if (!phantomTest(row)) continue;
+      const i = TEAMS.findIndex((t) => t.id === row.id);
+      if (i >= 0) TEAMS.splice(i, 1);
+      delete TEAM_BY_ID[row.id];
+    }
+    writeList(keep);
+  }
+  for (const row of keep) mount(row);
 }
 
 export function mountCustomList(rows: TeamSeed[] | undefined) {
@@ -72,7 +83,7 @@ export function mountCustomList(rows: TeamSeed[] | undefined) {
   const cur = readList();
   let changed = false;
   for (const row of rows) {
-    if (!row?.id) continue;
+    if (!row?.id || phantomTest(row)) continue;
     mount(row);
     if (!cur.some((t) => t.id === row.id)) {
       cur.push(TEAM_BY_ID[row.id]!);
@@ -82,14 +93,27 @@ export function mountCustomList(rows: TeamSeed[] | undefined) {
   if (changed) writeList(cur);
 }
 
+function phantomTest(t: { name?: string; mascot?: string; abbr?: string; city?: string }) {
+  if ((t.name ?? "").trim().toLowerCase() !== "test u") return false;
+  const mascot = (t.mascot ?? "").trim().toLowerCase();
+  const abbr = (t.abbr ?? "").trim().toUpperCase();
+  const city = (t.city ?? "").trim().toLowerCase();
+  return mascot === "trials" || abbr === "TST" || city === "testville";
+}
+
+export function isPhantomTest(t: { name?: string; mascot?: string; abbr?: string; city?: string }) {
+  return phantomTest(t);
+}
+
 function slug(name: string) {
   const s = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 22);
   return s || "school";
 }
 
-export function addCustomSchool(input: CustomSchoolInput): TeamSeed {
+export function addCustomSchool(input: CustomSchoolInput): TeamSeed | null {
   loadCustomSchools();
-  const name = input.name.trim().slice(0, 32) || "Test U";
+  const name = input.name.trim().slice(0, 32);
+  if (!name || phantomTest({ name, mascot: input.mascot, abbr: input.abbr, city: input.city })) return null;
   let id = `custom-${slug(name)}`;
   let n = 2;
   while (TEAM_BY_ID[id] && TEAM_BY_ID[id]!.name !== name) {
@@ -98,8 +122,8 @@ export function addCustomSchool(input: CustomSchoolInput): TeamSeed {
   const seed: TeamSeed = {
     id,
     name,
-    mascot: input.mascot.trim().slice(0, 24) || "Trials",
-    abbr: (input.abbr.trim() || name.slice(0, 3)).toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 5) || "TST",
+    mascot: input.mascot.trim().slice(0, 24) || "Club",
+    abbr: (input.abbr.trim() || name.slice(0, 3)).toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 5) || "SCH",
     conference: input.conference || "HOR",
     city: input.city.trim().slice(0, 28) || "Campus",
     state: input.stateName.trim().slice(0, 8) || "US",

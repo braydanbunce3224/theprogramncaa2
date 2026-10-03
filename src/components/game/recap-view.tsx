@@ -144,12 +144,15 @@ function RecapStrip({ state, result, recap }: { state: GameState; result: GameRe
   );
 }
 
-function ShotChart({ shots, home, away }: { shots: ShotMark[]; home?: string; away?: string }) {
+function ShotChart({ shots, boxMade, boxAtt, home, away }: { shots: ShotMark[]; boxMade: number; boxAtt: number; home?: string; away?: string }) {
   const made = shots.filter((s) => s.made).length;
+  const same = made === boxMade && shots.length === boxAtt;
   return (
     <div className="rounded-xl border border-border bg-elevated p-3">
       <p className="text-[11px] tracking-[0.16em] text-muted uppercase">
-        Shot chart · {made}/{shots.length} from the floor
+        {same
+          ? `Shot chart · ${made}/${shots.length} from the floor`
+          : `Plotted shots · ${made}/${shots.length}. Box is ${boxMade}–${boxAtt} from the floor.`}
       </p>
       <svg viewBox="0 0 94 50" className="mt-2 w-full" role="img" aria-label="Shot chart">
         <rect width="94" height="50" fill="var(--color-court)" />
@@ -263,7 +266,13 @@ export function RecapView() {
       </div>
 
       {recap.shots && recap.shots.length > 4 && (
-        <ShotChart shots={recap.shots} home={TEAM_BY_ID[result.homeId]?.color} away={TEAM_BY_ID[result.awayId]?.color} />
+        <ShotChart
+          shots={recap.shots}
+          boxMade={boxTotals(playedLines(recap.homeLeaders)).fgm + boxTotals(playedLines(recap.awayLeaders)).fgm}
+          boxAtt={boxTotals(playedLines(recap.homeLeaders)).fga + boxTotals(playedLines(recap.awayLeaders)).fga}
+          home={TEAM_BY_ID[result.homeId]?.color}
+          away={TEAM_BY_ID[result.awayId]?.color}
+        />
       )}
 
       <Box title={TEAM_BY_ID[result.homeId]?.name ?? "Home"} color={TEAM_BY_ID[result.homeId]?.color} rows={recap.homeLeaders} />

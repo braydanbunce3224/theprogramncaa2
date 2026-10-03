@@ -1,32 +1,16 @@
 import { useMemo, useRef, useState } from "react";
 import { useGame } from "@/game/store";
-import { CONFERENCES, TEAM_BY_ID, TEAMS, teamOf } from "@/game/teams";
-import { leagueName } from "@/game/align";
+import { TEAMS, teamOf } from "@/game/teams";
 import { DIFFICULTY_OPTS, settingsOf } from "@/game/engine";
 import { SAVE_VERSION } from "@/game/types";
-import { CHANGELOG, bugReport, challengeCode, downloadText, hostRoom, readRoom, writeChallengeSeed, writeRoom } from "@/game/sheet";
+import { bugReport, challengeCode, CHANGELOG, downloadText, hostRoom, readRoom, writeChallengeSeed, writeRoom } from "@/game/sheet";
 import { bindTap } from "@/lib/tap";
-import type { ConferenceId, Difficulty, GameState, LeagueSettings } from "@/game/types";
+import type { Difficulty, GameState, LeagueSettings } from "@/game/types";
 
 export function SettingsView() {
-  const { state, patchLeague, moveTeam, setView, exportLeague, importLeague, forceEndgame, forceTwoFor } = useGame();
-  const [q, setQ] = useState("");
-  const [pick, setPick] = useState<string | null>(null);
+  const { state, patchLeague, setView, exportLeague, importLeague, forceEndgame, forceTwoFor } = useGame();
   if (!state) return null;
   const s = settingsOf(state);
-  const list = useMemo(() => {
-    const query = q.trim().toLowerCase();
-    if (!query) return TEAMS.slice(0, 8);
-    return TEAMS.filter(
-      (t) =>
-        t.name.toLowerCase().includes(query) ||
-        t.abbr.toLowerCase().includes(query) ||
-        t.id.includes(query) ||
-        t.city.toLowerCase().includes(query),
-    ).slice(0, 16);
-  }, [q]);
-  const chosen = pick ? TEAM_BY_ID[pick] : null;
-  const live = chosen ? state.teams[chosen.id] : null;
 
   return (
     <div className="flex flex-col gap-4">
@@ -104,82 +88,6 @@ export function SettingsView() {
         hint="A light tap on buttons. Silence it if you don't want the buzz."
         onToggle={(v) => patchLeague({ haptics: v })}
       />
-      <Toggle
-        on={s.godMode}
-        title="God Mode"
-        hint="Force a pledge. Move a program. Jump jobs. Force a win once."
-        onToggle={(v) => patchLeague({ godMode: v, forceWin: v ? s.forceWin : false })}
-      />
-      {s.godMode && (
-        <Toggle
-          on={s.forceWin}
-          title="Force the next win"
-          hint="You win the next game you sim. One time."
-          onToggle={(v) => patchLeague({ forceWin: v })}
-        />
-      )}
-      {s.godMode && (
-        <div className="sandbox-warn rounded-xl border border-loss/50 bg-elevated p-4">
-          <p className="text-xs tracking-[0.18em] text-loss uppercase">Dev / sandbox</p>
-          <p className="mt-1 text-sm">These jumps do not write a Career win, an archive, or a box. Leave the game and the record stays put.</p>
-          <button type="button" className="mt-3 min-h-12 w-full rounded-lg bg-bg px-3 text-sm font-semibold" {...bindTap(forceEndgame)}>
-            Force endgame: up 3, 0:08, opponent ball
-          </button>
-          <button type="button" className="mt-2 min-h-12 w-full rounded-lg bg-bg px-3 text-sm font-semibold" {...bindTap(forceTwoFor)}>
-            Force 2-for-1: your ball, 0:36, ahead
-          </button>
-        </div>
-      )}
-
-      {s.godMode && (
-        <div className="rounded-xl border border-border bg-elevated p-4">
-          <p className="text-xs tracking-[0.18em] text-muted uppercase">Realignment</p>
-          <p className="mt-1 text-sm text-muted">Offseason or preseason. Conferences that are full swap a team the other way.</p>
-          <input
-            className="mt-3 h-12 w-full rounded-lg border border-border bg-bg px-3"
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder="Search a program…"
-          />
-          <ul className="mt-2">
-            {list.map((t) => {
-              const rt = state.teams[t.id];
-              return (
-                <li key={t.id} className="border-t border-border first:border-t-0">
-                  <button
-                    type="button"
-                    className={`flex min-h-12 w-full items-center justify-between gap-2 text-left text-sm ${pick === t.id ? "text-accent" : ""}`}
-                    {...bindTap(() => setPick(t.id))}
-                  >
-                    <span className="font-semibold">{t.name}</span>
-                    <span className="text-xs text-muted">{leagueName((rt?.conference ?? t.conference) as ConferenceId, state.season)}</span>
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-          {chosen && live && (
-            <div className="mt-3">
-              <p className="text-xs text-muted">
-                {chosen.name} is in the {leagueName(live.conference, state.season)}. Tap a conference.
-              </p>
-              <div className="mt-2 flex flex-wrap gap-2">
-                {CONFERENCES.map((c) => (
-                  <button
-                    key={c.id}
-                    type="button"
-                    disabled={c.id === live.conference}
-                    className="min-h-11 rounded-full bg-bg px-3 text-xs font-semibold disabled:opacity-40"
-                    {...bindTap(() => moveTeam(chosen.id, c.id as ConferenceId))}
-                  >
-                    {c.short}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      )}
 
       <p className="text-xs tracking-[0.18em] text-muted uppercase">Data</p>
       <Commissioner state={state} patchLeague={patchLeague} exportLeague={exportLeague} importLeague={importLeague} />
@@ -202,12 +110,11 @@ export function SettingsView() {
         <p className="text-xs tracking-[0.18em] text-muted uppercase">About</p>
         <h2 className="font-display mt-1 text-2xl">Dribble</h2>
         <p className="mt-1 text-sm text-muted">
-          Championship build {SAVE_VERSION}. Install it from the browser menu. It resumes the last save on this device, including offline.
+          A college basketball dynasty. You take a job, set the minutes, recruit, and coach the games. Championship build {SAVE_VERSION}. It resumes the last save on this device, including offline.
         </p>
+        <p className="mt-3 text-xs tracking-[0.18em] text-muted uppercase">What's New · build {SAVE_VERSION}</p>
+        <p className="mt-1 text-sm">{CHANGELOG.split("\n")[0]}</p>
         <div className="mt-3 flex flex-col gap-3">
-          <a href="/ARCHITECTURE.md" className="flex min-h-11 items-center rounded-lg bg-bg px-3 text-sm font-semibold text-accent">
-            Architecture
-          </a>
           <a href="/privacy.html" className="flex min-h-11 items-center rounded-lg bg-bg px-3 text-sm font-semibold text-accent">
             Privacy
           </a>
@@ -220,9 +127,7 @@ export function SettingsView() {
 function devOn() {
   if (typeof window === "undefined") return false;
   try {
-    const q = new URLSearchParams(window.location.search).get("dev") === "1";
-    if (q) sessionStorage.setItem("dribble-dev", "1");
-    return q || sessionStorage.getItem("dribble-dev") === "1";
+    return new URLSearchParams(window.location.search).get("dev") === "1";
   } catch {
     return false;
   }
@@ -378,7 +283,7 @@ function Commissioner({
 
       <div className="rounded-xl border border-border bg-elevated p-4">
         <p className="text-xs tracking-[0.18em] text-muted uppercase">Commissioner</p>
-        <p className="mt-1 text-sm text-muted">God Mode edits ratings on a player page and can force a win or move a program. Roster CSV is on the stats page. This is the full save.</p>
+        <p className="mt-1 text-sm text-muted">Export or import the full save. Roster CSV is on the stats page.</p>
         <div className="mt-3 flex flex-wrap gap-2">
           <button type="button" className="min-h-11 rounded-lg bg-bg px-3 text-sm font-semibold" {...bindTap(() => downloadText(`dribble-${state.season}.json`, exportLeague(), "application/json"))}>
             Export save
@@ -449,8 +354,6 @@ function Commissioner({
       </div>
 
       <div className="rounded-xl border border-border bg-elevated p-4">
-        <p className="text-xs tracking-[0.18em] text-muted uppercase">What's new</p>
-        <pre className="mt-2 whitespace-pre-wrap text-sm leading-relaxed">{CHANGELOG}</pre>
         <button
           type="button"
           className="mt-3 min-h-11 rounded-lg bg-bg px-3 text-sm font-semibold"

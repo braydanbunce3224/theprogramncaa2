@@ -3,7 +3,7 @@ import { useGame } from "@/game/store";
 import { TEAM_BY_ID } from "@/game/teams";
 import { NCAA_REGIONS, PAIR_64 } from "@/game/selection";
 import { bubbleLists, cbsField, espnField, recOf, teamLabel, apPoll, netRanks, type BracketOutlet } from "@/game/ranks";
-import type { NcaaBid, NcaaRegion } from "@/game/types";
+import type { GameState, NcaaBid, NcaaRegion } from "@/game/types";
 import { bindTap } from "@/lib/tap";
 import { ncaaRoundLabel } from "@/game/brand";
 
@@ -57,14 +57,6 @@ function seedTeams(rows: NcaaBid[], seed: number) {
   return rows.filter((b) => b.seed === seed);
 }
 
-function names(ids: string[], auto: boolean, outlet: BracketOutlet) {
-  return ids.map((id) => {
-    const t = TEAM_BY_ID[id];
-    if (!t) return id;
-    return outlet === "espn" && auto ? t.name.toUpperCase() : t.name;
-  }).join(" / ");
-}
-
 function EspnBoard() {
   const { state } = useGame();
   const [region, setRegion] = useState<NcaaRegion>("East");
@@ -109,8 +101,8 @@ function EspnBoard() {
           const b = seedTeams(rows, lo);
           return (
             <div key={`${region}-${hi}`} className="espn-pair">
-              <EspnGame seed={hi} bids={a} you={you} rec={a[0] ? recOf(state, a[0].teamId) : ""} />
-              <EspnGame seed={lo} bids={b} you={you} rec={b[0] ? recOf(state, b[0].teamId) : ""} />
+              <EspnGame seed={hi} bids={a} you={you} state={state} />
+              <EspnGame seed={lo} bids={b} you={you} state={state} />
             </div>
           );
         })}
@@ -134,7 +126,7 @@ function EspnBoard() {
         <ul>
           {sixtyEight.map((b) => (
             <li key={`${b.region}-${b.teamId}`}>
-              <span>{b.seed}</span> {TEAM_BY_ID[b.teamId]?.abbr ?? b.teamId}
+              <span>{b.seed}</span> {TEAM_BY_ID[b.teamId]?.name ?? b.teamId} {recOf(state, b.teamId)}
             </li>
           ))}
         </ul>
@@ -143,14 +135,20 @@ function EspnBoard() {
   );
 }
 
-function EspnGame({ seed, bids, you, rec }: { seed: number; bids: NcaaBid[]; you: string; rec: string }) {
+function EspnGame({ seed, bids, you, state }: { seed: number; bids: NcaaBid[]; you: string; state: GameState }) {
   const auto = bids.some((x) => x.path === "auto");
   const mine = bids.some((x) => x.teamId === you);
   return (
     <div className={`espn-game ${mine ? "you" : ""}`}>
       <span className="seed">{seed}</span>
-      <span className={`name ${auto ? "auto" : ""}`}>{names(bids.map((x) => x.teamId), auto, "espn") || "—"}</span>
-      <span className="rec">{rec}</span>
+      <span className={`name ${auto ? "auto" : ""}`}>
+        {bids.length ? bids.map((b) => (
+          <span key={b.teamId} className="block">
+            {TEAM_BY_ID[b.teamId]?.name ?? b.teamId}
+            <span className="rec"> {recOf(state, b.teamId)}</span>
+          </span>
+        )) : "—"}
+      </span>
     </div>
   );
 }
@@ -213,8 +211,8 @@ function CbsBoard() {
             const b = seedTeams(regionTeams(field, region), lo);
             return (
               <div key={`${region}-${hi}`} className="cbs-pair">
-                <CbsGame seed={hi} bids={a} you={you} rec={a[0] ? recOf(state, a[0].teamId) : ""} />
-                <CbsGame seed={lo} bids={b} you={you} rec={b[0] ? recOf(state, b[0].teamId) : ""} />
+                <CbsGame seed={hi} bids={a} you={you} state={state} />
+                <CbsGame seed={lo} bids={b} you={you} state={state} />
               </div>
             );
           })}
@@ -238,7 +236,7 @@ function CbsBoard() {
   );
 }
 
-function CbsGame({ seed, bids, you, rec }: { seed: number; bids: NcaaBid[]; you: string; rec: string }) {
+function CbsGame({ seed, bids, you, state }: { seed: number; bids: NcaaBid[]; you: string; state: GameState }) {
   const mine = bids.some((x) => x.teamId === you);
   return (
     <div className={`cbs-game ${mine ? "you" : ""}`}>
@@ -247,7 +245,7 @@ function CbsGame({ seed, bids, you, rec }: { seed: number; bids: NcaaBid[]; you:
         {bids.length ? bids.map((b) => (
           <span key={b.teamId} className="block">
             <span className="cbs-name">{TEAM_BY_ID[b.teamId]?.name}</span>
-            <span className="cbs-rec">{rec}{b.path === "auto" ? " · AUTO" : ""}{b.playIn ? " · FF" : ""}</span>
+            <span className="cbs-rec">{recOf(state, b.teamId)}{b.path === "auto" ? " · AUTO" : ""}{b.playIn ? " · FF" : ""}</span>
           </span>
         )) : <span className="cbs-name">—</span>}
       </span>

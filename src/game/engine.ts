@@ -114,7 +114,7 @@ function rosterFor(seed: number, teamId: string, prestige: number): Player[] {
       year: 1 + (i % 4),
       teamId,
       ovr,
-      mpg: i < 5 ? 28 : i < 8 ? 18 : 8,
+      mpg: i < 5 ? 26 : i < 8 ? 12 : 6,
       rng,
     }));
   }
@@ -1649,7 +1649,7 @@ export function signRecruit(state: GameState, id: string): { state: GameState; f
   if (!hit) {
     return {
       state: { ...state, recruits },
-      feedback: { title: `${r.first} said no`, detail: `${chance}% this week. Same odds if you ask again before the week turns.`, parts: [] },
+      feedback: { title: `${r.first} said no`, detail: `${chance}% this week. He said no. Ask again next week.`, parts: [] },
     };
   }
   const next = absorbBoard(state, markCommit({ ...state, recruits }, r, verbal ? "Verbal. He can still flip until signing day." : `${r.stars}★ ${r.pos}. Signed.`));

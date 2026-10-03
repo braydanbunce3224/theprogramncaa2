@@ -272,7 +272,7 @@ function clash(off, def) {
 	} else if (def === "trap") {
 		to += .08;
 		note = "Trap came.";
-	} else note = "The call was on.";
+	} else note = "Play whistled dead.";
 	return {
 		two,
 		three,

@@ -19,6 +19,7 @@ import { rivalryTease } from "@/game/rivalry";
 import { downloadText, seasonReport } from "@/game/sheet";
 import { siteRecordLine } from "@/game/present";
 import { netHoldLine, netReleased, weekDateLabel } from "@/game/calendar";
+import { marchCall } from "@/game/ranks";
 
 export function Hub() {
   const { state, simWeek, simGame, simSeason, stopSeason, seasonRun, playGame, setView, nextSeason, spendSkill, saveNow, setAssisted, openContract, openRecap } = useGame();
@@ -54,7 +55,6 @@ export function Hub() {
           {state.phase === "regular" ? ` · ${weekDateLabel(state.season, state.week)}` : ""} · {state.season}
         </p>
         <h1 className="scoreboard-name">{school.name}</h1>
-        <p className="scoreboard-next">What’s new: Polish — school count, Archives copy, Settings cleanup, live fatigue labels.</p>
         <div className="scoreboard-leds">
           <div className="led">
             <span>Job</span>
@@ -223,13 +223,7 @@ export function Hub() {
         <div className="tip-card">
           <p className="tip-kicker">Selection Day</p>
           <p className="font-display mt-1 text-2xl">
-            {(() => {
-              const bid = state.selection.ncaa.find((b) => b.teamId === state.playerTeamId);
-              if (bid) return `${bid.seed} seed · ${bid.region}${bid.playIn ? " · Play-in" : ""}`;
-              if (state.selection.nit.includes(state.playerTeamId)) return `${NIT} bid`;
-              if (state.selection.crown.includes(state.playerTeamId)) return CBI;
-              return "Home for March";
-            })()}
+            {marchCall(state)}
           </p>
           <button type="button" className="mt-3 min-h-11 rounded-lg bg-accent px-3 font-semibold text-accent-fg" {...bindTap(() => setView("bracketology"))}>
             Open bracketology
@@ -302,6 +296,7 @@ export function Hub() {
         <div className="desk-grid">
           <NewsStrip />
           <PodcastStrip />
+          {state.playerTeamId === "kentucky" && <MerchStrip />}
           <BurnerStrip />
         </div>
       </details>
@@ -516,7 +511,10 @@ function ResumeStrip() {
   const { state, openRanks } = useGame();
   if (!state || state.phase === "preseason" || state.phase === "offseason") return null;
   const r = resumeOf(state);
-  const tag = r.path === "auto" ? "Auto bid" : r.path === "at-large" ? `In as a ${r.seed}` : r.path === "bubble" ? "On the bubble" : r.path === "nit" ? "NIT" : "Outside the field";
+  const locked = Boolean(state.selection?.ncaa?.length);
+  const tag = locked
+    ? marchCall(state)
+    : r.path === "auto" ? "Auto bid" : r.path === "at-large" ? `In as a ${r.seed}` : r.path === "bubble" ? "On the bubble" : r.path === "nit" ? "NIT" : "Outside the field";
   return (
     <button type="button" className="desk-tile" {...bindTap(() => openRanks("bubble"))}>
       <p className="desk-kicker">Résumé</p>
@@ -734,6 +732,17 @@ function PodcastStrip() {
       <p className="desk-kicker">Podcasts</p>
       <p className="desk-head">{tease.head}</p>
       <p className="desk-note">{tease.note}</p>
+    </button>
+  );
+}
+
+function MerchStrip() {
+  const { setView } = useGame();
+  return (
+    <button type="button" className="desk-tile" {...bindTap(() => setView("merch"))}>
+      <p className="desk-kicker">The Catican</p>
+      <p className="desk-head">Merch</p>
+      <p className="desk-note">Tees, a hoodie, and a mug.</p>
     </button>
   );
 }

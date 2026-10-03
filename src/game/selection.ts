@@ -198,6 +198,13 @@ function seedField(state: GameState, autos: Record<string, string>, score?: (id:
       bids.push({ teamId: id, seed, region, path: pathOf(id), playIn: slot.playIn });
     }
   });
+  const seen = new Set(bids.map((b) => b.teamId));
+  for (const id of fieldIds) {
+    if (seen.has(id)) continue;
+    const region = REGIONS[bids.length % REGIONS.length]!;
+    bids.push({ teamId: id, seed: 16, region, path: pathOf(id), playIn: false });
+    seen.add(id);
+  }
   return bids;
 }
 
@@ -351,7 +358,7 @@ export function revealSelection(state: GameState): GameState {
       ? NIT
       : youCrown
         ? CBI
-        : "home for March";
+        : "outside the field";
   const tone: NewsTone = you ? "good" : youNit || youCrown ? "even" : "bad";
   return withNews(
     { ...state, selection: { ...sel, revealed: true } },

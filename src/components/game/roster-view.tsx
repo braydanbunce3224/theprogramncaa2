@@ -6,7 +6,7 @@ import { classLabel, canRedshirt, playedThisSeason, isOut, FOCUS_OPTS, PROMISE_O
 import { bindTap } from "@/lib/tap";
 
 export function RosterView() {
-  const { state, pep, bumpMinutes, bumpUsage, redshirt, setFocus, promise, hold, openPlayer } = useGame();
+  const { state, pep, bumpMinutes, setMinutes, bumpUsage, redshirt, setFocus, promise, hold, openPlayer } = useGame();
   const [open, setOpen] = useState<string | null>(null);
   if (!state) return null;
   const roster = state.players.filter((p) => p.teamId === state.playerTeamId).sort((a, b) => b.ovr - a.ovr);
@@ -17,9 +17,10 @@ export function RosterView() {
       <div>
         <h1 className="font-display text-3xl">Roster</h1>
         <p className="mt-1 text-sm text-muted">
-          Minutes, usage, focus. Redshirt him before he plays.
+          Set the minutes below. A game is 200 minutes to hand out.
         </p>
       </div>
+      <MinutesBoard roster={roster} setMinutes={setMinutes} />
       {roster.length === 0 && (
         <p className="text-sm text-muted">No players on this file. Load another save or start a new job.</p>
       )}
@@ -85,6 +86,10 @@ export function RosterView() {
                     {p.injury && p.injury.weeksLeft > 0 ? ` · ${p.injury.part}` : ""}
                     {fat > 60 ? " · tired" : ""}
                   </span>
+                </span>
+                <span className="jersey-min" aria-label={out || p.redshirt ? "Not playing" : `${p.mpg} minutes`}>
+                  <b>{out || p.redshirt ? "—" : p.mpg}</b>
+                  <span>min</span>
                 </span>
                 <span className={`jersey-ovr ${p.morale >= 70 ? "is-hot" : p.morale < 50 ? "is-cold" : ""}`}>
                   {p.ovr}
@@ -187,6 +192,65 @@ export function RosterView() {
             </li>
           );
         })}
+      </ul>
+    </div>
+  );
+}
+
+function MinutesBoard({
+  roster,
+  setMinutes,
+}: {
+  roster: { id: string; first: string; last: string; pos: string; year: number; mpg: number; redshirt?: boolean; injury?: { weeksLeft: number } | null }[];
+  setMinutes: (id: string, mpg: number) => void;
+}) {
+  const playing = roster.filter((p) => !p.redshirt && !(p.injury && p.injury.weeksLeft > 0));
+  const sitting = roster.filter((p) => p.redshirt || (p.injury && p.injury.weeksLeft > 0));
+  const used = playing.reduce((n, p) => n + p.mpg, 0);
+  const left = 200 - used;
+  const ordered = [...playing].sort((a, b) => b.mpg - a.mpg || a.last.localeCompare(b.last));
+  return (
+    <div className="rounded-xl bg-elevated p-4 panel">
+      <p className="text-xs tracking-[0.18em] text-muted uppercase">Minutes</p>
+      <p className="font-display mt-1 text-2xl tabular-nums">
+        {used} <span className="text-muted">/ 200</span>
+      </p>
+      <p className={`mt-1 text-xs ${left < 0 ? "text-loss" : "text-muted"}`}>
+        {left === 0
+          ? "The night adds up. Five players, 40 minutes."
+          : left > 0
+            ? `${left} minutes still open.`
+            : `Rotation is ${Math.abs(left)} minutes over the 200-minute game limit.`}
+      </p>
+      <div className="min-stack mt-3" aria-hidden>
+        {ordered.map((p) => (
+          <i key={p.id} style={{ width: `${Math.max(0, (p.mpg / Math.max(used, 200)) * 100)}%` }} />
+        ))}
+      </div>
+      <ul className="mt-2">
+        {ordered.map((p) => (
+          <li key={p.id} className="min-row">
+            <span className="min-name">{p.last}</span>
+            <span className="min-pos">{p.pos}</span>
+            <span className="min-num">{p.mpg} min</span>
+            <input
+              type="range"
+              min={0}
+              max={38}
+              step={1}
+              value={p.mpg}
+              aria-label={`${p.first} ${p.last} minutes`}
+              onChange={(e) => setMinutes(p.id, Number(e.target.value))}
+            />
+          </li>
+        ))}
+        {sitting.map((p) => (
+          <li key={p.id} className="min-row is-out">
+            <span className="min-name">{p.last}</span>
+            <span className="min-pos">{p.redshirt ? "RS" : "Out"}</span>
+            <span className="min-num">—</span>
+          </li>
+        ))}
       </ul>
     </div>
   );

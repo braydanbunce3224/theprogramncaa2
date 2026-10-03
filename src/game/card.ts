@@ -64,7 +64,7 @@ export function makeReportCard(state: GameState): SeasonCard {
     grade("Locker room", lockerScore, promiseLine(state)),
     grade("Class", recScore, `${signed.length} signed · ${stars} stars in the class.`),
     grade("NCAA", compScore, heat ? `Compliance heat ${heat}.` : "No compliance issues."),
-    grade("Hardware", awardScore, awards ? `${awards} national honor${awards === 1 ? "" : "s"}.` : "Nobody on the lists."),
+    grade("Awards", awardScore, awards ? `${awards} national honor${awards === 1 ? "" : "s"}.` : "Nobody on the lists."),
   ];
 
   const overallN = grades.reduce((n, g) => n + (g.letter.startsWith("A") ? 90 : g.letter.startsWith("B") ? 75 : g.letter.startsWith("C") ? 58 : g.letter.startsWith("D") ? 42 : 28), 0) / grades.length;

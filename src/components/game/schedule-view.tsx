@@ -230,7 +230,7 @@ export function ScheduleView() {
         </ul>
         <div className="mt-6">
           <h2 className="font-display text-2xl">Exhibition boards</h2>
-          <p className="mt-1 text-sm text-muted">D2, D3, and NAIA guests. Home cup games. They are not Division I and they do not join a conference.</p>
+          <p className="mt-1 text-sm text-muted">D2, D3, and NAIA guests play home cup games. They are not Division I and they do not join a conference.</p>
           {(["D2", "D3", "NAIA"] as const).map((div) => (
             <div key={div} className="mt-3">
               <p className="text-xs tracking-[0.18em] text-muted uppercase">{div}</p>

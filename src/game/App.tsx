@@ -32,6 +32,7 @@ import { StoryView } from "@/components/game/story-view";
 import { SettingsView } from "@/components/game/settings-view";
 import { SearchView } from "@/components/game/search-view";
 import { BurnerView } from "@/components/game/burner-view";
+import { MerchView } from "@/components/game/merch-view";
 import { ProgramView } from "@/components/game/program-view";
 import { TeamView } from "@/components/game/team-view";
 import { PlayerView } from "@/components/game/player-view";
@@ -171,6 +172,7 @@ function GameAppInner() {
       {view === "settings" && <SettingsView />}
       {view === "search" && <SearchView />}
       {view === "burner" && <BurnerView />}
+      {view === "merch" && <MerchView />}
       {view === "program" && <ProgramView />}
       {view === "player" && <PlayerView />}
       {view === "saves" && <SavesView />}

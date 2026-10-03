@@ -9,7 +9,7 @@ const STEPS = [
   { title: "Recruiting", body: "Scout, offer, host a visit, then sign. 48 means he's listening. 68 means he's close. An offer uses a scholarship. The national board is the top 100. Prospects is the rest of the class still available." },
   { title: "Roster", body: "You set minutes and usage. Talk to your players, and keep the promises you make. Redshirt someone before he plays. Name a captain." },
   { title: "Program", body: "Hire an offensive coordinator, a defensive coordinator, and a recruiting coordinator. Upgrade facilities. Set the weekly practice plan. Scout the next opponent." },
-  { title: "Around the program", body: "Inbox is your AD, boosters, and fans. News covers the games. Podcasts is Locked On your school. Kentucky coaches also get The Catican. The Burner is the rumor board. Toughest Places ranks home courts. The record book and the bubble board track where you stand." },
+  { title: "Around the program", body: "Inbox is your AD, boosters, and fans. News covers the games. Podcasts is Locked On your school. Kentucky coaches also get The Catican, and a merch shop. The Burner is the rumor board. Toughest Places ranks home courts. The record book and the bubble board track where you stand." },
   { title: "March", body: "Selection Sunday sets the field of 68. Miss the NCAA Tournament and you can still play the NIT. Win it all and they cut the nets." },
 ];
 

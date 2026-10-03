@@ -19,7 +19,7 @@ import { recordHof } from "./hof";
 import { gradePromises } from "./locker";
 import { rollAwards } from "./awards";
 import { repairStoredMonsters, stampSeasonArchive } from "./archives";
-import { mountCustomList } from "./custom-schools";
+import { isPhantomTest, listCustomSchools, mountCustomList } from "./custom-schools";
 import { openDraft } from "./college";
 import { makeReportCard } from "./card";
 import { bustChemCache } from "./chemistry";
@@ -456,6 +456,26 @@ function expandResult(raw) {
   return r;
 }
 
+function capShares(players, teamId) {
+	const live = players.filter((p) => p && p.teamId === teamId && !p.redshirt && !(p.injury && p.injury.weeksLeft > 0));
+	const sum = live.reduce((n, p) => n + (Number(p.mpg) || 0), 0);
+	if (sum <= 200 || !live.length) return players;
+	const scale = 200 / sum;
+	const next = new Map();
+	let used = 0;
+	for (const p of live) {
+		const mpg = Math.max(0, Math.floor((Number(p.mpg) || 0) * scale));
+		next.set(p.id, mpg);
+		used += mpg;
+	}
+	let extra = 200 - used;
+	for (const p of live.slice().sort((a, b) => (b.mpg || 0) - (a.mpg || 0))) {
+		if (extra <= 0) break;
+		next.set(p.id, (next.get(p.id) || 0) + 1);
+		extra--;
+	}
+	return players.map((p) => next.has(p.id) ? { ...p, mpg: next.get(p.id) } : p);
+}
 export function hydrateState(state): GameState {
 	if (!state || typeof state !== "object") throw new Error("Empty save.");
 	mountCustomList(Array.isArray(state.customSchools) ? state.customSchools : []);
@@ -470,6 +490,19 @@ export function hydrateState(state): GameState {
 		teams[id] = fillTeam(id, t);
 	}
 	if (!teams[playerTeamId]) teams[playerTeamId] = fillTeam(playerTeamId, void 0);
+	for (const id of Object.keys(teams)) {
+		const seed = TEAM_BY_ID[id];
+		if (seed && isPhantomTest(seed) && id !== playerTeamId) delete teams[id];
+	}
+	for (const row of listCustomSchools()) {
+		if (!row?.id || isPhantomTest(row) || teams[row.id]) continue;
+		teams[row.id] = fillTeam(row.id, { conference: row.conference, prestige: row.prestige });
+	}
+	let players = (Array.isArray(state.players) ? state.players : []).map((p) => maybePlayer(p, rng)).filter((p) => Boolean(p));
+	players = players.filter((p) => p.teamId === playerTeamId || teams[p.teamId]);
+	if ((state.phase || "preseason") === "preseason" && !(Array.isArray(state.results) && state.results.length)) {
+		players = capShares(players, playerTeamId);
+	}
 	const identity = {
 		first: state.identity?.first?.trim() || "Coach",
 		last: state.identity?.last?.trim() || "Stone",
@@ -485,9 +518,10 @@ export function hydrateState(state): GameState {
 		phase: state.phase || "preseason",
 		playerTeamId,
 		identity,
-		players: (Array.isArray(state.players) ? state.players : []).map((p) => maybePlayer(p, rng)).filter((p) => Boolean(p)),
+		players,
 		recruits: (Array.isArray(state.recruits) ? state.recruits : []).map((r) => maybeRecruit(r, rng)).filter((r) => Boolean(r)),
-		schedule: (Array.isArray(state.schedule) ? state.schedule : []).map((g) => expandSlot(g)).filter((g) => Boolean(g)),
+		schedule: (Array.isArray(state.schedule) ? state.schedule : []).map((g) => expandSlot(g)).filter((g) => g && (g.resultId || (teams[g.homeId] && teams[g.awayId]))),
+		customSchools: (Array.isArray(state.customSchools) ? state.customSchools : []).filter((t) => t && !isPhantomTest(t) && (t.id === playerTeamId || teams[t.id])),
 		mail: Array.isArray(state.mail) ? state.mail.filter((m) => m && m.id) : [],
 		coachSkills: state.coachSkills ?? { ...DEFAULT_COACH },
 		skillPoints: Number(state.skillPoints) || 0,

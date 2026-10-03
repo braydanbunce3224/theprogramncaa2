@@ -704,7 +704,8 @@ function EndgameBar({ state }: { state: GameState }) {
 }
 
 function liveLegs(season: number, minutes: number, half: number): "fresh" | "winded" | "tired" {
-  const fromMinutes = minutes >= 28 ? 70 : half >= 2 && minutes >= 16 ? 50 : minutes >= 24 ? 45 : 0;
+  const played = Math.round(minutes);
+  const fromMinutes = played >= 26 ? 72 : half >= 2 && played >= 10 ? 52 : played >= 18 ? 46 : 0;
   const fat = Math.max(season, fromMinutes);
   if (fat > 60) return "tired";
   if (fat > 35) return "winded";

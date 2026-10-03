@@ -971,29 +971,29 @@ to {
 
 .title-screen {
   position: relative;
-  min-height: 100%;
+  height: 100dvh;
   min-height: 100dvh;
-  height: 100%;
   max-height: 100dvh;
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-end;
-  background: var(--color-title);
+  background: #100818;
   overflow-x: hidden;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  container-type: inline-size;
 }
 html.is-framed .title-screen {
-  min-height: 100%;
   height: 100%;
+  min-height: 100%;
   max-height: 100%;
 }
 .title-poster {
   position: absolute;
-  inset: 0;
+  top: 0;
+  bottom: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -1001,6 +1001,20 @@ html.is-framed .title-screen {
   z-index: 0;
   pointer-events: none;
   user-select: none;
+}
+@media (min-width: 840px) {
+  .title-poster {
+    width: min(100vw, calc(100dvh * 0.667));
+    height: 100dvh;
+    left: 50%;
+    transform: translateX(-50%);
+    object-fit: contain;
+    object-position: center center;
+  }
+  html.is-framed .title-poster {
+    width: min(100%, calc(100% * 0.667));
+    height: 100%;
+  }
 }
 .title-logo {
   position: absolute;
@@ -1012,7 +1026,7 @@ html.is-framed .title-screen {
   text-align: center;
   font-family: var(--font-hud);
   font-weight: 400;
-  font-size: min(2.75rem, calc((100cqi - 2rem) / 8));
+  font-size: min(2.75rem, 8vw);
   line-height: 1.35;
   letter-spacing: 0;
   color: #ffe14a;
@@ -1590,6 +1604,50 @@ html.title-booting .title-btn.is-queued,
   margin-top: 0.1rem;
   color: var(--color-muted);
   font-size: 0.72rem;
+}
+.jersey-min {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  min-width: 2.6rem;
+  line-height: 1;
+}
+.jersey-min b {
+  font-variant-numeric: tabular-nums;
+  font-size: 1rem;
+}
+.jersey-min span {
+  margin-top: 0.15rem;
+  color: var(--color-muted);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.min-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 2.4rem 5.2rem;
+  align-items: center;
+  column-gap: 0.75rem;
+  min-height: 2.75rem;
+}
+.min-row input { grid-column: 1 / -1; }
+.min-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 700;
+}
+.min-pos {
+  color: var(--color-muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-align: center;
+}
+.min-num {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  text-align: right;
 }
 .jersey-ovr {
   font-family: var(--font-display);

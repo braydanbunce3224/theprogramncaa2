@@ -229,7 +229,7 @@ function EraSelect() {
 }
 
 function CreateCoach() {
-  const { draftCoach, setDraftCoach, draftDifficulty, setDraftDifficulty, setView, selectMode, eraDecade, toast } = useGame();
+  const { draftCoach, setDraftCoach, draftDifficulty, setDraftDifficulty, draftGodMode, setDraftGodMode, setView, selectMode, eraDecade, toast } = useGame();
   const [q, setQ] = useState("");
   const [needName, setNeedName] = useState(false);
   const alma = draftCoach.almaMaterId ? TEAM_BY_ID[draftCoach.almaMaterId] : null;
@@ -305,6 +305,16 @@ function CreateCoach() {
               </button>
             ))}
           </div>
+          <button
+            type="button"
+            className={`mt-4 min-h-12 w-full rounded-lg px-3 text-left ${draftGodMode ? "bg-accent text-accent-fg" : "bg-elevated"}`}
+            {...bindTap(() => setDraftGodMode(!draftGodMode))}
+          >
+            <span className="block font-semibold">God Mode {draftGodMode ? "on" : "off"}</span>
+            <span className={`block text-xs ${draftGodMode ? "text-accent-fg/80" : "text-muted"}`}>
+              Set it now. After you take the job it stays as you left it, and it is not in the career menu.
+            </span>
+          </button>
           <p className="mt-6 text-[11px] tracking-[0.16em] text-subtle uppercase">Age</p>
           <div className="mt-2 flex items-center gap-3">
             <button type="button" className="h-12 w-14 rounded-lg bg-elevated" {...bindTap(() => setDraftCoach({ age: Math.max(28, draftCoach.age - 1) }))}>
@@ -442,7 +452,7 @@ function TeamSelect() {
             </PressButton>
           )}
           {toast && <p className="mt-3 text-sm text-loss">{toast}</p>}
-          {!career && <AddSchool />}
+          <AddSchool />
           {career && pool.length === 0 && <p className="mt-4 text-sm text-loss">No eligible jobs. Go back and pick a school instead.</p>}
           <input className="mt-4 h-12 w-full rounded-lg border border-border bg-elevated px-3" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search Albany, Vermont…" />
           <div className="mt-3 flex gap-2 overflow-x-auto pb-2">
@@ -499,11 +509,11 @@ function Chip({ on, onClick, label }: { on: boolean; onClick: () => void; label:
 function AddSchool() {
   const createSchool = useGame((s) => s.createSchool);
   const [open, setOpen] = useState(false);
-  const [name, setName] = useState("Test U");
-  const [mascot, setMascot] = useState("Trials");
-  const [abbr, setAbbr] = useState("TST");
+  const [name, setName] = useState("");
+  const [mascot, setMascot] = useState("");
+  const [abbr, setAbbr] = useState("");
   const [color, setColor] = useState("#0E6B4F");
-  const [city, setCity] = useState("Testville");
+  const [city, setCity] = useState("");
   const [conf, setConf] = useState<ConferenceId>("HOR");
   if (!open) {
     return (
@@ -519,7 +529,7 @@ function AddSchool() {
       <input className="mt-2 h-12 w-full rounded-lg border border-border bg-bg px-3" value={name} onChange={(e) => setName(e.target.value)} placeholder="School name" />
       <div className="mt-2 grid grid-cols-2 gap-2">
         <input className="h-12 rounded-lg border border-border bg-bg px-3" value={mascot} onChange={(e) => setMascot(e.target.value)} placeholder="Mascot" />
-        <input className="h-12 rounded-lg border border-border bg-bg px-3" value={abbr} onChange={(e) => setAbbr(e.target.value)} placeholder="Abbr" />
+        <input className="h-12 rounded-lg border border-border bg-bg px-3" value={abbr} onChange={(e) => setAbbr(e.target.value)} placeholder="ABC" />
       </div>
       <input className="mt-2 h-12 w-full rounded-lg border border-border bg-bg px-3" value={city} onChange={(e) => setCity(e.target.value)} placeholder="City" />
       <div className="mt-2 flex items-center gap-2">
@@ -532,13 +542,15 @@ function AddSchool() {
       </div>
       <button
         type="button"
-        className="mt-3 min-h-12 w-full rounded-lg bg-accent font-semibold text-accent-fg"
+        className="mt-3 min-h-12 w-full rounded-lg bg-accent font-semibold text-accent-fg disabled:opacity-40"
+        disabled={!name.trim()}
         {...bindTap(() => {
+          if (!name.trim()) return;
           createSchool({ name, mascot, abbr, color, city, stateName: "US", conference: conf });
           setOpen(false);
         })}
       >
-        Put {name.trim() || "Test U"} on the board
+        Put {name.trim() || "the school"} on the board
       </button>
     </div>
   );

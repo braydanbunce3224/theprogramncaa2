@@ -115,6 +115,7 @@ interface Store {
   eraDecade: number | null;
   draftCoach: CoachIdentity;
   draftDifficulty: Difficulty;
+  draftGodMode: boolean;
   toast: string | null;
   feedback: Feedback | null;
   starting: boolean;
@@ -134,6 +135,7 @@ interface Store {
   pickEra: (d: number) => void;
   setDraftCoach: (p: Partial<CoachIdentity>) => void;
   setDraftDifficulty: (d: Difficulty) => void;
+  setDraftGodMode: (on: boolean) => void;
   pickTeam: (id: string | null) => void;
   startDynasty: (teamId: string) => void;
   continueSave: () => void;
@@ -196,6 +198,7 @@ interface Store {
   setAssisted: (on: boolean) => void;
   pep: (id: string) => void;
   bumpMinutes: (id: string, d: number) => void;
+  setMinutes: (id: string, mpg: number) => void;
   bumpUsage: (id: string, d: number) => void;
   setFocus: (id: string, focus: DevFocus) => void;
   promise: (id: string, kind: PromiseKind) => void;
@@ -393,6 +396,7 @@ export const useGame = create<Store>((set, get) => ({
   eraDecade: null,
   draftCoach: { first: "", last: "", age: 38, almaMaterId: "" },
   draftDifficulty: "realistic",
+  draftGodMode: false,
   toast: null,
   feedback: null,
   starting: false,
@@ -495,6 +499,7 @@ export const useGame = create<Store>((set, get) => ({
 
   setDraftCoach: (p) => set({ draftCoach: { ...get().draftCoach, ...p } }),
   setDraftDifficulty: (d) => set({ draftDifficulty: d }),
+  setDraftGodMode: (on) => set({ draftGodMode: on }),
 
   pickTeam: (id) => set({ selectedTeamId: id }),
 
@@ -533,7 +538,7 @@ export const useGame = create<Store>((set, get) => ({
             identity,
             eraDecade: mode === "eras" ? get().eraDecade : null,
           });
-          const state = patchSettings(state0, { difficulty: get().draftDifficulty });
+          const state = patchSettings(state0, { difficulty: get().draftDifficulty, godMode: get().draftGodMode });
           if (bootGen !== gen) return;
           const tuto = tutorialDone() ? "hub" : "tutorial";
           rememberView(tuto as View, true);
@@ -1356,6 +1361,11 @@ export const useGame = create<Store>((set, get) => ({
       feedback: { title: `${p.first} minutes`, detail: `${Math.max(4, Math.min(36, p.mpg + d))} a night.`, parts: [{ label: "MPG", delta: d }] },
     });
   },
+  setMinutes: (id, mpg) => {
+    const s = get().state;
+    if (!s) return;
+    apply(get, set, setPlayerMpg(s, id, Math.round(mpg)));
+  },
   bumpUsage: (id, d) => {
     const s = get().state;
     if (!s) return;
@@ -1738,6 +1748,10 @@ export const useGame = create<Store>((set, get) => ({
   },
   createSchool: (input) => {
     const school = addCustomSchool(input);
+    if (!school) {
+      set({ toast: "Give the school a name." });
+      return;
+    }
     const s = get().state;
     const next = s ? worldWithCustom(s, school) : null;
     if (next) persist(next);

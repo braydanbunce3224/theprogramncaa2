@@ -12,7 +12,6 @@ import {
   Mail,
   Newspaper,
   Trophy,
-  Type,
   Users,
   Activity,
   TrendingUp,
@@ -21,6 +20,7 @@ import {
   Search,
   Settings,
   Headphones,
+  ShoppingBag,
   Landmark,
   BookOpen,
   School,
@@ -54,6 +54,7 @@ const MORE: { id: View; label: string; icon: typeof LayoutGrid; hint: string }[]
   { id: "inbox", label: "Inbox", icon: Mail, hint: "AD, boosters, and fans" },
   { id: "news", label: "News", icon: Newspaper, hint: "Stories from this week's games" },
   { id: "podcasts", label: "Podcasts", icon: Headphones, hint: "Locked On your school" },
+  { id: "merch", label: "Catican merch", icon: ShoppingBag, hint: "Tees and a hoodie from the show" },
   { id: "burner", label: "The Burner", icon: Flame, hint: "Coaching rumors and portal talk" },
   { id: "standings", label: "Ranks", icon: ListOrdered, hint: "Conference standings, NET, KenPom, and the AP poll" },
   { id: "places", label: "Toughest places", icon: Landmark, hint: "Home-court rankings" },
@@ -69,11 +70,10 @@ const MORE: { id: View; label: string; icon: typeof LayoutGrid; hint: string }[]
   { id: "compliance", label: "Compliance", icon: Scale, hint: "APR, NIL, and NCAA status" },
   { id: "hof", label: "Hall of Fame", icon: Award, hint: "Banners from every job on this device" },
   { id: "saves", label: "Load game", icon: ClipboardList, hint: "Saves on this device" },
-  { id: "names", label: "Names", icon: Type, hint: "Real school names or a custom list" },
   { id: "settings", label: "Settings", icon: Settings, hint: "Difficulty, NIL, and display" },
 ];
 
-const MORE_VIEWS = new Set<View>(["inbox", "standings", "places", "records", "leaders", "bracketology", "news", "podcasts", "bracket", "team", "saves", "selection", "names", "hof", "contract", "compliance", "analytics", "market", "draft", "camp", "awards", "settings", "search", "burner", "program", "player", "archives"]);
+const MORE_VIEWS = new Set<View>(["inbox", "standings", "places", "records", "leaders", "bracketology", "news", "podcasts", "merch", "bracket", "team", "saves", "selection", "names", "hof", "contract", "compliance", "analytics", "market", "draft", "camp", "awards", "settings", "search", "burner", "program", "player", "archives"]);
 
 export function Shell({ children }: { children: React.ReactNode }) {
   const { state, view, setView, leaveToTitle, showTutorial, openNames, clearFeedback } = useGame();
@@ -144,7 +144,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
             <div className="more-sheet-card">
               <p className="shrink-0 px-4 pt-3 pb-2 text-[11px] tracking-[0.16em] text-muted uppercase">More</p>
               <ul className="more-sheet-list flex flex-col">
-                {MORE.map((item) => {
+                {MORE.filter((item) => item.id !== "merch" || state.playerTeamId === "kentucky").map((item) => {
                   const Icon = item.icon;
                   return (
                     <li key={item.id} className="border-t border-border first:border-t-0">

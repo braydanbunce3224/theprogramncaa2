@@ -9,7 +9,7 @@ export type View =
   | "recruiting" | "standings" | "news" | "bracketology" | "bracket" | "game" | "inbox"
   | "presser" | "saves" | "team" | "selection" | "names" | "hof" | "contract" | "compliance"
   | "recap" | "analytics" | "market" | "draft" | "camp" | "awards" | "story" | "settings" | "search"
-  | "burner" | "podcasts" | "places" | "records" | "leaders" | "program" | "player" | "archives" | "carousel";
+  | "burner" | "podcasts" | "merch" | "places" | "records" | "leaders" | "program" | "player" | "archives" | "carousel";
 
 
 export type Phase = "preseason" | "regular" | "conference" | "selection" | "ncaa" | "nit" | "crown" | "offseason";

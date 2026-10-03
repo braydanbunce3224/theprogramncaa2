@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useGame } from "@/game/store";
 import { TEAM_BY_ID } from "@/game/teams";
 import { NCAA_REGIONS, PAIR_64 } from "@/game/selection";
-import { confName, recOf } from "@/game/ranks";
+import { confName, marchCall, recOf } from "@/game/ranks";
 import { settingsOf } from "@/game/engine";
 import type { GameState, NcaaBid, NcaaRegion } from "@/game/types";
 import { bindTap } from "@/lib/tap";
@@ -50,8 +50,6 @@ export function SelectionShow() {
   }
 
   const progress = cards.length > 1 ? i / (cards.length - 1) : 1;
-  const nit = state.selection?.nit.includes(youId);
-  const crown = state.selection?.crown.includes(youId);
   const you = field.find((b) => b.teamId === youId);
 
   return (
@@ -76,7 +74,7 @@ export function SelectionShow() {
           <div className="sel-beat sel-envelope" key="you">
             <p className="sel-kicker">Your envelope</p>
             <h1 className="sel-title">
-              {you ? `${you.seed} seed · ${you.region}` : nit ? "NIT" : crown ? "CBI" : "Home for March"}
+              {marchCall(state, youId)}
             </h1>
             <p className="sel-copy">
               {TEAM_BY_ID[youId]?.name} {recOf(state, youId)}

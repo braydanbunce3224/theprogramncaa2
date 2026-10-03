@@ -23,6 +23,7 @@ export const Route = createRootRoute({
     ],
     links: [
       { rel: "canonical", href: "https://playdribble.app/" },
+      { rel: "icon", href: "/favicon.ico", sizes: "16x16" },
       { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
       { rel: "stylesheet", href: appCss },
       { rel: "manifest", href: "/__grok/manifest.webmanifest" },
